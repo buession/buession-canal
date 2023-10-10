@@ -25,6 +25,7 @@
 package com.buession.canal.client.adapter;
 
 import com.alibaba.otter.canal.client.CanalConnector;
+import com.buession.canal.client.handler.MessageHandler;
 import com.buession.core.utils.Assert;
 
 import java.util.concurrent.TimeUnit;
@@ -32,25 +33,30 @@ import java.util.concurrent.TimeUnit;
 /**
  * Canal 适配器抽象类
  *
+ * @param <C>
+ * 		Canal 数据操作客户端
+ *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public abstract class AbstractCanalAdapterClient implements CanalAdapterClient {
+public abstract class AbstractCanalAdapterClient<C extends CanalConnector> implements CanalAdapterClient {
+
+	protected final static TimeUnit TIMEOUT_UNIT = TimeUnit.SECONDS;
 
 	/**
 	 * Canal 数据操作客户端
 	 */
-	private final CanalConnector connector;
+	private final C connector;
 
 	/**
-	 * 超时时长
+	 * 消息处理器
 	 */
-	private final Integer timeout;
+	private MessageHandler<?> messageHandler;
 
 	/**
-	 * 超时时长单位
+	 * 超时时长，单位：秒
 	 */
-	private final TimeUnit timeoutUnit;
+	private final Long timeout;
 
 	/**
 	 * 批处理条数
@@ -62,9 +68,11 @@ public abstract class AbstractCanalAdapterClient implements CanalAdapterClient {
 	 *
 	 * @param connector
 	 * 		Canal 数据操作客户端
+	 * @param messageHandler
+	 * 		消息处理器
 	 */
-	public AbstractCanalAdapterClient(final CanalConnector connector) {
-		this(connector, 1, TimeUnit.SECONDS, 1);
+	public AbstractCanalAdapterClient(final C connector, final MessageHandler<?> messageHandler) {
+		this(connector, messageHandler, 1L, 1);
 	}
 
 	/**
@@ -72,14 +80,13 @@ public abstract class AbstractCanalAdapterClient implements CanalAdapterClient {
 	 *
 	 * @param connector
 	 * 		Canal 数据操作客户端
+	 * @param messageHandler
+	 * 		消息处理器
 	 * @param timeout
 	 * 		超时时长
-	 * @param timeoutUnit
-	 * 		超时时长单位
 	 */
-	public AbstractCanalAdapterClient(final CanalConnector connector, final Integer timeout,
-									  final TimeUnit timeoutUnit) {
-		this(connector, timeout, timeoutUnit, 1);
+	public AbstractCanalAdapterClient(final C connector, final MessageHandler<?> messageHandler, final Long timeout) {
+		this(connector, messageHandler, timeout, 1);
 	}
 
 	/**
@@ -87,11 +94,14 @@ public abstract class AbstractCanalAdapterClient implements CanalAdapterClient {
 	 *
 	 * @param connector
 	 * 		Canal 数据操作客户端
+	 * @param messageHandler
+	 * 		消息处理器
 	 * @param batchSize
 	 * 		批处理条数
 	 */
-	public AbstractCanalAdapterClient(final CanalConnector connector, final Integer batchSize) {
-		this(connector, 1, TimeUnit.SECONDS, batchSize);
+	public AbstractCanalAdapterClient(final C connector, final MessageHandler<?> messageHandler,
+									  final Integer batchSize) {
+		this(connector, messageHandler, 1L, batchSize);
 	}
 
 	/**
@@ -99,19 +109,19 @@ public abstract class AbstractCanalAdapterClient implements CanalAdapterClient {
 	 *
 	 * @param connector
 	 * 		Canal 数据操作客户端
+	 * @param messageHandler
+	 * 		消息处理器
 	 * @param timeout
 	 * 		超时时长
-	 * @param timeoutUnit
-	 * 		超时时长单位
 	 * @param batchSize
 	 * 		批处理条数
 	 */
-	public AbstractCanalAdapterClient(final CanalConnector connector, final Integer timeout, final TimeUnit timeoutUnit,
+	public AbstractCanalAdapterClient(final C connector, final MessageHandler<?> messageHandler, final Long timeout,
 									  final Integer batchSize) {
 		Assert.isNull(connector, "CanalConnector cloud not be null.");
 		this.connector = connector;
+		this.messageHandler = messageHandler;
 		this.timeout = timeout;
-		this.timeoutUnit = timeoutUnit;
 		this.batchSize = batchSize;
 	}
 
@@ -122,8 +132,17 @@ public abstract class AbstractCanalAdapterClient implements CanalAdapterClient {
 	 *
 	 * @see CanalConnector
 	 */
-	public CanalConnector getConnector() {
+	public C getConnector() {
 		return connector;
+	}
+
+	/**
+	 * 返回消息处理器
+	 *
+	 * @return 消息处理器
+	 */
+	public MessageHandler getMessageHandler() {
+		return messageHandler;
 	}
 
 	/**
@@ -131,17 +150,8 @@ public abstract class AbstractCanalAdapterClient implements CanalAdapterClient {
 	 *
 	 * @return 超时时长
 	 */
-	public Integer getTimeout() {
+	public Long getTimeout() {
 		return timeout;
-	}
-
-	/**
-	 * 返回超时时长单位
-	 *
-	 * @return 超时时长单位
-	 */
-	public TimeUnit getTimeoutUnit() {
-		return timeoutUnit;
 	}
 
 	/**
@@ -155,11 +165,17 @@ public abstract class AbstractCanalAdapterClient implements CanalAdapterClient {
 
 	@Override
 	public void init() {
-
+		connector.connect();
+		connector.subscribe();
+		process();
 	}
 
 	@Override
 	public void destroy() {
-
+		connector.unsubscribe();
+		connector.disconnect();
 	}
+
+	protected abstract void process();
+
 }

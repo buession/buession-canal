@@ -25,8 +25,11 @@
 package com.buession.canal.client;
 
 import com.buession.core.utils.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Canal 客户端抽象类
@@ -41,6 +44,12 @@ public abstract class AbstractCanalClient implements CanalClient {
 	 */
 	private final List<Instance> instances;
 
+	private ExecutorService executorService;
+
+	private volatile boolean running = false;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	/**
 	 * 构造函数
 	 *
@@ -52,19 +61,57 @@ public abstract class AbstractCanalClient implements CanalClient {
 		this.instances = instances;
 	}
 
+	/**
+	 * 构造函数
+	 *
+	 * @param instances
+	 * 		实例清单
+	 * @param executorService
+	 *        {@link ExecutorService} 实例
+	 */
+	public AbstractCanalClient(final List<Instance> instances, final ExecutorService executorService) {
+		this(instances);
+		this.executorService = executorService;
+	}
+
 	@Override
 	public void start() {
+		if(executorService == null){
+			logger.info("CanalClient starting...");
+			process();
+		}else{
+			logger.info("CanalClient starting with async...");
+			executorService.submit(this::process);
+		}
 
+		running = true;
 	}
 
 	@Override
 	public void stop() {
+		logger.info("CanalClient stopping...");
+		for(Instance instance : instances){
+			instance.getAdapterClient().destroy();
+		}
 
+		if(executorService != null){
+			executorService.shutdown();
+		}
+
+		running = false;
 	}
 
 	@Override
 	public boolean isRunning() {
-		return false;
+		return running;
+	}
+
+	protected void process() {
+		while(running){
+			for(Instance instance : instances){
+				instance.getAdapterClient().init();
+			}
+		}
 	}
 
 }

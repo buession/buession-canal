@@ -25,6 +25,7 @@
 package com.buession.canal.client;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * 默认 Canal 客户端
@@ -42,6 +43,18 @@ public class DefaultCanalClient extends AbstractCanalClient {
 	 */
 	public DefaultCanalClient(final List<Instance> instances) {
 		super(instances);
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param instances
+	 * 		实例清单
+	 * @param executorService
+	 *        {@link ExecutorService} 实例
+	 */
+	public DefaultCanalClient(final List<Instance> instances, final ExecutorService executorService) {
+		super(instances, executorService);
 	}
 
 }

@@ -22,8 +22,16 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
+package com.buession.canal.client.handler;
+
+import com.alibaba.otter.canal.protocol.FlatMessage;
+
 /**
+ * Flat 消息处理器
+ *
  * @author Yong.Teng
  * @since 0.0.1
  */
-package com.buession.canal.core.annotation;
+public interface FlatMessageHandler extends MessageHandler<FlatMessage> {
+
+}

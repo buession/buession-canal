@@ -22,33 +22,28 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.client;
-
-import com.buession.canal.client.adapter.CanalAdapterClient;
-import com.buession.canal.core.CanalMode;
+package com.buession.canal.client.handler;
 
 /**
+ * 消息处理器
+ *
+ * @param <M>
+ * 		消息类型
+ *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class Instance extends com.buession.canal.core.Instance {
+public interface MessageHandler<M> {
 
-	public Instance() {
-	}
-
-	public Instance(CanalMode mode, CanalAdapterClient adapterClient) {
-		setMode(mode);
-		this.adapterClient = adapterClient;
-	}
-
-	private CanalAdapterClient adapterClient;
-
-	public CanalAdapterClient getAdapterClient() {
-		return adapterClient;
-	}
-
-	public void setAdapterClient(CanalAdapterClient adapterClient) {
-		this.adapterClient = adapterClient;
-	}
+	/**
+	 * 消息处理
+	 *
+	 * @param message
+	 * 		消息
+	 *
+	 * @throws Exception
+	 * 		异常
+	 */
+	void handle(M message) throws Exception;
 
 }

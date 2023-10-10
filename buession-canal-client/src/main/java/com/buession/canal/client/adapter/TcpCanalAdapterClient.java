@@ -26,11 +26,14 @@ package com.buession.canal.client.adapter;
 
 import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalConnectors;
+import com.alibaba.otter.canal.protocol.Message;
 import com.alibaba.otter.canal.protocol.exception.CanalClientException;
+import com.buession.canal.client.handler.MessageHandler;
 import com.buession.core.validator.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Canal TCP 适配器
@@ -38,7 +41,9 @@ import java.util.concurrent.TimeUnit;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class TcpCanalAdapterClient extends AbstractCanalAdapterClient {
+public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConnector> {
+
+	private final static Logger logger = LoggerFactory.getLogger(TcpCanalAdapterClient.class);
 
 	/**
 	 * 构造函数
@@ -53,10 +58,12 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient {
 	 * 		用户名
 	 * @param password
 	 * 		密码
+	 * @param messageHandler
+	 * 		消息处理器
 	 */
 	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
-								 final String username, final String password) {
-		super(createCanalConnector(server, zkServers, destination, username, password));
+								 final String username, final String password, final MessageHandler<?> messageHandler) {
+		super(createCanalConnector(server, zkServers, destination, username, password), messageHandler);
 	}
 
 	/**
@@ -72,15 +79,15 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient {
 	 * 		用户名
 	 * @param password
 	 * 		密码
+	 * @param messageHandler
+	 * 		消息处理器
 	 * @param timeout
 	 * 		超时时长
-	 * @param timeoutUnit
-	 * 		超时时长单位
 	 */
 	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
-								 final String username, final String password, final Integer timeout,
-								 final TimeUnit timeoutUnit) {
-		super(createCanalConnector(server, zkServers, destination, username, password), timeout, timeoutUnit);
+								 final String username, final String password, final MessageHandler<?> messageHandler,
+								 final Long timeout) {
+		super(createCanalConnector(server, zkServers, destination, username, password), messageHandler, timeout);
 	}
 
 	/**
@@ -96,12 +103,15 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient {
 	 * 		用户名
 	 * @param password
 	 * 		密码
+	 * @param messageHandler
+	 * 		消息处理器
 	 * @param batchSize
 	 * 		批处理条数
 	 */
 	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
-								 final String username, final String password, final Integer batchSize) {
-		super(createCanalConnector(server, zkServers, destination, username, password), batchSize);
+								 final String username, final String password, final MessageHandler<?> messageHandler,
+								 final Integer batchSize) {
+		super(createCanalConnector(server, zkServers, destination, username, password), messageHandler, batchSize);
 	}
 
 	/**
@@ -117,18 +127,40 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient {
 	 * 		用户名
 	 * @param password
 	 * 		密码
+	 * @param messageHandler
+	 * 		消息处理器
 	 * @param timeout
 	 * 		超时时长
-	 * @param timeoutUnit
-	 * 		超时时长单位
 	 * @param batchSize
 	 * 		批处理条数
 	 */
 	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
-								 final String username, final String password, final Integer timeout,
-								 final TimeUnit timeoutUnit, final Integer batchSize) {
-		super(createCanalConnector(server, zkServers, destination, username, password), timeout, timeoutUnit,
+								 final String username, final String password, final MessageHandler<?> messageHandler,
+								 final Long timeout, final Integer batchSize) {
+		super(createCanalConnector(server, zkServers, destination, username, password), messageHandler, timeout,
 				batchSize);
+	}
+
+	@Override
+	protected void process() {
+		long batchId = 0L;
+		try{
+			Message message = getConnector().getWithoutAck(getBatchSize(), getTimeout(), TIMEOUT_UNIT);
+
+			if(logger.isDebugEnabled()){
+				logger.debug("Receive message = {}", message);
+			}
+
+			batchId = message.getId();
+			if(message.getId() != -1 && message.getEntries().size() != 0){
+				getMessageHandler().handle(message);
+			}
+
+			getConnector().ack(batchId);
+		}catch(Exception e){
+			logger.error("Handle message[batch id: {}] error, rollback", batchId, e);
+			getConnector().rollback(batchId);
+		}
 	}
 
 	protected static CanalConnector createCanalConnector(final String server, final String zkServers,

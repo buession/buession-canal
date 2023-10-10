@@ -22,33 +22,8 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.client;
-
-import com.buession.canal.client.adapter.CanalAdapterClient;
-import com.buession.canal.core.CanalMode;
-
 /**
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class Instance extends com.buession.canal.core.Instance {
-
-	public Instance() {
-	}
-
-	public Instance(CanalMode mode, CanalAdapterClient adapterClient) {
-		setMode(mode);
-		this.adapterClient = adapterClient;
-	}
-
-	private CanalAdapterClient adapterClient;
-
-	public CanalAdapterClient getAdapterClient() {
-		return adapterClient;
-	}
-
-	public void setAdapterClient(CanalAdapterClient adapterClient) {
-		this.adapterClient = adapterClient;
-	}
-
-}
+package com.buession.canal.client.handler;
