@@ -22,9 +22,13 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.client.handler;
+package com.buession.canal.core.handler;
 
+import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.Message;
+import com.buession.canal.core.Callable;
+
+import java.util.List;
 
 /**
  * 常规消息处理器抽象类
@@ -34,5 +38,21 @@ import com.alibaba.otter.canal.protocol.Message;
  */
 public abstract class AbstractGeneralMessageHandler extends AbstractMessageHandler<Message>
 		implements GeneralMessageHandler {
+
+	@Override
+	public void handle(final Message message, final Callable callable) throws Exception {
+		List<CanalEntry.Entry> entries = message.getEntries();
+
+		for(CanalEntry.Entry entry : entries){
+			if(CanalEntry.EntryType.ROWDATA.equals(entry.getEntryType()) == false){
+				continue;
+			}
+
+			String schemaName = entry.getHeader().getSchemaName();
+			String tableName = entry.getHeader().getTableName();
+
+			callable.call(null, null, schemaName, tableName);
+		}
+	}
 
 }

@@ -22,9 +22,7 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.client.handler;
-
-import com.alibaba.otter.canal.protocol.FlatMessage;
+package com.buession.canal.core.handler;
 
 /**
  * Flat 消息同步处理器
@@ -33,10 +31,5 @@ import com.alibaba.otter.canal.protocol.FlatMessage;
  * @since 0.0.1
  */
 public class SyncFlatMessageHandler extends AbstractFlatMessageHandler {
-
-	@Override
-	public void handle(FlatMessage message) throws Exception {
-
-	}
 
 }

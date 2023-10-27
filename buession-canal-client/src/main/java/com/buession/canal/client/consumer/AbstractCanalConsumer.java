@@ -22,48 +22,44 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.spring.annotation;
+package com.buession.canal.client.consumer;
 
-import com.buession.canal.annotation.CanalClient;
-import org.springframework.context.annotation.Import;
-import org.springframework.core.annotation.AliasFor;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.buession.canal.client.adapter.CanalAdapterClient;
+import com.buession.core.utils.Assert;
 
 /**
- * Scans for interfaces that declare they are feign clients (via {@link CanalClient} <code>@CanalClient</code>).
+ * Canal 消费端抽象类
  *
  * @author Yong.Teng
  * @since 0.0.1
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Documented
-@Import(CanalClientsRegistrar.class)
-public @interface EnableCanalClients {
+public abstract class AbstractCanalConsumer implements CanalConsumer {
 
 	/**
-	 * Alias for the {@link #basePackages()} attribute. Allows for more concise annotation declarations e.g.:
-	 * {@code @ComponentScan("org.my.pkg")} instead of {@code @ComponentScan(basePackages="org.my.pkg")}.
-	 *
-	 * @return the array of 'basePackages'.
+	 * Canal 适配器接口
 	 */
-	@AliasFor("basePackages")
-	String[] value() default {};
+	private final CanalAdapterClient adapterClient;
 
 	/**
-	 * Base packages to scan for annotated components.
-	 * <p>
-	 * {@link #value()} is an alias for (and mutually exclusive with) this attribute.
-	 * <p>
+	 * 构造函数
 	 *
-	 * @return the array of 'basePackages'.
+	 * @param adapterClient
+	 * 		Canal 适配器接口
 	 */
-	@AliasFor("value")
-	String[] basePackages() default {};
+	public AbstractCanalConsumer(final CanalAdapterClient adapterClient) {
+		Assert.isNull(adapterClient, "CanalAdapterClient cloud not be null");
+		this.adapterClient = adapterClient;
+	}
+
+	@Override
+	public void init() {
+		adapterClient.init();
+		adapterClient.process(this);
+	}
+
+	@Override
+	public void destroy() {
+		adapterClient.destroy();
+	}
 
 }

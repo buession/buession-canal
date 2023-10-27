@@ -22,8 +22,26 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
+package com.buession.canal.annotation;
+
+import com.alibaba.otter.canal.protocol.CanalEntry;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
+ * 修改数据表操作监听器
+ *
  * @author Yong.Teng
  * @since 0.0.1
  */
-package com.buession.canal.spring.factory;
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@CanalEventListener(eventType = CanalEntry.EventType.ALTER)
+public @interface AlertTableEventListener {
+
+}

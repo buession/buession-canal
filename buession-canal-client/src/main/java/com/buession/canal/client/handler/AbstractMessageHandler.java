@@ -22,7 +22,12 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.client.handler;
+package com.buession.canal.core.handler;
+
+import com.buession.canal.annotation.CanalBinding;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  * 消息处理器抽象类
@@ -31,5 +36,13 @@ package com.buession.canal.client.handler;
  * @since 0.0.1
  */
 public abstract class AbstractMessageHandler<M> implements MessageHandler<M> {
+
+	protected ApplicationContext applicationContext;
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+	private void initListeners() {
+		applicationContext.getBeansWithAnnotation(CanalBinding.class);
+	}
 
 }

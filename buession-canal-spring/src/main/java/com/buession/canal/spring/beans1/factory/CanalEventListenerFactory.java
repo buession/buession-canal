@@ -22,48 +22,35 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.core.concurrent;
+package com.buession.canal.spring.beans.factory;
 
-import org.springframework.lang.NonNull;
+import com.buession.canal.spring.listener.CanalEventListener;
 
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.List;
 
 /**
- * 默认线程工厂
+ * {@link CanalEventListener} 工厂
  *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class DefaultThreadFactory implements ThreadFactory {
+public class CanalEventListenerFactory {
 
-	private final static AtomicInteger POOL_NUMBER = new AtomicInteger(1);
+	private List<CanalEventListener> listeners;
 
-	private final ThreadGroup group;
-
-	private final AtomicInteger threadNumber = new AtomicInteger(1);
-
-	private final String namePrefix;
-
-	public DefaultThreadFactory(final String namePrefix) {
-		SecurityManager securityManager = System.getSecurityManager();
-		group = securityManager == null ? Thread.currentThread().getThreadGroup() : securityManager.getThreadGroup();
-		this.namePrefix = namePrefix + '-' + POOL_NUMBER.getAndIncrement() + "-thread-";
+	public CanalEventListenerFactory() {
 	}
 
-	@Override
-	public Thread newThread(@NonNull Runnable runnable) {
-		final Thread thread = new Thread(group, runnable, namePrefix + threadNumber.getAndIncrement(), 0);
+	public CanalEventListenerFactory(List<CanalEventListener> listeners) {
+		this.listeners = listeners;
+	}
 
-		if(thread.isDaemon()){
-			thread.setDaemon(false);
-		}
+	public List<CanalEventListener> getListeners() {
+		return listeners;
+	}
 
-		if(thread.getPriority() != Thread.NORM_PRIORITY){
-			thread.setPriority(Thread.NORM_PRIORITY);
-		}
-
-		return thread;
+	public void setListeners(List<CanalEventListener> listeners) {
+		this.listeners = listeners;
 	}
 
 }

@@ -22,7 +22,7 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.client.handler;
+package com.buession.canal.core.handler;
 
 import com.alibaba.otter.canal.protocol.Message;
 
@@ -32,6 +32,7 @@ import com.alibaba.otter.canal.protocol.Message;
  * @author Yong.Teng
  * @since 0.0.1
  */
+@FunctionalInterface
 public interface GeneralMessageHandler extends MessageHandler<Message> {
 
 }

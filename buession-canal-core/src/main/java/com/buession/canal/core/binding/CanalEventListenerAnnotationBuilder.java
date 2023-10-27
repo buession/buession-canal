@@ -21,53 +21,10 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */
-package com.buession.canal.spring.annotation;
-
-import com.buession.canal.annotation.CanalClient;
-import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.env.Environment;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.lang.NonNull;
-
-/**
+ */package com.buession.canal.core.binding;/**
+ * 
+ *
  * @author Yong.Teng
  * @since 0.0.1
- */
-class CanalClientClassPathScanningCandidateComponentProvider
-		extends ClassPathScanningCandidateComponentProvider {
-
-	CanalClientClassPathScanningCandidateComponentProvider() {
-		super();
-		addIncludeFilter();
-	}
-
-	CanalClientClassPathScanningCandidateComponentProvider(boolean useDefaultFilters) {
-		super(useDefaultFilters);
-		addIncludeFilter();
-	}
-
-	CanalClientClassPathScanningCandidateComponentProvider(boolean useDefaultFilters, Environment environment) {
-		super(useDefaultFilters, environment);
-		addIncludeFilter();
-	}
-
-	@Override
-	protected boolean isCandidateComponent(@NonNull AnnotatedBeanDefinition beanDefinition) {
-		boolean isCandidate = false;
-
-		if(beanDefinition.getMetadata().isIndependent()){
-			if(beanDefinition.getMetadata().isAnnotation() == false){
-				isCandidate = true;
-			}
-		}
-
-		return isCandidate;
-	}
-
-	protected void addIncludeFilter() {
-		addIncludeFilter(new AnnotationTypeFilter(CanalClient.class));
-	}
-
+ */public class CanalEventListenerAnnotationBuilder {
 }

@@ -22,9 +22,17 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.client.handler;
+package com.buession.canal.core.handler;
 
+import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.FlatMessage;
+import com.buession.canal.core.Callable;
+import com.buession.core.validator.Validate;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Flat 消息处理器抽象类
@@ -34,5 +42,32 @@ import com.alibaba.otter.canal.protocol.FlatMessage;
  */
 public abstract class AbstractFlatMessageHandler extends AbstractMessageHandler<FlatMessage>
 		implements FlatMessageHandler {
+
+	@Override
+	public void handle(final FlatMessage message, final Callable callable) throws Exception {
+		List<Map<String, String>> messageData = message.getData();
+
+		if(Validate.isEmpty(messageData)){
+			return;
+		}
+
+		String schemaName = message.getDatabase();
+		String tableName = message.getTable();
+
+		for(int i = 0, j = messageData.size(); i < j; i++){
+			CanalEntry.EventType eventType = CanalEntry.EventType.valueOf(message.getType());
+
+			List<Map<String, String>> maps;
+			if(eventType.equals(CanalEntry.EventType.UPDATE)){
+				Map<String, String> map = messageData.get(i);
+				Map<String, String> oldMap = message.getOld().get(i);
+				maps = Stream.of(map, oldMap).collect(Collectors.toList());
+			}else{
+				maps = Stream.of(messageData.get(i)).collect(Collectors.toList());
+			}
+		}
+
+		callable.call(null, null, schemaName, tableName);
+	}
 
 }

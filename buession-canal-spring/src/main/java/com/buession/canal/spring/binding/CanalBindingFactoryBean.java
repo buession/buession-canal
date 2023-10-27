@@ -22,96 +22,60 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.spring.factory;
+package com.buession.canal.spring.binding;
 
-import com.buession.canal.annotation.CanalClient;
+import com.buession.canal.core.session.CanalSession;
 import com.buession.core.utils.Assert;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.lang.NonNull;
 
 /**
- * {@link CanalClient} 工厂 Bean
- *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class CanalClientFactoryBean implements FactoryBean<Object>, InitializingBean,
-		ApplicationContextAware, BeanFactoryAware {
+public class BindingFactoryBean<T> implements InitializingBean, FactoryBean<T> {
 
-	private String name;
+	private Class<T> bindingInterface;
 
-	private Class<?> type;
+	private CanalSession canalSession;
 
-	private ApplicationContext applicationContext;
-
-	private BeanFactory beanFactory;
-
-	public CanalClientFactoryBean() {
+	public BindingFactoryBean() {
 	}
 
-	public CanalClientFactoryBean(String name) {
-		this.name = name;
+	public BindingFactoryBean(Class<T> bindingInterface) {
+		this.bindingInterface = bindingInterface;
 	}
 
-	public CanalClientFactoryBean(String name, Class<?> type) {
-		this(name);
-		this.type = type;
+	public Class<T> getBindingInterface() {
+		return bindingInterface;
 	}
 
-	public String getName() {
-		return name;
+	public void setBindingInterface(Class<T> bindingInterface) {
+		this.bindingInterface = bindingInterface;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public CanalSession getCanalSession() {
+		return canalSession;
 	}
 
-	public Class<?> getType() {
-		return type;
-	}
-
-	public void setType(Class<?> type) {
-		this.type = type;
-	}
-
-	public ApplicationContext getApplicationContext() {
-		return applicationContext;
+	public void setCanalSession(CanalSession canalSession) {
+		this.canalSession = canalSession;
 	}
 
 	@Override
-	public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
-		beanFactory = applicationContext;
-	}
-
-	public BeanFactory getBeanFactory() {
-		return beanFactory;
-	}
-
-	@Override
-	public void setBeanFactory(@NonNull BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
-	}
-
-	@Override
-	public Object getObject() {
-		return null;
+	public T getObject() throws Exception {
+		return getCanalSession().getBinding(getBindingInterface());
 	}
 
 	@Override
 	public Class<?> getObjectType() {
-		return getType();
+		return getBindingInterface();
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.isBlank(name, "Name cloud not be null or empty");
+		Assert.isNull(getCanalSession(), "Property 'canalSession' is required");
+		Assert.isNull(getBindingInterface(), "Property 'bindingInterface' is required");
 	}
 
 }

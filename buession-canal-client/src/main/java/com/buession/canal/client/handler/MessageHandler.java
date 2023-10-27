@@ -22,7 +22,9 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.client.handler;
+package com.buession.canal.core.handler;
+
+import com.buession.canal.core.Callable;
 
 /**
  * 消息处理器
@@ -33,6 +35,7 @@ package com.buession.canal.client.handler;
  * @author Yong.Teng
  * @since 0.0.1
  */
+@FunctionalInterface
 public interface MessageHandler<M> {
 
 	/**
@@ -40,10 +43,12 @@ public interface MessageHandler<M> {
 	 *
 	 * @param message
 	 * 		消息
+	 * @param callable
+	 * 		消息回调
 	 *
 	 * @throws Exception
 	 * 		异常
 	 */
-	void handle(M message) throws Exception;
+	void handle(final M message, final Callable callable) throws Exception;
 
 }
