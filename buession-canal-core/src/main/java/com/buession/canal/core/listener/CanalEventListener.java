@@ -21,10 +21,56 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.core.session;/**
- * 
- *
+ */
+package com.buession.canal.client.listener;
+
+import com.alibaba.otter.canal.protocol.CanalEntry;
+
+/**
  * @author Yong.Teng
  * @since 0.0.1
- */public interface CanalSession {
+ */
+public class CanalEventListener {
+
+	/**
+	 * 指令
+	 */
+	private final String destination;
+
+	/**
+	 * 事件类型
+	 */
+	private final CanalEntry.EventType eventType;
+
+	/**
+	 * 构造函数
+	 *
+	 * @param destination
+	 * 		指令
+	 * @param eventType
+	 * 		事件类型
+	 */
+	public CanalEventListener(final String destination, final CanalEntry.EventType eventType) {
+		this.destination = destination;
+		this.eventType = eventType;
+	}
+
+	/**
+	 * 返回指令
+	 *
+	 * @return 指令
+	 */
+	public String getDestination() {
+		return destination;
+	}
+
+	/**
+	 * 返回事件类型
+	 *
+	 * @return 事件类型
+	 */
+	public CanalEntry.EventType getEventType() {
+		return eventType;
+	}
+
 }

@@ -62,7 +62,7 @@
 
 	<properties>
 		<buession.version>2.3.1</buession.version>
-		<alibaba.canal.version>1.1.6</alibaba.canal.version>
+		<alibaba.canal.version>1.1.7</alibaba.canal.version>
 	</properties>
 
 	<dependencyManagement>
@@ -73,6 +73,10 @@
 				<artifactId>canal.client</artifactId>
 				<version>${alibaba.canal.version}</version>
 				<exclusions>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>*</artifactId>
+					</exclusion>
 					<exclusion>
 						<groupId>org.slf4j</groupId>
 						<artifactId>*</artifactId>
@@ -88,6 +92,10 @@
 				<artifactId>canal.protocol</artifactId>
 				<version>${alibaba.canal.version}</version>
 				<exclusions>
+					<exclusion>
+						<groupId>io.netty</groupId>
+						<artifactId>*</artifactId>
+					</exclusion>
 					<exclusion>
 						<groupId>org.slf4j</groupId>
 						<artifactId>*</artifactId>

@@ -22,46 +22,8 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.core.binding;
-
-import com.buession.canal.core.event.Event;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class EventProxyFactory<T> {
-
-	private final Class<T> listenerInterface;
-
-	private final Map<Method, EventMethodInvoker> methodCache = new ConcurrentHashMap<>();
-
-	public EventProxyFactory(Class<T> listenerInterface) {
-		this.listenerInterface = listenerInterface;
-	}
-
-	public Class<T> getListenerInterface() {
-		return listenerInterface;
-	}
-
-	public Map<Method, EventMethodInvoker> getMethodCache() {
-		return methodCache;
-	}
-
-	@SuppressWarnings("unchecked")
-	protected T newInstance(EventProxy<T> mapperProxy) {
-		return (T) Proxy.newProxyInstance(listenerInterface.getClassLoader(), new Class[]{listenerInterface},
-				mapperProxy);
-	}
-
-	public T newInstance(Event event) {
-		final EventProxy<T> mapperProxy = new EventProxy<>(event, listenerInterface, methodCache);
-		return newInstance(mapperProxy);
-	}
-
-}
+package com.buession.canal.spring.factory;

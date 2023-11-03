@@ -22,16 +22,17 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.core.session;
+package com.buession.canal.client.handler;
 
-import com.buession.canal.core.Configuration;
+import com.alibaba.otter.canal.protocol.Message;
 
 /**
+ * 常规消息处理器抽象类
+ *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public interface SqlSessionFactory {
-
-	Configuration getConfiguration();
+public abstract class AbstractGeneralMessageHandler extends AbstractMessageHandler<Message>
+		implements GeneralMessageHandler {
 
 }

@@ -21,10 +21,9 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.core.session;/**
- * 
- *
+ */
+/**
  * @author Yong.Teng
  * @since 0.0.1
- */public class DefaultSqlSession {
-}
+ */
+package com.buession.canal.spring.factory;
