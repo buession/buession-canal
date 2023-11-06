@@ -21,10 +21,113 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.core.binding;/**
- * 
+ */
+package com.buession.canal.core.binding;
+
+import com.buession.canal.core.listener.CanalEventListener;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * {@link com.buession.canal.annotation.CanalBinding} 实体
+ *
+ * @param <T>
+ *        {@link com.buession.canal.annotation.CanalBinding} 类型
  *
  * @author Yong.Teng
  * @since 0.0.1
- */public class CanalBinding {
+ */
+public final class CanalBinding<T> implements Serializable {
+
+	private final static long serialVersionUID = -7514808298435436878L;
+
+	/**
+	 * 类型
+	 */
+	private final Class<T> type;
+
+	/**
+	 * {@link com.buession.canal.annotation.CanalBinding} 实体实例
+	 */
+	private final T instance;
+
+	/**
+	 * 指令
+	 */
+	private final String destination;
+
+	private List<CanalEventListener> listeners;
+
+	/**
+	 * 构造函数
+	 *
+	 * @param type
+	 * 		类型
+	 * @param instance
+	 *        {@link com.buession.canal.annotation.CanalBinding} 实体实例
+	 * @param destination
+	 * 		指令
+	 */
+	public CanalBinding(Class<T> type, T instance, String destination) {
+		this.type = type;
+		this.instance = instance;
+		this.destination = destination;
+	}
+
+	/**
+	 * 返回类型
+	 *
+	 * @return 类型
+	 */
+	public Class<T> getType() {
+		return type;
+	}
+
+	/**
+	 * 返回 {@link com.buession.canal.annotation.CanalBinding} 实体实例
+	 *
+	 * @return {@link com.buession.canal.annotation.CanalBinding} 实体实例
+	 */
+	public T getInstance() {
+		return instance;
+	}
+
+	/**
+	 * 返回指令
+	 *
+	 * @return 指令
+	 */
+	public String getDestination() {
+		return destination;
+	}
+
+	public List<CanalEventListener> getListeners() {
+		return listeners;
+	}
+
+	public void setListeners(List<CanalEventListener> listeners) {
+		this.listeners = listeners;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(type);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null){
+			return false;
+		}
+
+		if(obj instanceof CanalBinding){
+			CanalBinding<?> that = (CanalBinding<?>) obj;
+			return Objects.equals(this.type, that.type);
+		}
+
+		return false;
+	}
+
 }

@@ -21,10 +21,50 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.core;/**
- * 
+ */
+package com.buession.canal.core;
+
+/**
+ * 参数类型
  *
  * @author Yong.Teng
  * @since 0.0.1
- */public enum ParameterType {
+ */
+public enum ParameterType {
+
+	/**
+	 * 指令
+	 */
+	DESTINATION,
+
+	/**
+	 * 数据库
+	 */
+	SCHEMA,
+
+	/**
+	 * 数据表
+	 */
+	TABLE,
+
+	/**
+	 * 行变化
+	 */
+	ROW_CHANGE,
+
+	/**
+	 * 行数据
+	 */
+	ROW_DATA,
+
+	/**
+	 * 事件类型
+	 */
+	EVENT_TYPE,
+
+	/**
+	 * 未知
+	 */
+	UNKNOW
+
 }

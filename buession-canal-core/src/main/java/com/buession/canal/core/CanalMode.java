@@ -31,13 +31,29 @@ package com.buession.canal.core;
  * @since 0.0.1
  */
 public enum CanalMode {
-	TCP,
+	TCP("tcp"),
 
-	KAFKA,
+	KAFKA("kafka"),
 
-	ROCKET_MQ,
+	ROCKET_MQ("rocketmq"),
 
-	RABBIT_MQ,
+	RABBIT_MQ("rabbitmq"),
 
-	PULSAR_MQ;
+	PULSAR_MQ("pulsarmq");
+
+	private final String name;
+
+	CanalMode(final String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public String toString() {
+		return getName();
+	}
+
 }

@@ -21,10 +21,83 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.core;/**
- * 
+ */
+package com.buession.canal.core;
+
+import com.buession.core.utils.StringUtils;
+
+import java.io.Serializable;
+import java.util.Objects;
+
+/**
+ * 数据库信息
  *
  * @author Yong.Teng
  * @since 0.0.1
- */public class Table {
+ */
+public class Table implements Serializable {
+
+	private final static long serialVersionUID = 8941302053989524508L;
+
+	/**
+	 * 表名
+	 */
+	private final String name;
+
+	/**
+	 * 数据库名
+	 */
+	private final String schema;
+
+	/**
+	 * 构造函数
+	 *
+	 * @param name
+	 * 		表名
+	 * @param schema
+	 * 		数据库名
+	 */
+	public Table(final String name, final String schema) {
+		this.name = name;
+		this.schema = schema;
+	}
+
+	/**
+	 * 返回表名
+	 *
+	 * @return 表名
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * 返回数据库名
+	 *
+	 * @return 数据库名
+	 */
+	public String getSchema() {
+		return schema;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(name, schema);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null){
+			return false;
+		}
+
+		if(obj instanceof Table){
+			Table that = (Table) obj;
+			return StringUtils.equalsIgnoreCase(this.schema, that.schema) &&
+					StringUtils.equalsIgnoreCase(this.name, that.name);
+		}
+
+		return false;
+	}
+
 }

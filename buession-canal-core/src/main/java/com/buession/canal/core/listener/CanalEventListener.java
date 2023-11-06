@@ -22,9 +22,12 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.client.listener;
+package com.buession.canal.core.listener;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
+
+import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * @author Yong.Teng
@@ -42,6 +45,12 @@ public class CanalEventListener {
 	 */
 	private final CanalEntry.EventType eventType;
 
+	private final Object object;
+
+	private final Method method;
+
+	private List<ParameterMapping> parameterMappings;
+
 	/**
 	 * 构造函数
 	 *
@@ -49,10 +58,20 @@ public class CanalEventListener {
 	 * 		指令
 	 * @param eventType
 	 * 		事件类型
+	 * @param object
+	 * 		-
+	 * @param method
+	 * 		-
+	 * @param parameterMappings
+	 * 		-
 	 */
-	public CanalEventListener(final String destination, final CanalEntry.EventType eventType) {
+	public CanalEventListener(final String destination, final CanalEntry.EventType eventType, final Object object,
+							  final Method method, final List<ParameterMapping> parameterMappings) {
 		this.destination = destination;
 		this.eventType = eventType;
+		this.object = object;
+		this.method = method;
+		this.parameterMappings = parameterMappings;
 	}
 
 	/**
@@ -71,6 +90,18 @@ public class CanalEventListener {
 	 */
 	public CanalEntry.EventType getEventType() {
 		return eventType;
+	}
+
+	public Object getObject() {
+		return object;
+	}
+
+	public Method getMethod() {
+		return method;
+	}
+
+	public List<ParameterMapping> getParameterMappings() {
+		return parameterMappings;
 	}
 
 }

@@ -21,10 +21,77 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.core.listener;/**
- * 
- *
+ */
+package com.buession.canal.core.listener;
+
+import com.buession.canal.core.ParameterType;
+
+import java.io.Serializable;
+import java.util.Objects;
+import java.util.StringJoiner;
+
+/**
  * @author Yong.Teng
  * @since 0.0.1
- */public class ParameterMapping {
+ */
+public class ParameterMapping implements Serializable {
+
+	private final static long serialVersionUID = -3360650251060687317L;
+
+	private String property;
+
+	private Class<?> type = Object.class;
+
+	private ParameterType parameterType;
+
+	private ParameterMapping() {
+	}
+
+	public ParameterMapping(String property, Class<?> type, ParameterType parameterType) {
+		this.property = property;
+		this.type = type;
+		this.parameterType = parameterType;
+	}
+
+	public String getProperty() {
+		return property;
+	}
+
+	public Class<?> getType() {
+		return type;
+	}
+
+	public ParameterType getParameterType() {
+		return parameterType;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(property, type, parameterType);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null){
+			return false;
+		}
+
+		if(obj instanceof ParameterMapping){
+			ParameterMapping that = (ParameterMapping) obj;
+			return Objects.equals(property, that.getProperty()) && Objects.equals(type, that.getType()) &&
+					Objects.equals(parameterType, that.getParameterType());
+		}
+
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return new StringJoiner(", ", "ParameterMapping[", "]")
+				.add("property='" + property + "'")
+				.add("type=" + type)
+				.add("parameterType=" + parameterType)
+				.toString();
+	}
+
 }
