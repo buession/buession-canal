@@ -21,10 +21,24 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.core;/**
- * 
+ */
+package com.buession.canal.core.convert;
+
+import com.buession.canal.core.CanalMessage;
+import com.buession.core.converter.Converter;
+
+import java.util.List;
+
+/**
+ * 信息转换器接口
+ *
+ * @param <M>
+ * 		消息类型
  *
  * @author Yong.Teng
  * @since 0.0.1
- */public class Configuration {
+ */
+@FunctionalInterface
+public interface MessageTransponder<M> extends Converter<M, List<CanalMessage>> {
+
 }

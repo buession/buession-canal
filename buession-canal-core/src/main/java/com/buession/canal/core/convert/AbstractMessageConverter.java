@@ -21,10 +21,27 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.core.convert;/**
- * 
+ */
+package com.buession.canal.core.convert;
+
+import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.buession.core.builder.ListBuilder;
+
+import java.util.List;
+
+/**
+ * 信息转换器抽象类
+ *
+ * @param <M>
+ * 		消息类型
  *
  * @author Yong.Teng
  * @since 0.0.1
- */public class AbstractMessageTransponder {
+ */
+public abstract class AbstractMessageTransponder<M> implements MessageConverter<M> {
+
+	protected List<CanalEntry.EntryType> getIgnoreEntryTypes() {
+		return ListBuilder.empty();
+	}
+
 }
