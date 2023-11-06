@@ -21,10 +21,9 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.client.transfer;/**
- * 
- *
+ */
+/**
  * @author Yong.Teng
  * @since 0.0.1
- */public class AbstractMessageTransponder {
-}
+ */
+package com.buession.canal.client.handler;

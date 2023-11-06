@@ -22,27 +22,51 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.core.handler;
+package com.buession.canal.client.transfer;
 
-import com.buession.canal.annotation.CanalBinding;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
+import com.buession.canal.client.adapter.CanalAdapterClient;
+import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.binding.CanalBinding;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
- * 消息处理器抽象类
+ * 信息转换抽象类
  *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public abstract class AbstractMessageHandler<M> implements MessageHandler<M> {
+public abstract class AbstractMessageTransponder implements MessageTransponder {
 
-	protected ApplicationContext applicationContext;
+	private final CanalAdapterClient adapterClient;
 
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	private final CanalBinding<?> binding;
 
-	private void initListeners() {
-		applicationContext.getBeansWithAnnotation(CanalBinding.class);
+	private final long timeout;
+
+	private volatile boolean running = true;
+
+	public AbstractMessageTransponder(final CanalAdapterClient adapterClient, final CanalBinding<?> binding,
+									  final long timeout) {
+		this.adapterClient = adapterClient;
+		this.binding = binding;
+		this.timeout = timeout;
+	}
+
+	@Override
+	public void run() {
+		while(running){
+			List<CanalMessage> messages = adapterClient.getListWithoutAck(timeout, TimeUnit.SECONDS);
+
+			for(CanalMessage message : messages){
+				System.out.println(message);
+			}
+
+			adapterClient.ack();
+		}
+
+		running = false;
 	}
 
 }

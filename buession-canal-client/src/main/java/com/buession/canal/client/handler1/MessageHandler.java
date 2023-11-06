@@ -21,10 +21,30 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.client.transfer;/**
- * 
+ */
+package com.buession.canal.client.handler;
+
+/**
+ * 消息处理器
+ *
+ * @param <M>
+ * 		消息类型
  *
  * @author Yong.Teng
  * @since 0.0.1
- */public interface MessageTransponder {
+ */
+@FunctionalInterface
+public interface MessageHandler<M> {
+
+	/**
+	 * 消息处理
+	 *
+	 * @param message
+	 * 		消息
+	 *
+	 * @throws Exception
+	 * 		异常
+	 */
+	void handle(final M message) throws Exception;
+
 }

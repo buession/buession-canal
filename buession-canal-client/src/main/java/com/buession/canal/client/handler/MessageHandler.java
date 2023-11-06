@@ -22,33 +22,14 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.core.handler;
-
-import com.buession.canal.core.Callable;
+package com.buession.canal.client.transfer;
 
 /**
- * 消息处理器
- *
- * @param <M>
- * 		消息类型
+ * 信息转换接口
  *
  * @author Yong.Teng
  * @since 0.0.1
  */
-@FunctionalInterface
-public interface MessageHandler<M> {
-
-	/**
-	 * 消息处理
-	 *
-	 * @param message
-	 * 		消息
-	 * @param callable
-	 * 		消息回调
-	 *
-	 * @throws Exception
-	 * 		异常
-	 */
-	void handle(final M message, final Callable callable) throws Exception;
+public interface MessageTransponder extends Runnable {
 
 }

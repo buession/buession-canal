@@ -22,17 +22,28 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.core.handler;
+package com.buession.canal.client.handler;
 
-import com.alibaba.otter.canal.protocol.Message;
+import com.alibaba.otter.canal.protocol.CanalEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * 常规消息处理器
+ * 消息处理器抽象类
  *
  * @author Yong.Teng
  * @since 0.0.1
  */
-@FunctionalInterface
-public interface GeneralMessageHandler extends MessageHandler<Message> {
+public abstract class AbstractMessageHandler<M> implements MessageHandler<M> {
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	
+	protected List<CanalEntry.EntryType> getIgnoreEntryTypes() {
+		return Arrays.asList(CanalEntry.EntryType.TRANSACTIONBEGIN, CanalEntry.EntryType.TRANSACTIONEND,
+				CanalEntry.EntryType.HEARTBEAT);
+	}
 
 }

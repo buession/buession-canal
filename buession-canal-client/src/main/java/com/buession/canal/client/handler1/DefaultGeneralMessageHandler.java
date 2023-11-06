@@ -22,17 +22,55 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.core.handler;
+package com.buession.canal.client.handler;
 
-import com.alibaba.otter.canal.protocol.FlatMessage;
+import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.alibaba.otter.canal.protocol.Message;
+
+import java.util.List;
 
 /**
- * Flat 消息处理器
+ * 默认常规消息处理器
  *
  * @author Yong.Teng
  * @since 0.0.1
  */
-@FunctionalInterface
-public interface FlatMessageHandler extends MessageHandler<FlatMessage> {
+public class DefaultGeneralMessageHandler extends AbstractGeneralMessageHandler {
+
+	@Override
+	public void handle(final Message message) throws Exception {
+		List<CanalEntry.Entry> entries = message.getEntries();
+		List<CanalEntry.EntryType> ignoreEntryTypes = getIgnoreEntryTypes();
+
+		for(CanalEntry.Entry entry : entries){
+			if(ignoreEntryTypes.stream().anyMatch(t->entry.getEntryType() == t)){
+				continue;
+			}
+
+			doHandle(entry);
+		}
+	}
+
+	private void doHandle(final CanalEntry.Entry entry) {
+		String schemaName = entry.getHeader().getSchemaName();
+		String tableName = entry.getHeader().getTableName();
+
+		CanalEntry.RowChange rowChange;
+		try{
+			rowChange = CanalEntry.RowChange.parseFrom(entry.getStoreValue());
+		}catch(Exception e){
+			throw new RuntimeException("parse event has an error, data: " + entry, e);
+		}
+		
+		CanalEntry.EventType eventType = rowChange.getEventType();
+
+		try{
+			for(CanalEntry.RowData rowData : rowChange.getRowDatasList()){
+				System.out.println(rowData);
+			}
+		}catch(Exception e){
+			logger.error("handle row data error", e);
+		}
+	}
 
 }
