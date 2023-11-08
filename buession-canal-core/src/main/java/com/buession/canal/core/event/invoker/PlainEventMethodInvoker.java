@@ -22,8 +22,27 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
+package com.buession.canal.core.event.invoker;
+
+import com.buession.canal.core.event.EventMethod;
+
+import java.lang.reflect.Method;
+
 /**
  * @author Yong.Teng
  * @since 0.0.1
  */
-package com.buession.canal.core.event.invoker;
+public class PlainEventMethodInvoker implements EventMethodInvoker {
+
+	private final EventMethod eventMethod;
+
+	public PlainEventMethodInvoker(final EventMethod eventMethod) {
+		this.eventMethod = eventMethod;
+	}
+
+	@Override
+	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		return eventMethod.execute(proxy, args);
+	}
+
+}

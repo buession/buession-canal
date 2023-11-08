@@ -22,8 +22,34 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
+package com.buession.canal.core.event.invoker;
+
+import java.lang.reflect.Method;
+
 /**
+ * {@link com.buession.canal.annotation.CanalBinding} 方法调用器
+ *
  * @author Yong.Teng
  * @since 0.0.1
  */
-package com.buession.canal.core.event.invoker;
+@FunctionalInterface
+public interface EventMethodInvoker {
+
+	/**
+	 * {@link com.buession.canal.annotation.CanalBinding} 方法调用
+	 *
+	 * @param proxy
+	 *        {@link com.buession.canal.annotation.CanalBinding} 代理实例
+	 * @param method
+	 *        {@link com.buession.canal.annotation.CanalBinding} 方法
+	 * @param args
+	 * 		参数
+	 *
+	 * @return 调用结果
+	 *
+	 * @throws Throwable
+	 * 		异常
+	 */
+	Object invoke(Object proxy, Method method, Object[] args) throws Throwable;
+
+}

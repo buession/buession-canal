@@ -22,8 +22,26 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
+package com.buession.canal.core.event.invoker;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Method;
+
 /**
  * @author Yong.Teng
  * @since 0.0.1
  */
-package com.buession.canal.core.event.invoker;
+public class DefaultEventMethodInvoker implements EventMethodInvoker {
+
+	private final MethodHandle methodHandle;
+
+	public DefaultEventMethodInvoker(final MethodHandle methodHandle) {
+		this.methodHandle = methodHandle;
+	}
+
+	@Override
+	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		return methodHandle.bindTo(proxy).invokeWithArguments(args);
+	}
+
+}
