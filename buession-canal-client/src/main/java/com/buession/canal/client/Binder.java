@@ -21,10 +21,94 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.client;/**
- * 
+ */
+package com.buession.canal.client;
+
+import com.buession.canal.client.adapter.CanalAdapterClient;
+import com.buession.canal.core.binding.CanalBinding;
+
+import java.io.Serializable;
+
+/**
+ * {@link com.buession.canal.annotation.CanalBinding} 实体和 Canal 适配器绑定者
  *
  * @author Yong.Teng
  * @since 0.0.1
- */public class Binder {
+ */
+public class Binder implements Serializable {
+
+	private final static long serialVersionUID = -6134832445159441225L;
+
+	/**
+	 * {@link com.buession.canal.annotation.CanalBinding} 实体
+	 */
+	private CanalBinding<?> binding;
+
+	/**
+	 * Canal 适配器
+	 */
+	private CanalAdapterClient adapterClient;
+
+	/**
+	 * 超时时长，单位：秒
+	 */
+	private long timeout;
+
+	/**
+	 * 返回 {@link com.buession.canal.annotation.CanalBinding} 实体
+	 *
+	 * @return {@link com.buession.canal.annotation.CanalBinding} 实体
+	 */
+	public CanalBinding<?> getBinding() {
+		return binding;
+	}
+
+	/**
+	 * 设置 {@link com.buession.canal.annotation.CanalBinding} 实体
+	 *
+	 * @param binding
+	 *        {@link com.buession.canal.annotation.CanalBinding} 实体
+	 */
+	public void setBinding(CanalBinding<?> binding) {
+		this.binding = binding;
+	}
+
+	/**
+	 * 返回 Canal 适配器
+	 *
+	 * @return Canal 适配器
+	 */
+	public CanalAdapterClient getAdapterClient() {
+		return adapterClient;
+	}
+
+	/**
+	 * 设置 Canal 适配器
+	 *
+	 * @param adapterClient
+	 * 		Canal 适配器
+	 */
+	public void setAdapterClient(CanalAdapterClient adapterClient) {
+		this.adapterClient = adapterClient;
+	}
+
+	/**
+	 * 返回超时时长
+	 *
+	 * @return 超时时长，单位：秒
+	 */
+	public long getTimeout() {
+		return timeout;
+	}
+
+	/**
+	 * 设置超时时长，单位：秒
+	 *
+	 * @param timeout
+	 * 		超时时长
+	 */
+	public void setTimeout(long timeout) {
+		this.timeout = timeout;
+	}
+
 }
