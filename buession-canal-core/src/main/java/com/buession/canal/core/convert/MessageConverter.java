@@ -26,6 +26,7 @@ package com.buession.canal.core.convert;
 
 import com.buession.canal.core.CanalMessage;
 import com.buession.core.converter.Converter;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 
@@ -39,6 +40,10 @@ import java.util.List;
  * @since 0.0.1
  */
 @FunctionalInterface
-public interface MessageTransponder<M> extends Converter<M, List<CanalMessage>> {
+public interface MessageConverter<M> extends Converter<M, List<CanalMessage>> {
+
+	@Override
+	@NonNull
+	List<CanalMessage> convert(final M message);
 
 }

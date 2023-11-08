@@ -38,7 +38,7 @@ import java.util.List;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public abstract class AbstractMessageTransponder<M> implements MessageConverter<M> {
+public abstract class AbstractMessageConverter<M> implements MessageConverter<M> {
 
 	protected List<CanalEntry.EntryType> getIgnoreEntryTypes() {
 		return ListBuilder.empty();

@@ -27,6 +27,7 @@ package com.buession.canal.core.convert;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.Message;
 import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.Table;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,12 +39,13 @@ import java.util.stream.Collectors;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class DefaultMessageTransponder extends AbstractMessageTransponder<Message> {
+public class DefaultMessageConverter extends AbstractMessageConverter<Message> {
+
+	private final List<CanalEntry.EntryType> ignoreEntryTypes = getIgnoreEntryTypes();
 
 	@Override
 	public List<CanalMessage> convert(final Message message) {
 		List<CanalEntry.Entry> entries = message.getEntries();
-		List<CanalEntry.EntryType> ignoreEntryTypes = getIgnoreEntryTypes();
 
 		return entries.stream()
 				.filter((entry)->ignoreEntryTypes.stream().anyMatch(t->entry.getEntryType() == t) == false)
@@ -59,9 +61,8 @@ public class DefaultMessageTransponder extends AbstractMessageTransponder<Messag
 		}
 
 		final CanalMessage canalMessage = new CanalMessage();
-
-		canalMessage.setSchemaName(entry.getHeader().getSchemaName());
-		canalMessage.setTableName(entry.getHeader().getTableName());
+		
+		canalMessage.setTable(new Table(entry.getHeader().getSchemaName(), entry.getHeader().getTableName()));
 		canalMessage.setEventType(entry.getHeader().getEventType());
 		canalMessage.setRowData(rowChange.getRowDatasList());
 		canalMessage.setDdl(rowChange.getIsDdl());
