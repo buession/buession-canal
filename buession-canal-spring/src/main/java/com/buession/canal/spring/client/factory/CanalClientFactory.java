@@ -21,10 +21,69 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.spring.client.factory;/**
- * 
+ */
+package com.buession.canal.spring.client.factory;
+
+import com.buession.canal.client.Binder;
+import com.buession.canal.client.CanalClient;
+
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+
+/**
+ * {@link CanalClient} 工厂
  *
  * @author Yong.Teng
  * @since 0.0.1
- */public class CanalClientFactory {
+ */
+public class CanalClientFactory {
+
+	/**
+	 * {@link Binder} 列表
+	 */
+	private List<Binder> binders;
+
+	/**
+	 * {@link ExecutorService}
+	 */
+	private ExecutorService executor;
+
+	/**
+	 * 返回 {@link Binder} 列表
+	 *
+	 * @return {@link Binder} 列表
+	 */
+	public List<Binder> getBinders() {
+		return binders;
+	}
+
+	/**
+	 * 设置 {@link Binder} 列表
+	 *
+	 * @param binders
+	 *        {@link Binder} 列表
+	 */
+	public void setBinders(List<Binder> binders) {
+		this.binders = binders;
+	}
+
+	/**
+	 * 返回 {@link ExecutorService}
+	 *
+	 * @return {@link ExecutorService}
+	 */
+	public ExecutorService getExecutor() {
+		return executor;
+	}
+
+	/**
+	 * 设置 {@link ExecutorService}
+	 *
+	 * @param executor
+	 *        {@link ExecutorService}
+	 */
+	public void setExecutor(ExecutorService executor) {
+		this.executor = executor;
+	}
+
 }

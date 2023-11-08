@@ -26,4 +26,4 @@
  * @author Yong.Teng
  * @since 0.0.1
  */
-package com.buession.canal.spring.beans1;
+package com.buession.canal.spring.binding;

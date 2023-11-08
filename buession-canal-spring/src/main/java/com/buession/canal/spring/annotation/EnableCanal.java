@@ -35,7 +35,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Scans for interfaces that declare they are feign clients (via {@link CanalBinding} <code>@CanalBinding</code>).
+ * Scans for interfaces that declare they are canal instances (via {@link CanalBinding} <code>@CanalBinding</code>).
  *
  * @author Yong.Teng
  * @since 0.0.1
@@ -43,7 +43,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@Import(CanalRegistrar.class)
+@Import(CanalBindingScannerRegistrar.class)
 public @interface EnableCanal {
 
 	/**
@@ -65,5 +65,12 @@ public @interface EnableCanal {
 	 */
 	@AliasFor("value")
 	String[] basePackages() default {};
+
+	/**
+	 * 是否延迟初始化 {@link CanalBinding} bean
+	 *
+	 * @return true / false
+	 */
+	String lazyInitialization() default "";
 
 }

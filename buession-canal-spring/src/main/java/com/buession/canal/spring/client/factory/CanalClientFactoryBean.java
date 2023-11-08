@@ -21,10 +21,63 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.spring.client.factory;/**
- * 
+ */
+package com.buession.canal.spring.client.factory;
+
+import com.buession.canal.client.CanalClient;
+import com.buession.canal.client.DefaultCanalClient;
+import com.buession.core.utils.Assert;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextStartedEvent;
+
+/**
+ * {@link CanalClient} 工厂 bean
  *
  * @author Yong.Teng
  * @since 0.0.1
- */public class CanalClientFactoryBean {
+ */
+public class CanalClientFactoryBean extends CanalClientFactory implements ApplicationListener<ContextStartedEvent>,
+		FactoryBean<CanalClient>, InitializingBean, DisposableBean, AutoCloseable {
+
+	private CanalClient canalClient;
+
+	@Override
+	public CanalClient getObject() throws Exception {
+		return canalClient;
+	}
+
+	@Override
+	public Class<?> getObjectType() {
+		return canalClient.getClass();
+	}
+
+	@Override
+	public void onApplicationEvent(ContextStartedEvent event) {
+
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		Assert.isNull(getBinders(), "Property 'binders' is required");
+
+		canalClient = new DefaultCanalClient(getBinders(), getExecutor());
+
+		if(canalClient.isRunning() == false){
+			canalClient.start();
+		}
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		canalClient.stop();
+	}
+
+	@Override
+	public void close() throws Exception {
+		destroy();
+	}
+
 }

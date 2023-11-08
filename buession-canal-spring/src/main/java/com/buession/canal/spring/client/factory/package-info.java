@@ -22,60 +22,8 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.spring.binding;
-
-import com.buession.canal.core.session.CanalSession;
-import com.buession.core.utils.Assert;
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.InitializingBean;
-
 /**
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class BindingFactoryBean<T> implements InitializingBean, FactoryBean<T> {
-
-	private Class<T> bindingInterface;
-
-	private CanalSession canalSession;
-
-	public BindingFactoryBean() {
-	}
-
-	public BindingFactoryBean(Class<T> bindingInterface) {
-		this.bindingInterface = bindingInterface;
-	}
-
-	public Class<T> getBindingInterface() {
-		return bindingInterface;
-	}
-
-	public void setBindingInterface(Class<T> bindingInterface) {
-		this.bindingInterface = bindingInterface;
-	}
-
-	public CanalSession getCanalSession() {
-		return canalSession;
-	}
-
-	public void setCanalSession(CanalSession canalSession) {
-		this.canalSession = canalSession;
-	}
-
-	@Override
-	public T getObject() throws Exception {
-		return getCanalSession().getBinding(getBindingInterface());
-	}
-
-	@Override
-	public Class<?> getObjectType() {
-		return getBindingInterface();
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		Assert.isNull(getCanalSession(), "Property 'canalSession' is required");
-		Assert.isNull(getBindingInterface(), "Property 'bindingInterface' is required");
-	}
-
-}
+package com.buession.canal.spring.client.factory;

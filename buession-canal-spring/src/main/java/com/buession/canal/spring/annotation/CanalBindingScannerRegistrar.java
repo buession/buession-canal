@@ -24,10 +24,9 @@
  */
 package com.buession.canal.spring.annotation;
 
-import com.buession.canal.spring.mapper.MapperScannerConfigurer;
+import com.buession.canal.annotation.CanalBinding;
 import com.buession.core.validator.Validate;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
@@ -37,15 +36,20 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.NonNull;
+import org.springframework.util.ClassUtils;
 
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
+ * {@link CanalBinding} bean definition 注册器
+ *
  * @author Yong.Teng
+ * @see BeanDefinition
  * @since 0.0.1
  */
-public class CanalScannerRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware, EnvironmentAware {
+class CanalBindingScannerRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware, EnvironmentAware {
 
 	private Environment environment;
 
@@ -56,7 +60,7 @@ public class CanalScannerRegistrar implements ImportBeanDefinitionRegistrar, Res
 	}
 
 	@Override
-	public void setEnvironment(Environment environment) {
+	public void setEnvironment(@NonNull Environment environment) {
 		this.environment = environment;
 	}
 
@@ -65,47 +69,38 @@ public class CanalScannerRegistrar implements ImportBeanDefinitionRegistrar, Res
 	}
 
 	@Override
-	public void setResourceLoader(ResourceLoader resourceLoader) {
+	public void setResourceLoader(@NonNull ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 	}
 
 	@Override
-	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
+	public void registerBeanDefinitions(@NonNull AnnotationMetadata metadata,
+										@NonNull BeanDefinitionRegistry registry) {
 		final AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(
 				metadata.getAnnotationAttributes(EnableCanal.class.getName()));
+		final CanalBindingClassPathMapperScanner scanner = new CanalBindingClassPathMapperScanner(registry,
+				getEnvironment(), getResourceLoader());
+		final Set<String> basePackages = getBasePackages(annotationAttributes);
 
-		if(Validate.isNotEmpty(annotationAttributes)){
-			registerCanalBindings(metadata, annotationAttributes, registry);
-		}
-	}
-
-	private void registerCanalBindings(final AnnotationMetadata annotationMetadata,
-									   final AnnotationAttributes annotationAttributes,
-									   final BeanDefinitionRegistry registry) {
-		final String beanName = generateBaseBeanName(annotationMetadata, 0);
-		final BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
-				MapperScannerConfigurer.class);
-
-		builder.addPropertyValue("basePackage", getBasePackages(annotationAttributes));
-		builder.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-
-		registry.registerBeanDefinition(beanName, builder.getBeanDefinition());
-	}
-
-	private static Set<String> getBasePackages(@NonNull AnnotationAttributes annotationAttributes) {
-		Set<String> basePackages = new HashSet<>();
-
-		for(String pkg : annotationAttributes.getStringArray("basePackages")){
-			if(Validate.hasText(pkg)){
-				basePackages.add(pkg);
-			}
+		String lazyInitialization = annotationAttributes.getString("lazyInitialization");
+		if(Validate.hasText(lazyInitialization)){
+			scanner.setLazyInitialization(Boolean.parseBoolean(lazyInitialization));
 		}
 
-		return basePackages;
+		if(basePackages.isEmpty()){
+			basePackages.add(getDefaultBasePackage(metadata));
+		}
+
+		scanner.doScan(basePackages.toArray(new String[]{}));
 	}
 
-	private static String generateBaseBeanName(AnnotationMetadata annotationMetadata, int index) {
-		return annotationMetadata.getClassName() + "#" + CanalScannerRegistrar.class.getSimpleName() + "#" + index;
+	private static Set<String> getBasePackages(final AnnotationAttributes annotationAttributes) {
+		return Arrays.stream(annotationAttributes.getStringArray("basePackages")).filter(Validate::hasText).collect(
+				Collectors.toSet());
+	}
+
+	private static String getDefaultBasePackage(final AnnotationMetadata importingClassMetadata) {
+		return ClassUtils.getPackageName(importingClassMetadata.getClassName());
 	}
 
 }
