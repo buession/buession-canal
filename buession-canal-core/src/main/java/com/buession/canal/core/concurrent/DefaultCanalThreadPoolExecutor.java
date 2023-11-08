@@ -24,6 +24,7 @@
  */
 package com.buession.canal.core.concurrent;
 
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -32,20 +33,41 @@ import java.util.concurrent.TimeUnit;
  * 默认 Canal 任务线程池执行器
  *
  * @author Yong.Teng
+ * @see ThreadPoolExecutor
  * @since 0.0.1
  */
-public final class CanalThreadPoolExecutor extends ThreadPoolExecutor {
+public final class DefaultCanalThreadPoolExecutor extends ThreadPoolExecutor {
 
 	/**
 	 * 构造函数
 	 */
-	public CanalThreadPoolExecutor() {
-		this(2, 4, 3L, TimeUnit.SECONDS);
+	public DefaultCanalThreadPoolExecutor() {
+		this("canal", Runtime.getRuntime().availableProcessors() << 1, Runtime.getRuntime().availableProcessors() << 1,
+				3L, TimeUnit.SECONDS);
 	}
 
 	/**
 	 * 构造函数
 	 *
+	 * @param namePrefix
+	 * 		线程名称前缀
+	 * @param corePoolSize
+	 * 		线程池核心线程大小
+	 * @param maximumPoolSize
+	 * 		线程池最大线程数量
+	 * @param keepAliveTimeMillis
+	 * 		空闲线程存活时间（单位：微妙）
+	 */
+	public DefaultCanalThreadPoolExecutor(String namePrefix, int corePoolSize, int maximumPoolSize,
+										  long keepAliveTimeMillis) {
+		this(namePrefix, corePoolSize, maximumPoolSize, keepAliveTimeMillis, TimeUnit.MILLISECONDS);
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param namePrefix
+	 * 		线程名称前缀
 	 * @param corePoolSize
 	 * 		线程池核心线程大小
 	 * @param maximumPoolSize
@@ -55,9 +77,53 @@ public final class CanalThreadPoolExecutor extends ThreadPoolExecutor {
 	 * @param timeUnit
 	 * 		keepAliveTime 的计量单位
 	 */
-	public CanalThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit timeUnit) {
+	public DefaultCanalThreadPoolExecutor(String namePrefix, int corePoolSize, int maximumPoolSize,
+										  long keepAliveTime, TimeUnit timeUnit) {
+		this(namePrefix, corePoolSize, maximumPoolSize, keepAliveTime, timeUnit,
+				new ThreadPoolExecutor.DiscardPolicy());
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param namePrefix
+	 * 		线程名称前缀
+	 * @param corePoolSize
+	 * 		线程池核心线程大小
+	 * @param maximumPoolSize
+	 * 		线程池最大线程数量
+	 * @param keepAliveTimeMillis
+	 * 		空闲线程存活时间（单位：微妙）
+	 * @param rejectedExecutionHandler
+	 * 		饱和拒绝策略
+	 */
+	public DefaultCanalThreadPoolExecutor(String namePrefix, int corePoolSize, int maximumPoolSize,
+										  long keepAliveTimeMillis, RejectedExecutionHandler rejectedExecutionHandler) {
+		this(namePrefix, corePoolSize, maximumPoolSize, keepAliveTimeMillis, TimeUnit.MILLISECONDS,
+				rejectedExecutionHandler);
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param namePrefix
+	 * 		线程名称前缀
+	 * @param corePoolSize
+	 * 		线程池核心线程大小
+	 * @param maximumPoolSize
+	 * 		线程池最大线程数量
+	 * @param keepAliveTime
+	 * 		空闲线程存活时间
+	 * @param timeUnit
+	 * 		keepAliveTime 的计量单位
+	 * @param rejectedExecutionHandler
+	 * 		饱和拒绝策略
+	 */
+	public DefaultCanalThreadPoolExecutor(String namePrefix, int corePoolSize, int maximumPoolSize,
+										  long keepAliveTime, TimeUnit timeUnit,
+										  RejectedExecutionHandler rejectedExecutionHandler) {
 		super(corePoolSize, maximumPoolSize, keepAliveTime, timeUnit, new SynchronousQueue<>(),
-				new DefaultThreadFactory("canal"), new ThreadPoolExecutor.DiscardPolicy());
+				new DefaultCanalThreadFactory(namePrefix), rejectedExecutionHandler);
 	}
 
 }

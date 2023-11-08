@@ -33,9 +33,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 默认线程工厂
  *
  * @author Yong.Teng
+ * @see ThreadFactory
  * @since 0.0.1
  */
-public class DefaultThreadFactory implements ThreadFactory {
+public class DefaultCanalThreadFactory implements ThreadFactory {
 
 	private final ThreadGroup group;
 
@@ -43,7 +44,7 @@ public class DefaultThreadFactory implements ThreadFactory {
 
 	private final String namePrefix;
 
-	public DefaultThreadFactory(final String namePrefix) {
+	public DefaultCanalThreadFactory(final String namePrefix) {
 		SecurityManager securityManager = System.getSecurityManager();
 		group = securityManager == null ? Thread.currentThread().getThreadGroup() : securityManager.getThreadGroup();
 		this.namePrefix = namePrefix + "-thread-";
@@ -53,13 +54,11 @@ public class DefaultThreadFactory implements ThreadFactory {
 	public Thread newThread(@NonNull Runnable runnable) {
 		final Thread thread = new Thread(group, runnable, namePrefix + threadNumber.getAndIncrement(), 0);
 
-		if(thread.isDaemon()){
-			thread.setDaemon(true);
-		}
-
 		if(thread.getPriority() != Thread.NORM_PRIORITY){
 			thread.setPriority(Thread.NORM_PRIORITY);
 		}
+		
+		thread.setDaemon(true);
 
 		return thread;
 	}
