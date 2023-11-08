@@ -22,7 +22,7 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.client.transfer;
+package com.buession.canal.client.handler;
 
 /**
  * 信息转换接口
@@ -30,6 +30,6 @@ package com.buession.canal.client.transfer;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public interface MessageTransponder extends Runnable {
+public interface MessageHandler extends Runnable {
 
 }

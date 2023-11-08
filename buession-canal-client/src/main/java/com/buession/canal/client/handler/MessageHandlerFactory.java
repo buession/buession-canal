@@ -22,10 +22,9 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.client.transfer;
+package com.buession.canal.client.handler;
 
-import com.buession.canal.client.adapter.CanalAdapterClient;
-import com.buession.canal.core.binding.CanalBinding;
+import com.buession.canal.client.Binder;
 
 /**
  * 信息转换工厂接口
@@ -34,8 +33,8 @@ import com.buession.canal.core.binding.CanalBinding;
  * @since 0.0.1
  */
 @FunctionalInterface
-public interface HandlerFactory {
+public interface MessageHandlerFactory {
 
-	MessageTransponder newTransponder(CanalAdapterClient adapterClient, CanalBinding<?> binding, long timeout);
+	MessageHandler newHandler(Binder binder);
 
 }

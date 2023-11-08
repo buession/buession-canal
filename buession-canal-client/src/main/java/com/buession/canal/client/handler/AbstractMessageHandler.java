@@ -22,14 +22,22 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.client.transfer;
+package com.buession.canal.client.handler;
 
+import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.buession.canal.client.Binder;
 import com.buession.canal.client.adapter.CanalAdapterClient;
 import com.buession.canal.core.CanalMessage;
 import com.buession.canal.core.binding.CanalBinding;
+import com.buession.canal.core.listener.CanalEventListener;
+import com.buession.canal.core.listener.ParameterMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * 信息转换抽象类
@@ -37,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public abstract class AbstractMessageTransponder implements MessageTransponder {
+public abstract class AbstractMessageHandler implements MessageHandler {
 
 	private final CanalAdapterClient adapterClient;
 
@@ -47,26 +55,52 @@ public abstract class AbstractMessageTransponder implements MessageTransponder {
 
 	private volatile boolean running = true;
 
-	public AbstractMessageTransponder(final CanalAdapterClient adapterClient, final CanalBinding<?> binding,
-									  final long timeout) {
-		this.adapterClient = adapterClient;
-		this.binding = binding;
-		this.timeout = timeout;
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	public AbstractMessageHandler(final Binder binder) {
+		this.adapterClient = binder.getAdapterClient();
+		this.binding = binder.getBinding();
+		this.timeout = binder.getTimeout();
+		adapterClient.init();
 	}
 
 	@Override
 	public void run() {
 		while(running){
-			List<CanalMessage> messages = adapterClient.getListWithoutAck(timeout, TimeUnit.SECONDS);
+			try{
+				List<CanalMessage> messages = adapterClient.getListWithoutAck(timeout, TimeUnit.SECONDS);
 
-			for(CanalMessage message : messages){
-				System.out.println(message);
+				for(CanalMessage message : messages){
+					distributeEvent(message);
+				}
+
+				adapterClient.ack();
+			}catch(Exception e){
+				logger.error("Message handle error", e);
 			}
-
-			adapterClient.ack();
 		}
 
 		running = false;
+	}
+
+	protected CanalBinding<?> getBinding() {
+		return binding;
+	}
+
+	protected Object[] getInvokeArgs(final CanalEventListener eventListener, final CanalMessage message) {
+		return Arrays.stream(eventListener.getParameterMappings()).map(convertParameter(message)).toArray();
+	}
+
+	protected abstract void distributeEvent(final CanalMessage message);
+
+	protected Function<ParameterMapping, Object> convertParameter(final CanalMessage message) {
+		return (pm)->{
+			if(pm.getType().getClass().isAssignableFrom(CanalEntry.RowData.class)){
+				return message.getRowData().get(0);
+			}else{
+				return null;
+			}
+		};
 	}
 
 }

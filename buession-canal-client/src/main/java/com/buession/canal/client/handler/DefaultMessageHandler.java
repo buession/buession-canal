@@ -22,10 +22,16 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.client.transfer;
+package com.buession.canal.client.handler;
 
-import com.buession.canal.client.adapter.CanalAdapterClient;
-import com.buession.canal.core.binding.CanalBinding;
+import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.buession.canal.client.Binder;
+import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.listener.CanalEventListener;
+import com.buession.core.validator.Validate;
+
+import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * 默认信息转换
@@ -33,11 +39,49 @@ import com.buession.canal.core.binding.CanalBinding;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class DefaultMessageTransponder extends AbstractMessageTransponder {
+public class DefaultMessageHandler extends AbstractMessageHandler {
 
-	public DefaultMessageTransponder(final CanalAdapterClient adapterClient, final CanalBinding<?> binding,
-									 final long timeout) {
-		super(adapterClient, binding, timeout);
+	public DefaultMessageHandler(final Binder binder) {
+		super(binder);
+	}
+
+	@Override
+	protected void distributeEvent(final CanalMessage message) {
+		if(getBinding().getListeners() == null){
+			return;
+		}
+
+		getBinding().getListeners().stream()
+				.filter(eventListenerFilter(message.getTable().getSchema(), message.getTable().getName(),
+						message.getEventType()))
+				.forEach((listener)->{
+					try{
+						listener.getInvoker()
+								.invoke(listener.getObject(), listener.getMethod(), getInvokeArgs(listener, message));
+					}catch(Throwable e){
+						e.printStackTrace();
+					}
+				});
+	}
+
+	protected Predicate<CanalEventListener> eventListenerFilter(final String schemaName, final String tableName,
+																final CanalEntry.EventType eventType) {
+		// 判断数据库名是否一致
+		Predicate<CanalEventListener> sf =
+				listener->schemaName == null || Validate.isBlank(listener.getTable().getSchema())
+						|| Objects.equals(schemaName, listener.getTable().getSchema());
+
+		// 判断数据表名是否一致
+		Predicate<CanalEventListener> tf =
+				listener->tableName == null || Validate.isBlank(listener.getTable().getName())
+						|| Objects.equals(tableName, listener.getTable().getName());
+
+		// 判断事件类型是否一致
+		Predicate<CanalEventListener> ef =
+				listener->eventType == null || listener.getEventType() == null
+						|| eventType == listener.getEventType();
+
+		return sf.and(tf).and(ef);
 	}
 
 }

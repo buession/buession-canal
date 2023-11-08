@@ -22,14 +22,8 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.core.handler;
-
 /**
- * 常规消息异步处理器
- *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class AsyncGeneralMessageHandler extends AbstractGeneralMessageHandler {
-
-}
+package com.buession.canal.client.handler;
