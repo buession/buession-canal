@@ -25,7 +25,6 @@
 package com.buession.canal.client.adapter;
 
 import com.buession.canal.core.CanalMessage;
-import com.buession.core.utils.StringUtils;
 import org.junit.Test;
 
 import java.util.List;
@@ -35,10 +34,10 @@ import java.util.concurrent.TimeUnit;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class KafkaCanalAdapterClientTest {
+public class TcpCanalAdapterClientTest {
 
-	private final static KafkaCanalAdapterClient client = new KafkaCanalAdapterClient("192.168.0.161:9092",
-			"crm-department", "crm-department", null, 1, true);
+	private final static TcpCanalAdapterClient client = new TcpCanalAdapterClient("127.0.0.1:11111",
+			null, "customer", "admin", "admin", 5);
 
 	static {
 		client.init();

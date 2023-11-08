@@ -21,10 +21,33 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.client.adapter;/**
- * 
- *
+ */
+package com.buession.canal.client.adapter;
+
+import com.buession.canal.core.CanalMessage;
+import com.buession.core.utils.StringUtils;
+import org.junit.Test;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+/**
  * @author Yong.Teng
  * @since 0.0.1
- */public class KafkaCanalAdapterClientTest {
+ */
+public class KafkaCanalAdapterClientTest {
+
+	private final static KafkaCanalAdapterClient client = new KafkaCanalAdapterClient("127.0.0.1:9092",
+			"user", "user", null, 1, true);
+
+	static {
+		client.init();
+	}
+
+	@Test
+	public void getList() {
+		List<CanalMessage> messages = client.getList(5L, TimeUnit.SECONDS);
+		System.out.println(messages);
+	}
+
 }
