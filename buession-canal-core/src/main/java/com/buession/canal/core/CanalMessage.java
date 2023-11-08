@@ -26,6 +26,7 @@ package com.buession.canal.core;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -33,17 +34,19 @@ import java.util.StringJoiner;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class CanalMessage {
+public class CanalMessage implements Serializable {
+
+	private final static long serialVersionUID = -5272311798653766460L;
 
 	/**
-	 * 数据库名
+	 * 指令
 	 */
-	private String schemaName;
+	private String destination;
 
 	/**
-	 * 数据表名
+	 * 数据库信息
 	 */
-	private String tableName;
+	private Table table;
 
 	/**
 	 * 事件类型
@@ -58,41 +61,41 @@ public class CanalMessage {
 	private List<CanalEntry.RowData> rowData;
 
 	/**
-	 * 返回数据库名
+	 * 返回指令
 	 *
-	 * @return 数据库名
+	 * @return 指令
 	 */
-	public String getSchemaName() {
-		return schemaName;
+	public String getDestination() {
+		return destination;
 	}
 
 	/**
-	 * 设置数据库名
+	 * 设置指令
 	 *
-	 * @param schemaName
-	 * 		数据库名
+	 * @param destination
+	 * 		指令
 	 */
-	public void setSchemaName(String schemaName) {
-		this.schemaName = schemaName;
+	public void setDestination(String destination) {
+		this.destination = destination;
 	}
 
 	/**
-	 * 返回数据表名
+	 * 返回数据库信息
 	 *
-	 * @return 数据表名
+	 * @return 数据库信息
 	 */
-	public String getTableName() {
-		return tableName;
+	public Table getTable() {
+		return table;
 	}
 
 	/**
-	 * 设置数据表名
+	 * 设置数据库信息
 	 *
-	 * @param tableName
-	 * 		数据表名
+	 * @param table
+	 * 		数据库信息
 	 */
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
+	public void setTable(Table table) {
+		this.table = table;
 	}
 
 	/**
@@ -144,8 +147,8 @@ public class CanalMessage {
 	@Override
 	public String toString() {
 		return new StringJoiner(", ", "[", "]")
-				.add("schemaName='" + schemaName + "'")
-				.add("tableName='" + tableName + "'")
+				.add("destination=" + destination)
+				.add("table=" + table)
 				.add("eventType=" + eventType)
 				.add("rowData=" + rowData)
 				.toString();

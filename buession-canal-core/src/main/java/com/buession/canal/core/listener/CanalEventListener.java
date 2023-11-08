@@ -25,9 +25,9 @@
 package com.buession.canal.core.listener;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.buession.canal.core.Table;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * @author Yong.Teng
@@ -41,6 +41,11 @@ public class CanalEventListener {
 	private final String destination;
 
 	/**
+	 * 数据库信息
+	 */
+	private final Table table;
+
+	/**
 	 * 事件类型
 	 */
 	private final CanalEntry.EventType eventType;
@@ -49,13 +54,17 @@ public class CanalEventListener {
 
 	private final Method method;
 
-	private List<ParameterMapping> parameterMappings;
+	private final ParameterMapping[] parameterMappings;
+
+	private final Invoker invoker;
 
 	/**
 	 * 构造函数
 	 *
 	 * @param destination
 	 * 		指令
+	 * @param table
+	 * 		数据库信息
 	 * @param eventType
 	 * 		事件类型
 	 * @param object
@@ -64,14 +73,19 @@ public class CanalEventListener {
 	 * 		-
 	 * @param parameterMappings
 	 * 		-
+	 * @param invoker
+	 * 		-
 	 */
-	public CanalEventListener(final String destination, final CanalEntry.EventType eventType, final Object object,
-							  final Method method, final List<ParameterMapping> parameterMappings) {
+	public CanalEventListener(final String destination, final Table table, final CanalEntry.EventType eventType,
+							  final Object object, final Method method,
+							  final ParameterMapping[] parameterMappings, final Invoker invoker) {
 		this.destination = destination;
+		this.table = table;
 		this.eventType = eventType;
 		this.object = object;
 		this.method = method;
 		this.parameterMappings = parameterMappings;
+		this.invoker = invoker;
 	}
 
 	/**
@@ -81,6 +95,15 @@ public class CanalEventListener {
 	 */
 	public String getDestination() {
 		return destination;
+	}
+
+	/**
+	 * 返回数据库信息
+	 *
+	 * @return 数据库信息
+	 */
+	public Table getTable() {
+		return table;
 	}
 
 	/**
@@ -100,8 +123,12 @@ public class CanalEventListener {
 		return method;
 	}
 
-	public List<ParameterMapping> getParameterMappings() {
+	public ParameterMapping[] getParameterMappings() {
 		return parameterMappings;
+	}
+
+	public Invoker getInvoker() {
+		return invoker;
 	}
 
 }

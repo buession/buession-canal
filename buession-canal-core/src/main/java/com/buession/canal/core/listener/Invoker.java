@@ -22,8 +22,9 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.core.binding;
+package com.buession.canal.core.listener;
 
+import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.buession.canal.core.event.EventMethod;
 import com.buession.canal.core.event.invoker.DefaultEventMethodInvoker;
 import com.buession.canal.core.event.invoker.EventMethodInvoker;
@@ -46,18 +47,20 @@ import java.util.Map;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class CanalBindingProxy<T> implements InvocationHandler, Serializable {
+public class Invoker implements InvocationHandler, Serializable {
 
 	private final static long serialVersionUID = 4769603987519131562L;
 
 	private final static int ALLOWED_MODES = MethodHandles.Lookup.PRIVATE | MethodHandles.Lookup.PROTECTED
 			| MethodHandles.Lookup.PACKAGE | MethodHandles.Lookup.PUBLIC;
 
-	private final Class<T> bindingType;
-
 	private final static Method PRIVATE_LOOKUP_IN_METHOD;
 
 	private final static Constructor<MethodHandles.Lookup> LOOKUP_CONSTRUCTOR;
+
+	private final Class<?> bindingType;
+
+	private final CanalEntry.EventType eventType;
 
 	private final Map<Method, EventMethodInvoker> methodCache;
 
@@ -87,8 +90,10 @@ public class CanalBindingProxy<T> implements InvocationHandler, Serializable {
 		LOOKUP_CONSTRUCTOR = lookup;
 	}
 
-	public CanalBindingProxy(final Class<T> bindingType, final Map<Method, EventMethodInvoker> methodCache) {
+	public Invoker(final Class<?> bindingType, final CanalEntry.EventType eventType, final Map<Method,
+			EventMethodInvoker> methodCache) {
 		this.bindingType = bindingType;
+		this.eventType = eventType;
 		this.methodCache = methodCache;
 	}
 
@@ -134,7 +139,7 @@ public class CanalBindingProxy<T> implements InvocationHandler, Serializable {
 					}
 				}
 
-				return new PlainEventMethodInvoker(new EventMethod(bindingType, method));
+				return new PlainEventMethodInvoker(new EventMethod(bindingType, method, eventType));
 			});
 		}catch(RuntimeException ex){
 			Throwable cause = ex.getCause();
