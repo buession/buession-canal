@@ -21,10 +21,83 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.core.event;/**
- * 
- *
+ */
+package com.buession.canal.core.event;
+
+import com.alibaba.otter.canal.protocol.CanalEntry;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+/**
  * @author Yong.Teng
  * @since 0.0.1
- */public class EventMethod {
+ */
+public class EventMethod {
+
+	private final Method method;
+
+	private final CanalEntry.EventType eventType;
+
+	public EventMethod(Class<?> bindingType, final Method method, final CanalEntry.EventType eventType) {
+		this.method = method;
+		this.eventType = eventType;
+	}
+
+	public Object execute(Object object, Object[] args) throws InvocationTargetException, IllegalAccessException {
+		switch(eventType){
+			case INSERT:
+				//event.onInsert();
+				break;
+			case UPDATE:
+				System.out.println("update: ");
+				System.out.println(object);
+				method.invoke(object, args);
+				break;
+			case DELETE:
+				//event.onDelete();
+				break;
+			case CREATE:
+				//event.onCreate();
+				break;
+			case ALTER:
+				//event.onAlert();
+				break;
+			case ERASE:
+				//event.onErase();
+				break;
+			case QUERY:
+				//event.onQuery();
+				break;
+			case TRUNCATE:
+				//event.onTruncate();
+				break;
+			case RENAME:
+				//event.onRename();
+				break;
+			case CINDEX:
+				//event.onCIndex();
+				break;
+			case DINDEX:
+				//event.onDIndex();
+				break;
+			case GTID:
+				//event.onGtid();
+				break;
+			case XACOMMIT:
+				//event.onXAcommit();
+				break;
+			case XAROLLBACK:
+				//event.onXArollback();
+				break;
+			case MHEARTBEAT:
+				//event.onMHeartbeat();
+				break;
+			default:
+				break;
+		}
+
+		return null;
+	}
+
 }
