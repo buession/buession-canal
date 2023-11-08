@@ -21,10 +21,37 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.core.exception;/**
- * 
- *
+ */
+package com.buession.canal.core.exception;
+
+import com.alibaba.otter.canal.protocol.exception.CanalClientException;
+
+/**
  * @author Yong.Teng
  * @since 0.0.1
- */public class BindingException {
+ */
+public class BindingException extends CanalClientException {
+
+	private final static long serialVersionUID = -283975971655388701L;
+
+	public BindingException(String errorCode) {
+		super(errorCode);
+	}
+
+	public BindingException(String errorCode, Throwable cause) {
+		super(errorCode, cause);
+	}
+
+	public BindingException(String errorCode, String errorDesc) {
+		super(errorCode, errorDesc);
+	}
+
+	public BindingException(String errorCode, String errorDesc, Throwable cause) {
+		super(errorCode, errorDesc, cause);
+	}
+
+	public BindingException(Throwable cause) {
+		super(cause);
+	}
+
 }
