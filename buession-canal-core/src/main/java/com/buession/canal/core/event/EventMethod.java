@@ -47,52 +47,35 @@ public class EventMethod {
 	public Object execute(Object object, Object[] args) throws InvocationTargetException, IllegalAccessException {
 		switch(eventType){
 			case INSERT:
-				//event.onInsert();
-				break;
+				return method.invoke(object, args);
 			case UPDATE:
-				System.out.println("update: ");
-				System.out.println(object);
-				method.invoke(object, args);
-				break;
+				return method.invoke(object, args);
 			case DELETE:
-				//event.onDelete();
-				break;
+				return method.invoke(object, args);
 			case CREATE:
-				//event.onCreate();
-				break;
+				return method.invoke(object, args);
 			case ALTER:
-				//event.onAlert();
-				break;
+				return method.invoke(object, args);
 			case ERASE:
-				//event.onErase();
-				break;
+				return method.invoke(object, args);
 			case QUERY:
-				//event.onQuery();
-				break;
+				return method.invoke(object, args);
 			case TRUNCATE:
-				//event.onTruncate();
-				break;
+				return method.invoke(object, args);
 			case RENAME:
-				//event.onRename();
-				break;
+				return method.invoke(object, args);
 			case CINDEX:
-				//event.onCIndex();
-				break;
+				return method.invoke(object, args);
 			case DINDEX:
-				//event.onDIndex();
-				break;
+				return method.invoke(object, args);
 			case GTID:
-				//event.onGtid();
-				break;
+				return method.invoke(object, args);
 			case XACOMMIT:
-				//event.onXAcommit();
-				break;
+				return method.invoke(object, args);
 			case XAROLLBACK:
-				//event.onXArollback();
-				break;
+				return method.invoke(object, args);
 			case MHEARTBEAT:
-				//event.onMHeartbeat();
-				break;
+				return method.invoke(object, args);
 			default:
 				break;
 		}

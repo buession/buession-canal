@@ -27,6 +27,7 @@ package com.buession.canal.core.listener;
 import com.buession.canal.core.ParameterType;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -40,14 +41,14 @@ public class ParameterMapping implements Serializable {
 
 	private String property;
 
-	private Class<?> type = Object.class;
+	private Type type = Object.class;
 
 	private ParameterType parameterType;
 
 	private ParameterMapping() {
 	}
 
-	public ParameterMapping(String property, Class<?> type, ParameterType parameterType) {
+	public ParameterMapping(String property, Type type, ParameterType parameterType) {
 		this.property = property;
 		this.type = type;
 		this.parameterType = parameterType;
@@ -57,7 +58,7 @@ public class ParameterMapping implements Serializable {
 		return property;
 	}
 
-	public Class<?> getType() {
+	public Type getType() {
 		return type;
 	}
 

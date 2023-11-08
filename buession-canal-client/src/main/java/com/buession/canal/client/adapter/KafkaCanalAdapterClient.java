@@ -153,8 +153,7 @@ public class KafkaCanalAdapterClient extends AbstractCanalMqAdapterClient<KafkaC
 	 */
 	public KafkaCanalAdapterClient(final String servers, final String topic, final String groupId,
 								   final Integer partition, final boolean flatMessage) {
-		super(createKafkaCanalConnector(servers, topic, groupId, partition, flatMessage), flatMessage);
-		setDestination(topic);
+		super(createKafkaCanalConnector(servers, topic, groupId, partition, flatMessage), topic, flatMessage);
 	}
 
 	/**
@@ -175,7 +174,7 @@ public class KafkaCanalAdapterClient extends AbstractCanalMqAdapterClient<KafkaC
 	 */
 	public KafkaCanalAdapterClient(final String servers, final String topic, final String groupId,
 								   final Integer partition, final int batchSize, final boolean flatMessage) {
-		super(createKafkaCanalConnector(servers, topic, groupId, partition, batchSize, flatMessage), batchSize,
+		super(createKafkaCanalConnector(servers, topic, groupId, partition, batchSize, flatMessage), topic, batchSize,
 				flatMessage);
 	}
 

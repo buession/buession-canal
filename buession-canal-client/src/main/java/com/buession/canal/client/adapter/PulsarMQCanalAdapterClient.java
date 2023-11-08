@@ -100,9 +100,8 @@ public class PulsarMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Pul
 	 */
 	public PulsarMQCanalAdapterClient(final String serviceUrl, final String roleToken, final String topic,
 									  final String subscriptName, final boolean flatMessage) {
-		super(createPulsarMQCanalConnector(serviceUrl, roleToken, topic, subscriptName, flatMessage),
+		super(createPulsarMQCanalConnector(serviceUrl, roleToken, topic, subscriptName, flatMessage), subscriptName,
 				DEFAULT_BATCH_SIZE, flatMessage);
-		setDestination(subscriptName);
 	}
 
 	/**
@@ -124,8 +123,7 @@ public class PulsarMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Pul
 	public PulsarMQCanalAdapterClient(final String serviceUrl, final String roleToken, final String topic,
 									  final String subscriptName, final int batchSize, final boolean flatMessage) {
 		super(createPulsarMQCanalConnector(serviceUrl, roleToken, topic, subscriptName, batchSize, flatMessage),
-				batchSize, flatMessage);
-		setDestination(subscriptName);
+				subscriptName, batchSize, flatMessage);
 	}
 
 	/**
@@ -161,8 +159,7 @@ public class PulsarMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Pul
 									  final Integer maxRedeliveryCount) {
 		super(createPulsarMQCanalConnector(serviceUrl, roleToken, topic, subscriptName, getBatchTimeout,
 				batchProcessTimeout, redeliveryDelay, ackTimeout, isRetry, isRetryDLQUpperCase,
-				maxRedeliveryCount, DEFAULT_FLAT_MESSAGE), DEFAULT_FLAT_MESSAGE);
-		setDestination(subscriptName);
+				maxRedeliveryCount, DEFAULT_FLAT_MESSAGE), subscriptName, DEFAULT_FLAT_MESSAGE);
 	}
 
 	/**
@@ -200,8 +197,7 @@ public class PulsarMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Pul
 									  final Integer maxRedeliveryCount, final int batchSize) {
 		super(createPulsarMQCanalConnector(serviceUrl, roleToken, topic, subscriptName, batchSize, getBatchTimeout,
 				batchProcessTimeout, redeliveryDelay, ackTimeout, isRetry, isRetryDLQUpperCase,
-				maxRedeliveryCount, DEFAULT_FLAT_MESSAGE), batchSize, DEFAULT_FLAT_MESSAGE);
-		setDestination(subscriptName);
+				maxRedeliveryCount, DEFAULT_FLAT_MESSAGE), subscriptName, batchSize, DEFAULT_FLAT_MESSAGE);
 	}
 
 	/**
@@ -239,8 +235,7 @@ public class PulsarMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Pul
 									  final Integer maxRedeliveryCount, final boolean flatMessage) {
 		super(createPulsarMQCanalConnector(serviceUrl, roleToken, topic, subscriptName, getBatchTimeout,
 				batchProcessTimeout, redeliveryDelay, ackTimeout, isRetry, isRetryDLQUpperCase,
-				maxRedeliveryCount, flatMessage), flatMessage);
-		setDestination(subscriptName);
+				maxRedeliveryCount, flatMessage), subscriptName, flatMessage);
 	}
 
 	/**
@@ -281,8 +276,7 @@ public class PulsarMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Pul
 									  final int batchSize, final boolean flatMessage) {
 		super(createPulsarMQCanalConnector(serviceUrl, roleToken, topic, subscriptName, batchSize, getBatchTimeout,
 				batchProcessTimeout, redeliveryDelay, ackTimeout, isRetry, isRetryDLQUpperCase,
-				maxRedeliveryCount, flatMessage), batchSize, flatMessage);
-		setDestination(subscriptName);
+				maxRedeliveryCount, flatMessage), subscriptName, batchSize, flatMessage);
 	}
 
 	protected static PulsarMQCanalConnector createPulsarMQCanalConnector(final String serviceUrl,

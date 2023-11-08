@@ -48,6 +48,11 @@ public enum ParameterType {
 	TABLE,
 
 	/**
+	 * 头
+	 */
+	HEADER,
+
+	/**
 	 * 行变化
 	 */
 	ROW_CHANGE,
@@ -56,6 +61,11 @@ public enum ParameterType {
 	 * 行数据
 	 */
 	ROW_DATA,
+
+	/**
+	 * 实体类型
+	 */
+	ENTRY_TYPE,
 
 	/**
 	 * 事件类型

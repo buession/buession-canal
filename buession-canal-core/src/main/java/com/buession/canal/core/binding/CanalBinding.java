@@ -58,6 +58,9 @@ public final class CanalBinding<T> implements Serializable {
 	 */
 	private final String destination;
 
+	/**
+	 * 事件监听器
+	 */
 	private List<CanalEventListener> listeners;
 
 	/**
@@ -103,10 +106,21 @@ public final class CanalBinding<T> implements Serializable {
 		return destination;
 	}
 
+	/**
+	 * 返回事件监听器
+	 *
+	 * @return 事件监听器
+	 */
 	public List<CanalEventListener> getListeners() {
 		return listeners;
 	}
 
+	/**
+	 * 设置事件监听器
+	 *
+	 * @param listeners
+	 * 		事件监听器
+	 */
 	public void setListeners(List<CanalEventListener> listeners) {
 		this.listeners = listeners;
 	}

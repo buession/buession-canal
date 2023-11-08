@@ -25,7 +25,7 @@
 package com.buession.canal.client.handler;
 
 /**
- * 信息转换接口
+ * 信息处理接口
  *
  * @author Yong.Teng
  * @since 0.0.1

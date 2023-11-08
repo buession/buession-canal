@@ -26,14 +26,24 @@ package com.buession.canal.core.listener;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.buession.canal.core.Table;
+import com.buession.canal.core.event.invoker.EventMethodInvoker;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 事件监听器
+ *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class CanalEventListener {
+public class CanalEventListener implements Serializable {
+
+	private final static long serialVersionUID = -8417968908960591491L;
+
+	private final Map<Method, EventMethodInvoker> methodCache = new ConcurrentHashMap<>();
 
 	/**
 	 * 指令
@@ -50,12 +60,24 @@ public class CanalEventListener {
 	 */
 	private final CanalEntry.EventType eventType;
 
+	/**
+	 * {@link com.buession.canal.annotation.CanalBinding} 实例
+	 */
 	private final Object object;
 
+	/**
+	 * 方法
+	 */
 	private final Method method;
 
+	/**
+	 * 方法参数列表
+	 */
 	private final ParameterMapping[] parameterMappings;
 
+	/**
+	 * 方法调用者
+	 */
 	private final Invoker invoker;
 
 	/**
@@ -68,24 +90,22 @@ public class CanalEventListener {
 	 * @param eventType
 	 * 		事件类型
 	 * @param object
-	 * 		-
+	 *        {@link com.buession.canal.annotation.CanalBinding} 实例
 	 * @param method
-	 * 		-
+	 * 		方法
 	 * @param parameterMappings
-	 * 		-
-	 * @param invoker
-	 * 		-
+	 * 		方法参数列表
 	 */
 	public CanalEventListener(final String destination, final Table table, final CanalEntry.EventType eventType,
 							  final Object object, final Method method,
-							  final ParameterMapping[] parameterMappings, final Invoker invoker) {
+							  final ParameterMapping[] parameterMappings) {
 		this.destination = destination;
 		this.table = table;
 		this.eventType = eventType;
 		this.object = object;
 		this.method = method;
 		this.parameterMappings = parameterMappings;
-		this.invoker = invoker;
+		this.invoker = new Invoker(object.getClass(), eventType, methodCache);
 	}
 
 	/**
@@ -115,18 +135,38 @@ public class CanalEventListener {
 		return eventType;
 	}
 
+	/**
+	 * 返回 {@link com.buession.canal.annotation.CanalBinding} 实例
+	 *
+	 * @return {@link com.buession.canal.annotation.CanalBinding} 实例
+	 */
 	public Object getObject() {
 		return object;
 	}
 
+	/**
+	 * 返回方法
+	 *
+	 * @return 方法
+	 */
 	public Method getMethod() {
 		return method;
 	}
 
+	/**
+	 * 返回方法参数列表
+	 *
+	 * @return 方法参数列表
+	 */
 	public ParameterMapping[] getParameterMappings() {
 		return parameterMappings;
 	}
 
+	/**
+	 * 返回方法调用者
+	 *
+	 * @return 方法调用者
+	 */
 	public Invoker getInvoker() {
 		return invoker;
 	}

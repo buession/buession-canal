@@ -61,10 +61,12 @@ public class DefaultMessageConverter extends AbstractMessageConverter<Message> {
 		}
 
 		final CanalMessage canalMessage = new CanalMessage();
-		
+
 		canalMessage.setTable(new Table(entry.getHeader().getSchemaName(), entry.getHeader().getTableName()));
+		canalMessage.setEntryType(entry.getEntryType());
 		canalMessage.setEventType(entry.getHeader().getEventType());
-		canalMessage.setRowData(rowChange.getRowDatasList());
+		canalMessage.setHeader(entry.getHeader());
+		canalMessage.setRowChange(rowChange);
 		canalMessage.setDdl(rowChange.getIsDdl());
 
 		return canalMessage;

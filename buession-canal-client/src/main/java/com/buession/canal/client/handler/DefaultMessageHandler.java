@@ -29,12 +29,13 @@ import com.buession.canal.client.Binder;
 import com.buession.canal.core.CanalMessage;
 import com.buession.canal.core.listener.CanalEventListener;
 import com.buession.core.validator.Validate;
+import org.slf4j.Logger;
 
 import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * 默认信息转换
+ * 默认信息处理
  *
  * @author Yong.Teng
  * @since 0.0.1
@@ -57,9 +58,9 @@ public class DefaultMessageHandler extends AbstractMessageHandler {
 				.forEach((listener)->{
 					try{
 						listener.getInvoker()
-								.invoke(listener.getObject(), listener.getMethod(), getInvokeArgs(listener, message));
+								.invoke(listener.getObject(), listener.getMethod(), getArgs(listener, message));
 					}catch(Throwable e){
-						e.printStackTrace();
+						logger.error("Invoker invoke error", e);
 					}
 				});
 	}

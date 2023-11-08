@@ -68,8 +68,7 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConne
 	 */
 	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
 								 final String username, final String password) {
-		super(createCanalConnector(server, zkServers, destination, username, password));
-		setDestination(destination);
+		super(createCanalConnector(server, zkServers, destination, username, password), destination);
 	}
 
 	/**
@@ -90,8 +89,7 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConne
 	 */
 	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
 								 final String username, final String password, final int batchSize) {
-		super(createCanalConnector(server, zkServers, destination, username, password), batchSize);
-		setDestination(destination);
+		super(createCanalConnector(server, zkServers, destination, username, password), destination, batchSize);
 	}
 
 	/**
@@ -115,8 +113,8 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConne
 	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
 								 final String username, final String password, final Integer soTimeout,
 								 final Integer idleTimeout) {
-		super(createCanalConnector(server, zkServers, destination, username, password, soTimeout, idleTimeout));
-		setDestination(destination);
+		super(createCanalConnector(server, zkServers, destination, username, password, soTimeout, idleTimeout),
+				destination);
 	}
 
 	/**
@@ -143,8 +141,7 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConne
 								 final String username, final String password, final Integer soTimeout,
 								 final Integer idleTimeout, final int batchSize) {
 		super(createCanalConnector(server, zkServers, destination, username, password, soTimeout, idleTimeout),
-				batchSize);
-		setDestination(destination);
+				destination, batchSize);
 	}
 
 	@Override
@@ -211,19 +208,14 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConne
 
 	protected static SocketAddress createSocketAddressFromHostAndPort(final String hostAndPort) {
 		String[] hostnameAndPort = StringUtils.split(hostAndPort, ':');
-		String host;
-		int port = DEFAULT_PORT;
 
 		if(hostnameAndPort.length == 1){
-			host = hostnameAndPort[0];
+			return new InetSocketAddress(hostnameAndPort[0], DEFAULT_PORT);
 		}else if(hostnameAndPort.length == 2 && Validate.isNumeric(hostnameAndPort[1])){
-			host = hostnameAndPort[0];
-			port = Integer.parseInt(hostnameAndPort[1]);
+			return new InetSocketAddress(hostnameAndPort[0], Integer.parseInt(hostnameAndPort[1]));
 		}else{
-			throw new CanalClientException("Illegal canal host and port: " + hostAndPort);
+			throw new CanalClientException("Illegal canal server host and port: " + hostAndPort);
 		}
-
-		return new InetSocketAddress(host, port);
 	}
 
 }

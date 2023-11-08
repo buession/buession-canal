@@ -51,6 +51,11 @@ public class CanalMessage implements Serializable {
 	/**
 	 * 事件类型
 	 */
+	private CanalEntry.EntryType entryType;
+
+	/**
+	 * 事件类型
+	 */
 	private CanalEntry.EventType eventType;
 
 	/**
@@ -58,7 +63,9 @@ public class CanalMessage implements Serializable {
 	 */
 	private boolean isDdl;
 
-	private List<CanalEntry.RowData> rowData;
+	private CanalEntry.Header header;
+
+	private CanalEntry.RowChange rowChange;
 
 	/**
 	 * 返回指令
@@ -96,6 +103,14 @@ public class CanalMessage implements Serializable {
 	 */
 	public void setTable(Table table) {
 		this.table = table;
+	}
+
+	public CanalEntry.EntryType getEntryType() {
+		return entryType;
+	}
+
+	public void setEntryType(CanalEntry.EntryType entryType) {
+		this.entryType = entryType;
 	}
 
 	/**
@@ -136,22 +151,20 @@ public class CanalMessage implements Serializable {
 		this.isDdl = isDdl;
 	}
 
-	public List<CanalEntry.RowData> getRowData() {
-		return rowData;
+	public CanalEntry.Header getHeader() {
+		return header;
 	}
 
-	public void setRowData(List<CanalEntry.RowData> rowData) {
-		this.rowData = rowData;
+	public void setHeader(CanalEntry.Header header) {
+		this.header = header;
 	}
 
-	@Override
-	public String toString() {
-		return new StringJoiner(", ", "[", "]")
-				.add("destination=" + destination)
-				.add("table=" + table)
-				.add("eventType=" + eventType)
-				.add("rowData=" + rowData)
-				.toString();
+	public CanalEntry.RowChange getRowChange() {
+		return rowChange;
+	}
+
+	public void setRowChange(CanalEntry.RowChange rowChange) {
+		this.rowChange = rowChange;
 	}
 
 }

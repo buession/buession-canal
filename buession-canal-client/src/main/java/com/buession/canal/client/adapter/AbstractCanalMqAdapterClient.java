@@ -53,9 +53,11 @@ public abstract class AbstractCanalMqAdapterClient<C extends CanalMQConnector> e
 	 *
 	 * @param connector
 	 * 		Canal 数据操作客户端
+	 * @param destination
+	 * 		指令
 	 */
-	public AbstractCanalMqAdapterClient(final C connector) {
-		this(connector, DEFAULT_FLAT_MESSAGE);
+	public AbstractCanalMqAdapterClient(final C connector, final String destination) {
+		this(connector, destination, DEFAULT_FLAT_MESSAGE);
 	}
 
 	/**
@@ -63,11 +65,13 @@ public abstract class AbstractCanalMqAdapterClient<C extends CanalMQConnector> e
 	 *
 	 * @param connector
 	 * 		Canal 数据操作客户端
+	 * @param destination
+	 * 		指令
 	 * @param batchSize
 	 * 		批处理条数
 	 */
-	public AbstractCanalMqAdapterClient(final C connector, final int batchSize) {
-		this(connector, batchSize, DEFAULT_FLAT_MESSAGE);
+	public AbstractCanalMqAdapterClient(final C connector, final String destination, final int batchSize) {
+		this(connector, destination, batchSize, DEFAULT_FLAT_MESSAGE);
 	}
 
 	/**
@@ -75,11 +79,13 @@ public abstract class AbstractCanalMqAdapterClient<C extends CanalMQConnector> e
 	 *
 	 * @param connector
 	 * 		Canal 数据操作客户端
+	 * @param destination
+	 * 		指令
 	 * @param flatMessage
 	 * 		true / false
 	 */
-	public AbstractCanalMqAdapterClient(final C connector, final boolean flatMessage) {
-		super(connector);
+	public AbstractCanalMqAdapterClient(final C connector, final String destination, final boolean flatMessage) {
+		super(connector, destination);
 		this.flatMessage = flatMessage;
 	}
 
@@ -88,13 +94,16 @@ public abstract class AbstractCanalMqAdapterClient<C extends CanalMQConnector> e
 	 *
 	 * @param connector
 	 * 		Canal 数据操作客户端
+	 * @param destination
+	 * 		指令
 	 * @param batchSize
 	 * 		批处理条数
 	 * @param flatMessage
 	 * 		true / false
 	 */
-	public AbstractCanalMqAdapterClient(final C connector, final int batchSize, final boolean flatMessage) {
-		super(connector, batchSize);
+	public AbstractCanalMqAdapterClient(final C connector, final String destination, final int batchSize,
+										final boolean flatMessage) {
+		super(connector, destination, batchSize);
 		this.flatMessage = flatMessage;
 	}
 

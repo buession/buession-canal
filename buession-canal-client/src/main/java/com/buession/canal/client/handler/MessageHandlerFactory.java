@@ -27,7 +27,7 @@ package com.buession.canal.client.handler;
 import com.buession.canal.client.Binder;
 
 /**
- * 信息转换工厂接口
+ * 信息处理工厂接口
  *
  * @author Yong.Teng
  * @since 0.0.1
@@ -35,6 +35,14 @@ import com.buession.canal.client.Binder;
 @FunctionalInterface
 public interface MessageHandlerFactory {
 
+	/**
+	 * 创建信息处理实例
+	 *
+	 * @param binder
+	 *        {@link Binder}
+	 *
+	 * @return 信息处理
+	 */
 	MessageHandler newHandler(Binder binder);
 
 }

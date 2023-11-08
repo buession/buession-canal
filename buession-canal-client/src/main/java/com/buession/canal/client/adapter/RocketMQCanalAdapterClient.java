@@ -153,8 +153,7 @@ public class RocketMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Roc
 									  final String namespace, final Boolean enableMessageTrace,
 									  final String customizedTraceTopic, final String accessChannel) {
 		super(createRocketMQCanalConnector(nameServer, topic, groupId, namespace, enableMessageTrace,
-				customizedTraceTopic, accessChannel, DEFAULT_FLAT_MESSAGE));
-		setDestination(topic);
+				customizedTraceTopic, accessChannel, DEFAULT_FLAT_MESSAGE), topic);
 	}
 
 	/**
@@ -182,8 +181,7 @@ public class RocketMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Roc
 									  final String customizedTraceTopic, final String accessChannel,
 									  final int batchSize) {
 		super(createRocketMQCanalConnector(nameServer, topic, groupId, namespace, batchSize, enableMessageTrace,
-				customizedTraceTopic, accessChannel, DEFAULT_FLAT_MESSAGE), batchSize);
-		setDestination(topic);
+				customizedTraceTopic, accessChannel, DEFAULT_FLAT_MESSAGE), topic, batchSize);
 	}
 
 	/**
@@ -211,8 +209,7 @@ public class RocketMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Roc
 									  final String customizedTraceTopic, final String accessChannel,
 									  final boolean flatMessage) {
 		super(createRocketMQCanalConnector(nameServer, topic, groupId, namespace, enableMessageTrace,
-				customizedTraceTopic, accessChannel, flatMessage), flatMessage);
-		setDestination(topic);
+				customizedTraceTopic, accessChannel, flatMessage), topic, flatMessage);
 	}
 
 	/**
@@ -242,8 +239,7 @@ public class RocketMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Roc
 									  final String customizedTraceTopic, final String accessChannel,
 									  final int batchSize, final boolean flatMessage) {
 		super(createRocketMQCanalConnector(nameServer, topic, groupId, namespace, batchSize, enableMessageTrace,
-				customizedTraceTopic, accessChannel, flatMessage), batchSize, flatMessage);
-		setDestination(topic);
+				customizedTraceTopic, accessChannel, flatMessage), topic, batchSize, flatMessage);
 	}
 
 	protected static RocketMQCanalConnector createRocketMQCanalConnector(final String nameServer,

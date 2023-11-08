@@ -56,8 +56,21 @@ public interface CanalAdapterClient {
 	 */
 	void setDestination(String destination);
 
+	/**
+	 * 返回消息转换器
+	 *
+	 * @return 消息转换器
+	 */
+	@SuppressWarnings({"rawtypes"})
 	MessageConverter getMessageConverter();
 
+	/**
+	 * 设置消息转换器
+	 *
+	 * @param messageConverter
+	 * 		消息转换器
+	 */
+	@SuppressWarnings({"rawtypes"})
 	void setMessageConverter(MessageConverter messageConverter);
 
 	/**

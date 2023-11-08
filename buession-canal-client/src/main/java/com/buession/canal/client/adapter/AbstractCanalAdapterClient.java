@@ -32,8 +32,6 @@ import com.buession.canal.core.convert.DefaultMessageConverter;
 import com.buession.canal.core.convert.MessageConverter;
 import com.buession.core.utils.Assert;
 import com.buession.core.validator.Validate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +40,7 @@ import java.util.List;
  * Canal 适配器抽象类
  *
  * @param <C>
- * 		Canal 数据操作客户端
+ * 		Canal 数据连接器
  *
  * @author Yong.Teng
  * @since 0.0.1
@@ -69,18 +67,22 @@ public abstract class AbstractCanalAdapterClient<C extends CanalConnector> imple
 	 */
 	private String destination;
 
+	/**
+	 * 消息转换器
+	 */
+	@SuppressWarnings({"rawtypes"})
 	private MessageConverter messageConverter = new DefaultMessageConverter();
-
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * 构造函数
 	 *
 	 * @param connector
 	 * 		Canal 数据操作客户端
+	 * @param destination
+	 * 		指令
 	 */
-	public AbstractCanalAdapterClient(final C connector) {
-		this(connector, 1);
+	public AbstractCanalAdapterClient(final C connector, final String destination) {
+		this(connector, destination, 1);
 	}
 
 	/**
@@ -88,12 +90,15 @@ public abstract class AbstractCanalAdapterClient<C extends CanalConnector> imple
 	 *
 	 * @param connector
 	 * 		Canal 数据操作客户端
+	 * @param destination
+	 * 		指令
 	 * @param batchSize
 	 * 		批处理条数
 	 */
-	public AbstractCanalAdapterClient(final C connector, final int batchSize) {
+	public AbstractCanalAdapterClient(final C connector, final String destination, final int batchSize) {
 		Assert.isNull(connector, "CanalConnector cloud not be null.");
 		this.connector = connector;
+		this.destination = destination;
 		this.batchSize = batchSize;
 	}
 
@@ -126,11 +131,13 @@ public abstract class AbstractCanalAdapterClient<C extends CanalConnector> imple
 		this.destination = destination;
 	}
 
+	@SuppressWarnings({"rawtypes"})
 	@Override
 	public MessageConverter getMessageConverter() {
 		return messageConverter;
 	}
 
+	@SuppressWarnings({"rawtypes"})
 	@Override
 	public void setMessageConverter(MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
@@ -200,7 +207,9 @@ public abstract class AbstractCanalAdapterClient<C extends CanalConnector> imple
 	protected List<CanalMessage> messagesConvert(final Message message) {
 		List<CanalMessage> messages = getMessageConverter().convert(message);
 
-		messages.forEach((m)->m.setDestination(getDestination()));
+		if(messages != null){
+			messages.forEach((m)->m.setDestination(getDestination()));
+		}
 
 		return messages;
 	}

@@ -93,8 +93,7 @@ public class RabbitMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Rab
 	public RabbitMQCanalAdapterClient(final String server, final String virtualHost, final String username,
 									  final String password, final String queueName, final boolean flatMessage) {
 		super(createRabbitMQCanalConnector(server, virtualHost, queueName, username, password, flatMessage),
-				flatMessage);
-		setDestination(queueName);
+				queueName, flatMessage);
 	}
 
 	/**
@@ -119,8 +118,7 @@ public class RabbitMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Rab
 									  final String password, final String queueName, final int batchSize,
 									  final boolean flatMessage) {
 		super(createRabbitMQCanalConnector(server, virtualHost, queueName, username, password, flatMessage),
-				batchSize, flatMessage);
-		setDestination(queueName);
+				queueName, batchSize, flatMessage);
 	}
 
 	protected static RabbitMQCanalConnector createRabbitMQCanalConnector(final String server,

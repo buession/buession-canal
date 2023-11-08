@@ -26,7 +26,6 @@ package com.buession.canal.core.convert;
 
 import com.buession.canal.core.CanalMessage;
 import com.buession.core.converter.Converter;
-import org.springframework.lang.NonNull;
 
 import java.util.List;
 
@@ -42,8 +41,15 @@ import java.util.List;
 @FunctionalInterface
 public interface MessageConverter<M> extends Converter<M, List<CanalMessage>> {
 
+	/**
+	 * 将原始消息转换成 {@link CanalMessage}
+	 *
+	 * @param message
+	 * 		原始消息
+	 *
+	 * @return {@link CanalMessage}
+	 */
 	@Override
-	@NonNull
 	List<CanalMessage> convert(final M message);
 
 }

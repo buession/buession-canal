@@ -28,19 +28,24 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.buession.canal.client.Binder;
 import com.buession.canal.client.adapter.CanalAdapterClient;
 import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.ParameterType;
 import com.buession.canal.core.binding.CanalBinding;
 import com.buession.canal.core.listener.CanalEventListener;
 import com.buession.canal.core.listener.ParameterMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 /**
- * 信息转换抽象类
+ * 信息处理抽象类
  *
  * @author Yong.Teng
  * @since 0.0.1
@@ -55,7 +60,7 @@ public abstract class AbstractMessageHandler implements MessageHandler {
 
 	private volatile boolean running = true;
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public AbstractMessageHandler(final Binder binder) {
 		this.adapterClient = binder.getAdapterClient();
@@ -87,7 +92,7 @@ public abstract class AbstractMessageHandler implements MessageHandler {
 		return binding;
 	}
 
-	protected Object[] getInvokeArgs(final CanalEventListener eventListener, final CanalMessage message) {
+	protected Object[] getArgs(final CanalEventListener eventListener, final CanalMessage message) {
 		return Arrays.stream(eventListener.getParameterMappings()).map(convertParameter(message)).toArray();
 	}
 
@@ -95,11 +100,38 @@ public abstract class AbstractMessageHandler implements MessageHandler {
 
 	protected Function<ParameterMapping, Object> convertParameter(final CanalMessage message) {
 		return (pm)->{
-			if(pm.getType().getClass().isAssignableFrom(CanalEntry.RowData.class)){
-				return message.getRowData().get(0);
-			}else{
-				return null;
+			switch(pm.getParameterType()){
+				case ROW_CHANGE:
+					return message.getRowChange();
+				case ROW_DATA:
+					return message.getRowChange().getRowDatasList().get(0);
+				case HEADER:
+					return message.getHeader();
+				case ENTRY_TYPE:
+					return message.getEntryType();
+				case EVENT_TYPE:
+					return message.getEventType();
+				case DESTINATION:
+					return message.getDestination();
+				case SCHEMA:
+					return message.getTable().getSchema();
+				case TABLE:
+					return message.getTable().getName();
+				default:
+					break;
 			}
+
+			ParameterizedType parameterizedType = ((ParameterizedType) pm.getType());
+			Type type = parameterizedType.getRawType();
+			Class<?> clazz = (Class<?>) type;
+
+			if(Collection.class.isAssignableFrom(clazz)){
+				if(Objects.equals(parameterizedType.getActualTypeArguments()[0], CanalEntry.RowData.class)){
+					return message.getRowChange().getRowDatasList();
+				}
+			}
+
+			return null;
 		};
 	}
 
