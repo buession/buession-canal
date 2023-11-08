@@ -25,6 +25,7 @@
 package com.buession.canal.annotation;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
+import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -43,5 +44,21 @@ import java.lang.annotation.Target;
 @Documented
 @CanalEventListener(eventType = CanalEntry.EventType.CINDEX)
 public @interface CreateIndexEventListener {
+
+	/**
+	 * 返回数据库名称
+	 *
+	 * @return 数据库名称
+	 */
+	@AliasFor(annotation = CanalEventListener.class)
+	String schema() default "";
+
+	/**
+	 * 返回数据表名称
+	 *
+	 * @return 数据表名称
+	 */
+	@AliasFor(annotation = CanalEventListener.class)
+	String table() default "";
 
 }

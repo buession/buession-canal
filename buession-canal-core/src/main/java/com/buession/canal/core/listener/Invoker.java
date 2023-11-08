@@ -24,7 +24,10 @@
  */
 package com.buession.canal.core.binding;
 
-import com.buession.canal.core.event.Event;
+import com.buession.canal.core.event.EventMethod;
+import com.buession.canal.core.event.invoker.DefaultEventMethodInvoker;
+import com.buession.canal.core.event.invoker.EventMethodInvoker;
+import com.buession.canal.core.event.invoker.PlainEventMethodInvoker;
 import com.buession.canal.core.exception.ExceptionUtil;
 
 import java.io.Serializable;
@@ -38,23 +41,25 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
+ * {@link com.buession.canal.annotation.CanalBinding} 实例代理类
+ *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class EventProxy<T> implements InvocationHandler, Serializable {
+public class CanalBindingProxy<T> implements InvocationHandler, Serializable {
+
+	private final static long serialVersionUID = 4769603987519131562L;
 
 	private final static int ALLOWED_MODES = MethodHandles.Lookup.PRIVATE | MethodHandles.Lookup.PROTECTED
 			| MethodHandles.Lookup.PACKAGE | MethodHandles.Lookup.PUBLIC;
 
-	private final Event event;
+	private final Class<T> bindingType;
 
-	private final Class<T> listenerInterface;
+	private final static Method PRIVATE_LOOKUP_IN_METHOD;
+
+	private final static Constructor<MethodHandles.Lookup> LOOKUP_CONSTRUCTOR;
 
 	private final Map<Method, EventMethodInvoker> methodCache;
-
-	private static final Method privateLookupInMethod;
-
-	private static final Constructor<MethodHandles.Lookup> lookupConstructor;
 
 	static {
 		Method privateLookupIn;
@@ -63,10 +68,10 @@ public class EventProxy<T> implements InvocationHandler, Serializable {
 		}catch(NoSuchMethodException e){
 			privateLookupIn = null;
 		}
-		privateLookupInMethod = privateLookupIn;
+		PRIVATE_LOOKUP_IN_METHOD = privateLookupIn;
 
 		Constructor<MethodHandles.Lookup> lookup = null;
-		if(privateLookupInMethod == null){
+		if(PRIVATE_LOOKUP_IN_METHOD == null){
 			// JDK 1.8
 			try{
 				lookup = MethodHandles.Lookup.class.getDeclaredConstructor(Class.class, int.class);
@@ -79,13 +84,11 @@ public class EventProxy<T> implements InvocationHandler, Serializable {
 				lookup = null;
 			}
 		}
-		lookupConstructor = lookup;
+		LOOKUP_CONSTRUCTOR = lookup;
 	}
 
-	public EventProxy(final Event event, final Class<T> listenerInterface,
-					  final Map<Method, EventMethodInvoker> methodCache) {
-		this.event = event;
-		this.listenerInterface = listenerInterface;
+	public CanalBindingProxy(final Class<T> bindingType, final Map<Method, EventMethodInvoker> methodCache) {
+		this.bindingType = bindingType;
 		this.methodCache = methodCache;
 	}
 
@@ -95,7 +98,8 @@ public class EventProxy<T> implements InvocationHandler, Serializable {
 			if(Object.class.equals(method.getDeclaringClass())){
 				return method.invoke(this, args);
 			}
-			return cachedInvoker(method).invoke(proxy, method, args, event);
+
+			return cachedInvoker(method).invoke(proxy, method, args);
 		}catch(Throwable t){
 			throw ExceptionUtil.unwrapThrowable(t);
 		}
@@ -104,66 +108,37 @@ public class EventProxy<T> implements InvocationHandler, Serializable {
 	private static MethodHandle getMethodHandleJava8(final Method method)
 			throws IllegalAccessException, InstantiationException, InvocationTargetException {
 		final Class<?> declaringClass = method.getDeclaringClass();
-		return lookupConstructor.newInstance(declaringClass, ALLOWED_MODES).unreflectSpecial(method, declaringClass);
+		return LOOKUP_CONSTRUCTOR.newInstance(declaringClass, ALLOWED_MODES).unreflectSpecial(method, declaringClass);
 	}
 
 	private static MethodHandle getMethodHandleJava9(final Method method)
 			throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		final Class<?> declaringClass = method.getDeclaringClass();
-		return ((MethodHandles.Lookup) privateLookupInMethod.invoke(null, declaringClass,
+		return ((MethodHandles.Lookup) PRIVATE_LOOKUP_IN_METHOD.invoke(null, declaringClass,
 				MethodHandles.lookup())).findSpecial(declaringClass, method.getName(),
-				MethodType.methodType(method.getReturnType(), method.getParameterTypes()),
-				declaringClass);
+				MethodType.methodType(method.getReturnType(), method.getParameterTypes()), declaringClass);
 	}
 
 	private EventMethodInvoker cachedInvoker(Method method) throws Throwable {
-		return methodCache.computeIfAbsent(method, (m)->{
-			if(!m.isDefault()){
-				return new PlainEventMethodInvoker(new EventMethod(listenerInterface, method));
-			}
-			try{
-				if(privateLookupInMethod == null){
-					return new DefaultEventMethodInvoker(getMethodHandleJava8(method));
-				}else{
-					return new DefaultEventMethodInvoker(getMethodHandleJava9(method));
+		try{
+			return methodCache.computeIfAbsent(method, (m)->{
+				if(m.isDefault()){
+					try{
+						if(PRIVATE_LOOKUP_IN_METHOD == null){
+							return new DefaultEventMethodInvoker(getMethodHandleJava8(method));
+						}else{
+							return new DefaultEventMethodInvoker(getMethodHandleJava9(method));
+						}
+					}catch(Exception e){
+						throw new RuntimeException(e);
+					}
 				}
-			}catch(IllegalAccessException e){
-				throw new RuntimeException(e);
-			}catch(InstantiationException e){
-				throw new RuntimeException(e);
-			}catch(InvocationTargetException e){
-				throw new RuntimeException(e);
-			}catch(NoSuchMethodException e){
-				throw new RuntimeException(e);
-			}
-		});
-	}
 
-	private static class DefaultEventMethodInvoker implements EventMethodInvoker {
-
-		private final MethodHandle methodHandle;
-
-		public DefaultEventMethodInvoker(MethodHandle methodHandle) {
-			this.methodHandle = methodHandle;
-		}
-
-		@Override
-		public Object invoke(Object proxy, Method method, Object[] args, Event event) throws Throwable {
-			return methodHandle.bindTo(proxy).invokeWithArguments(args);
-		}
-	}
-
-	private static class PlainEventMethodInvoker implements EventMethodInvoker {
-
-		private final EventMethod eventMethod;
-
-		public PlainEventMethodInvoker(EventMethod eventMethod) {
-			this.eventMethod = eventMethod;
-		}
-
-		@Override
-		public Object invoke(Object proxy, Method method, Object[] args, Event event) throws Throwable {
-			return eventMethod.execute(event, args);
+				return new PlainEventMethodInvoker(new EventMethod(bindingType, method));
+			});
+		}catch(RuntimeException ex){
+			Throwable cause = ex.getCause();
+			throw cause == null ? ex : cause;
 		}
 	}
 
