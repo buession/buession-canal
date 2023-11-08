@@ -24,6 +24,8 @@
  */
 package com.buession.canal.client;
 
+import com.buession.canal.client.handler.MessageHandlerFactory;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -38,23 +40,29 @@ public class DefaultCanalClient extends AbstractCanalClient {
 	/**
 	 * 构造函数
 	 *
-	 * @param instances
-	 * 		实例清单
+	 * @param binders
+	 *        {@link Binder} 列表
 	 */
-	public DefaultCanalClient(final List<Instance> instances) {
-		super(instances);
+	public DefaultCanalClient(final List<Binder> binders) {
+		super(binders);
 	}
 
 	/**
 	 * 构造函数
 	 *
-	 * @param instances
-	 * 		实例清单
-	 * @param executorService
-	 *        {@link ExecutorService} 实例
+	 * @param binders
+	 *        {@link Binder} 列表
+	 * @param executor
+	 *        {@link ExecutorService}
 	 */
-	public DefaultCanalClient(final List<Instance> instances, final ExecutorService executorService) {
-		super(instances, executorService);
+	public DefaultCanalClient(final List<Binder> binders, final ExecutorService executor) {
+		super(binders, executor);
+	}
+
+	@Override
+	protected void process(final Binder binder, final MessageHandlerFactory messageHandlerFactory,
+						   final ExecutorService executor) {
+		executor.submit(messageHandlerFactory.newHandler(binder));
 	}
 
 }

@@ -24,6 +24,10 @@
  */
 package com.buession.canal.client;
 
+import com.buession.canal.client.handler.DefaultMessageHandler;
+import com.buession.canal.client.handler.MessageHandlerFactory;
+import com.buession.canal.core.binding.CanalBinding;
+import com.buession.canal.core.concurrent.DefaultCanalThreadPoolExecutor;
 import com.buession.core.utils.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +44,16 @@ import java.util.concurrent.ExecutorService;
 public abstract class AbstractCanalClient implements CanalClient {
 
 	/**
-	 * 实例清单
+	 * {@link Binder} 列表
 	 */
-	private final List<Instance> instances;
+	private final List<Binder> binders;
 
-	private ExecutorService executorService;
+	/**
+	 * {@link ExecutorService}
+	 */
+	private final ExecutorService executor;
+
+	private final MessageHandlerFactory messageHandlerFactory;
 
 	private volatile boolean running = false;
 
@@ -53,35 +62,36 @@ public abstract class AbstractCanalClient implements CanalClient {
 	/**
 	 * 构造函数
 	 *
-	 * @param instances
-	 * 		实例清单
+	 * @param binders
+	 *        {@link Binder} 列表
 	 */
-	public AbstractCanalClient(final List<Instance> instances) {
-		Assert.isNull(instances, "The instances cloud not be null");
-		this.instances = instances;
+	public AbstractCanalClient(final List<Binder> binders) {
+		this(binders, new DefaultCanalThreadPoolExecutor());
 	}
 
 	/**
 	 * 构造函数
 	 *
-	 * @param instances
-	 * 		实例清单
-	 * @param executorService
-	 *        {@link ExecutorService} 实例
+	 * @param binders
+	 *        {@link Binder} 列表
+	 *        {@link CanalBinding} 列表
+	 * @param executor
+	 *        {@link ExecutorService}
 	 */
-	public AbstractCanalClient(final List<Instance> instances, final ExecutorService executorService) {
-		this(instances);
-		this.executorService = executorService;
+	public AbstractCanalClient(final List<Binder> binders, final ExecutorService executor) {
+		Assert.isNull(binders, "The Binder cloud not be null");
+		Assert.isNull(executor, "The ExecutorService cloud not be null");
+		this.binders = binders;
+		this.executor = executor;
+		this.messageHandlerFactory = DefaultMessageHandler::new;
 	}
 
 	@Override
 	public void start() {
-		if(executorService == null){
-			logger.info("CanalClient starting...");
-			process();
-		}else{
-			logger.info("CanalClient starting with async...");
-			executorService.submit(this::process);
+		logger.info("CanalClient starting...");
+
+		for(Binder binder : binders){
+			process(binder, messageHandlerFactory, executor);
 		}
 
 		running = true;
@@ -90,14 +100,7 @@ public abstract class AbstractCanalClient implements CanalClient {
 	@Override
 	public void stop() {
 		logger.info("CanalClient stopping...");
-		for(Instance instance : instances){
-			instance.getAdapterClient().destroy();
-		}
-
-		if(executorService != null){
-			executorService.shutdown();
-		}
-
+		executor.shutdown();
 		running = false;
 	}
 
@@ -106,12 +109,7 @@ public abstract class AbstractCanalClient implements CanalClient {
 		return running;
 	}
 
-	protected void process() {
-		while(running){
-			for(Instance instance : instances){
-				instance.getAdapterClient().init();
-			}
-		}
-	}
+	protected abstract void process(final Binder binder, final MessageHandlerFactory messageHandlerFactory,
+									final ExecutorService executor);
 
 }

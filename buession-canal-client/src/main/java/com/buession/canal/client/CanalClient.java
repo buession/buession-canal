@@ -47,6 +47,8 @@ public interface CanalClient {
 	 *
 	 * @return true / false
 	 */
-	boolean isRunning();
+	default boolean isRunning() {
+		return false;
+	}
 
 }
