@@ -24,13 +24,121 @@
  */
 package com.buession.canal.client.adapter;
 
-import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalMQConnector;
+import com.alibaba.otter.canal.protocol.FlatMessage;
+import com.alibaba.otter.canal.protocol.Message;
+import com.alibaba.otter.canal.protocol.exception.CanalClientException;
+import com.buession.canal.core.CanalMessage;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
+ * Canal MQ 适配器抽象类
+ *
+ * @param <C>
+ * 		Canal 数据操作客户端
+ *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class AbstractMqCanalAdapterClient<C extends CanalMQConnector> extends AbstractCanalAdapterClient<C> {
+public abstract class AbstractCanalMqAdapterClient<C extends CanalMQConnector> extends AbstractCanalAdapterClient<C>
+		implements CanalMqAdapterClient {
+
+	private final boolean flatMessage;
+
+	/**
+	 * 构造函数
+	 *
+	 * @param connector
+	 * 		Canal 数据操作客户端
+	 */
+	public AbstractCanalMqAdapterClient(final C connector) {
+		this(connector, DEFAULT_FLAT_MESSAGE);
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param connector
+	 * 		Canal 数据操作客户端
+	 * @param batchSize
+	 * 		批处理条数
+	 */
+	public AbstractCanalMqAdapterClient(final C connector, final int batchSize) {
+		this(connector, batchSize, DEFAULT_FLAT_MESSAGE);
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param connector
+	 * 		Canal 数据操作客户端
+	 * @param flatMessage
+	 * 		true / false
+	 */
+	public AbstractCanalMqAdapterClient(final C connector, final boolean flatMessage) {
+		super(connector);
+		this.flatMessage = flatMessage;
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param connector
+	 * 		Canal 数据操作客户端
+	 * @param batchSize
+	 * 		批处理条数
+	 * @param flatMessage
+	 * 		true / false
+	 */
+	public AbstractCanalMqAdapterClient(final C connector, final int batchSize, final boolean flatMessage) {
+		super(connector, batchSize);
+		this.flatMessage = flatMessage;
+	}
+
+	@Override
+	public boolean isFlatMessage() {
+		return flatMessage;
+	}
+
+	@Override
+	public List<CanalMessage> getList(Long timeout, TimeUnit unit) throws CanalClientException {
+		if(isFlatMessage()){
+			List<FlatMessage> messages = getConnector().getFlatList(timeout, unit);
+			return flatMessagesConvert(messages);
+		}else{
+			List<Message> messages = getConnector().getList(timeout, unit);
+			return messagesConvert(messages);
+		}
+	}
+
+	@Override
+	public List<CanalMessage> getListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException {
+		if(isFlatMessage()){
+			List<FlatMessage> messages = getConnector().getFlatListWithoutAck(timeout, unit);
+			return flatMessagesConvert(messages);
+		}else{
+			List<Message> messages = getConnector().getListWithoutAck(timeout, unit);
+			return messagesConvert(messages);
+		}
+	}
+
+	@Override
+	public void ack() throws CanalClientException {
+		getConnector().ack();
+	}
+
+	@SuppressWarnings({"unchecked"})
+	protected List<CanalMessage> flatMessagesConvert(final List<FlatMessage> messages) {
+		List<CanalMessage> result = new ArrayList<>(messages.size());
+
+		for(FlatMessage flatMessage : messages){
+			//result.addAll(getMessageTransponder().convert(flatMessage));
+		}
+
+		return result;
+	}
 
 }

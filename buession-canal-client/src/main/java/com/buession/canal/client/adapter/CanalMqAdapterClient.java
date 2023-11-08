@@ -24,54 +24,16 @@
  */
 package com.buession.canal.client.adapter;
 
-import com.buession.canal.client.consumer.CanalConsumer;
-import com.buession.canal.core.convert.MessageTransponder;
-
-import java.util.concurrent.TimeUnit;
-
 /**
- * Canal 适配器接口
+ * Canal MQ 适配器接口
  *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public interface CanalAdapterClient {
+public interface CanalMqAdapterClient extends CanalAdapterClient {
 
-	TimeUnit TIMEOUT_UNIT = TimeUnit.MILLISECONDS;
+	boolean DEFAULT_FLAT_MESSAGE = false;
 
-	int DEFAULT_BATCH_SIZE = 1;
-
-	/**
-	 * 返回信息转换器接口
-	 *
-	 * @return 信息转换器接口
-	 */
-	MessageTransponder getMessageTransponder();
-
-	/**
-	 * 设置信息转换器接口
-	 *
-	 * @param messageTransponder
-	 * 		信息转换器接口
-	 */
-	void setMessageTransponder(MessageTransponder messageTransponder);
-
-	/**
-	 * 初始化客户端
-	 */
-	void init();
-
-	/**
-	 * 数据处理
-	 *
-	 * @param consumer
-	 * 		Canal 消费者
-	 */
-	void process(CanalConsumer consumer);
-
-	/**
-	 * 销毁客户端
-	 */
-	void destroy();
+	boolean isFlatMessage();
 
 }

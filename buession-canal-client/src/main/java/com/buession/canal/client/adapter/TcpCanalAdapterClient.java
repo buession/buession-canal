@@ -26,14 +26,21 @@ package com.buession.canal.client.adapter;
 
 import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalConnectors;
+import com.alibaba.otter.canal.client.impl.ClusterCanalConnector;
+import com.alibaba.otter.canal.client.impl.SimpleCanalConnector;
 import com.alibaba.otter.canal.protocol.Message;
 import com.alibaba.otter.canal.protocol.exception.CanalClientException;
-import com.buession.canal.client.handler.MessageHandler;
+import com.buession.canal.core.CanalMessage;
+import com.buession.core.converter.mapper.PropertyMapper;
+import com.buession.core.utils.StringUtils;
 import com.buession.core.validator.Validate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Canal TCP 适配器
@@ -43,7 +50,7 @@ import java.net.InetSocketAddress;
  */
 public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConnector> {
 
-	private final static Logger logger = LoggerFactory.getLogger(TcpCanalAdapterClient.class);
+	public final static int DEFAULT_PORT = 1111;
 
 	/**
 	 * 构造函数
@@ -53,17 +60,16 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConne
 	 * @param zkServers
 	 * 		Zookeeper 主机地址
 	 * @param destination
-	 * 		-
+	 * 		指令
 	 * @param username
 	 * 		用户名
 	 * @param password
 	 * 		密码
-	 * @param messageHandler
-	 * 		消息处理器
 	 */
 	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
-								 final String username, final String password, final MessageHandler<?> messageHandler) {
-		super(createCanalConnector(server, zkServers, destination, username, password), messageHandler);
+								 final String username, final String password) {
+		super(createCanalConnector(server, zkServers, destination, username, password));
+		setDestination(destination);
 	}
 
 	/**
@@ -74,44 +80,18 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConne
 	 * @param zkServers
 	 * 		Zookeeper 主机地址
 	 * @param destination
-	 * 		-
+	 * 		指令
 	 * @param username
 	 * 		用户名
 	 * @param password
 	 * 		密码
-	 * @param messageHandler
-	 * 		消息处理器
-	 * @param timeout
-	 * 		超时时长
-	 */
-	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
-								 final String username, final String password, final MessageHandler<?> messageHandler,
-								 final Long timeout) {
-		super(createCanalConnector(server, zkServers, destination, username, password), messageHandler, timeout);
-	}
-
-	/**
-	 * 构造函数
-	 *
-	 * @param server
-	 * 		主机地址
-	 * @param zkServers
-	 * 		Zookeeper 主机地址
-	 * @param destination
-	 * 		-
-	 * @param username
-	 * 		用户名
-	 * @param password
-	 * 		密码
-	 * @param messageHandler
-	 * 		消息处理器
 	 * @param batchSize
 	 * 		批处理条数
 	 */
 	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
-								 final String username, final String password, final MessageHandler<?> messageHandler,
-								 final Integer batchSize) {
-		super(createCanalConnector(server, zkServers, destination, username, password), messageHandler, batchSize);
+								 final String username, final String password, final int batchSize) {
+		super(createCanalConnector(server, zkServers, destination, username, password), batchSize);
+		setDestination(destination);
 	}
 
 	/**
@@ -122,63 +102,128 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConne
 	 * @param zkServers
 	 * 		Zookeeper 主机地址
 	 * @param destination
-	 * 		-
+	 * 		指令
 	 * @param username
 	 * 		用户名
 	 * @param password
 	 * 		密码
-	 * @param messageHandler
-	 * 		消息处理器
-	 * @param timeout
-	 * 		超时时长
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param soTimeout
+	 * 		读取超时
+	 * @param idleTimeout
+	 * 		连接池超时
 	 */
 	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
-								 final String username, final String password, final MessageHandler<?> messageHandler,
-								 final Long timeout, final Integer batchSize) {
-		super(createCanalConnector(server, zkServers, destination, username, password), messageHandler, timeout,
+								 final String username, final String password, final Integer soTimeout,
+								 final Integer idleTimeout) {
+		super(createCanalConnector(server, zkServers, destination, username, password, soTimeout, idleTimeout));
+		setDestination(destination);
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param server
+	 * 		主机地址
+	 * @param zkServers
+	 * 		Zookeeper 主机地址
+	 * @param destination
+	 * 		指令
+	 * @param username
+	 * 		用户名
+	 * @param password
+	 * 		密码
+	 * @param batchSize
+	 * 		批处理条数
+	 * @param soTimeout
+	 * 		读取超时
+	 * @param idleTimeout
+	 * 		连接池超时
+	 */
+	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
+								 final String username, final String password, final Integer soTimeout,
+								 final Integer idleTimeout, final int batchSize) {
+		super(createCanalConnector(server, zkServers, destination, username, password, soTimeout, idleTimeout),
 				batchSize);
+		setDestination(destination);
 	}
 
 	@Override
-	protected void process() {
-		long batchId = 0L;
-		try{
-			Message message = getConnector().getWithoutAck(getBatchSize(), getTimeout(), TIMEOUT_UNIT);
+	public List<CanalMessage> getList(Long timeout, TimeUnit unit) throws CanalClientException {
+		Message message = getConnector().get(getBatchSize(), timeout, unit);
+		return messagesConvert(message);
+	}
 
-			if(logger.isDebugEnabled()){
-				logger.debug("Receive message = {}", message);
-			}
-
-			batchId = message.getId();
-			if(message.getId() != -1 && message.getEntries().size() != 0){
-				getMessageHandler().handle(message);
-			}
-
-			getConnector().ack(batchId);
-		}catch(Exception e){
-			logger.error("Handle message[batch id: {}] error, rollback", batchId, e);
-			getConnector().rollback(batchId);
-		}
+	@Override
+	public List<CanalMessage> getListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException {
+		Message message = getConnector().getWithoutAck(getBatchSize(), timeout, unit);
+		return messagesConvert(message);
 	}
 
 	protected static CanalConnector createCanalConnector(final String server, final String zkServers,
 														 final String destination, final String username,
 														 final String password) {
+		return createCanalConnector(server, zkServers, destination, username, password, null, null);
+	}
+
+	protected static CanalConnector createCanalConnector(final String server, final String zkServers,
+														 final String destination, final String username,
+														 final String password, final Integer soTimeout,
+														 final Integer idleTimeout) {
+		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+
 		if(Validate.hasText(zkServers)){
-			return CanalConnectors.newClusterConnector(zkServers, destination, username, password);
+			ClusterCanalConnector canalConnector =
+					(ClusterCanalConnector) CanalConnectors.newClusterConnector(zkServers, destination,
+							username, password);
+
+			propertyMapper.from(soTimeout).to(canalConnector::setSoTimeout);
+			propertyMapper.from(idleTimeout).to(canalConnector::setIdleTimeout);
+
+			return canalConnector;
 		}else{
-			String[] hostnameAndPort = server.split(":");
+			String[] servers = StringUtils.split(server, ',');
 
-			if(hostnameAndPort.length != 2 || Validate.isNumeric(hostnameAndPort[1]) == false){
-				throw new CanalClientException("Illegal canal host and port: " + server);
+			if(servers.length == 1){
+				SocketAddress address = createSocketAddressFromHostAndPort(servers[0]);
+				SimpleCanalConnector canalConnector =
+						(SimpleCanalConnector) CanalConnectors.newSingleConnector(address, destination,
+								username, password);
+
+				propertyMapper.from(soTimeout).to(canalConnector::setSoTimeout);
+				propertyMapper.from(idleTimeout).to(canalConnector::setIdleTimeout);
+
+				return canalConnector;
+			}else{
+				List<SocketAddress> serverSocketAddresses = Stream.of(servers).map(
+						TcpCanalAdapterClient::createSocketAddressFromHostAndPort).collect(Collectors.toList());
+
+				ClusterCanalConnector canalConnector =
+						(ClusterCanalConnector) CanalConnectors.newClusterConnector(serverSocketAddresses, destination,
+								username, password);
+
+				propertyMapper.from(soTimeout).to(canalConnector::setSoTimeout);
+				propertyMapper.from(idleTimeout).to(canalConnector::setIdleTimeout);
+
+				return canalConnector;
 			}
-
-			return CanalConnectors.newSingleConnector(
-					new InetSocketAddress(hostnameAndPort[0], Integer.parseInt(hostnameAndPort[1])), destination,
-					username, password);
 		}
+	}
+
+	protected static SocketAddress createSocketAddressFromHostAndPort(final String hostAndPort) {
+		String[] hostnameAndPort = StringUtils.split(hostAndPort, ':');
+		String host;
+		int port = DEFAULT_PORT;
+
+		if(hostnameAndPort.length == 1){
+			host = hostnameAndPort[0];
+		}else if(hostnameAndPort.length == 2 && Validate.isNumeric(hostnameAndPort[1])){
+			host = hostnameAndPort[0];
+			port = Integer.parseInt(hostnameAndPort[1]);
+		}else{
+			throw new CanalClientException("Illegal canal host and port: " + hostAndPort);
+		}
+
+		return new InetSocketAddress(host, port);
 	}
 
 }

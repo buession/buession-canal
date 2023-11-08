@@ -25,12 +25,6 @@
 package com.buession.canal.client.adapter;
 
 import com.alibaba.otter.canal.client.kafka.KafkaCanalConnector;
-import com.alibaba.otter.canal.protocol.FlatMessage;
-import com.buession.canal.client.handler.MessageHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Canal Kafka 适配器
@@ -38,9 +32,7 @@ import java.util.List;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class KafkaCanalAdapterClient extends AbstractCanalAdapterClient<KafkaCanalConnector> {
-
-	private final static Logger logger = LoggerFactory.getLogger(KafkaCanalAdapterClient.class);
+public class KafkaCanalAdapterClient extends AbstractCanalMqAdapterClient<KafkaCanalConnector> {
 
 	/**
 	 * 构造函数
@@ -51,14 +43,9 @@ public class KafkaCanalAdapterClient extends AbstractCanalAdapterClient<KafkaCan
 	 * 		Topic
 	 * @param groupId
 	 * 		Group ID
-	 * @param partition
-	 * 		partition
-	 * @param messageHandler
-	 * 		消息处理器
 	 */
-	public KafkaCanalAdapterClient(final String servers, final String topic, final String groupId,
-								   final Integer partition, final MessageHandler<?> messageHandler) {
-		super(createKafkaCanalConnector(servers, topic, groupId, partition, 1), messageHandler);
+	public KafkaCanalAdapterClient(final String servers, final String topic, final String groupId) {
+		this(servers, topic, groupId, null, DEFAULT_FLAT_MESSAGE);
 	}
 
 	/**
@@ -70,39 +57,48 @@ public class KafkaCanalAdapterClient extends AbstractCanalAdapterClient<KafkaCan
 	 * 		Topic
 	 * @param groupId
 	 * 		Group ID
-	 * @param partition
-	 * 		partition
-	 * @param messageHandler
-	 * 		消息处理器
-	 * @param timeout
-	 * 		超时时长
-	 */
-	public KafkaCanalAdapterClient(final String servers, final String topic, final String groupId,
-								   final Integer partition, final MessageHandler<?> messageHandler,
-								   final Long timeout) {
-		super(createKafkaCanalConnector(servers, topic, groupId, partition, 1), messageHandler, timeout);
-	}
-
-	/**
-	 * 构造函数
-	 *
-	 * @param servers
-	 * 		Kafka 地址
-	 * @param topic
-	 * 		Topic
-	 * @param groupId
-	 * 		Group ID
-	 * @param partition
-	 * 		partition
-	 * @param messageHandler
-	 * 		消息处理器
 	 * @param batchSize
 	 * 		批处理条数
 	 */
 	public KafkaCanalAdapterClient(final String servers, final String topic, final String groupId,
-								   final Integer partition, final MessageHandler<?> messageHandler,
-								   final Integer batchSize) {
-		super(createKafkaCanalConnector(servers, topic, groupId, partition, batchSize), messageHandler, batchSize);
+								   final int batchSize) {
+		this(servers, topic, groupId, null, batchSize, DEFAULT_FLAT_MESSAGE);
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param servers
+	 * 		Kafka 地址
+	 * @param topic
+	 * 		Topic
+	 * @param groupId
+	 * 		Group ID
+	 * @param flatMessage
+	 * 		true / false
+	 */
+	public KafkaCanalAdapterClient(final String servers, final String topic, final String groupId,
+								   final boolean flatMessage) {
+		this(servers, topic, groupId, null, DEFAULT_BATCH_SIZE, flatMessage);
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param servers
+	 * 		Kafka 地址
+	 * @param topic
+	 * 		Topic
+	 * @param groupId
+	 * 		Group ID
+	 * @param batchSize
+	 * 		批处理条数
+	 * @param flatMessage
+	 * 		true / false
+	 */
+	public KafkaCanalAdapterClient(final String servers, final String topic, final String groupId,
+								   final int batchSize, final boolean flatMessage) {
+		this(servers, topic, groupId, null, batchSize, flatMessage);
 	}
 
 	/**
@@ -116,44 +112,83 @@ public class KafkaCanalAdapterClient extends AbstractCanalAdapterClient<KafkaCan
 	 * 		Group ID
 	 * @param partition
 	 * 		partition
-	 * @param messageHandler
-	 * 		消息处理器
-	 * @param timeout
-	 * 		超时时长
+	 */
+	public KafkaCanalAdapterClient(final String servers, final String topic, final String groupId,
+								   final Integer partition) {
+		this(servers, topic, groupId, partition, DEFAULT_FLAT_MESSAGE);
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param servers
+	 * 		Kafka 地址
+	 * @param topic
+	 * 		Topic
+	 * @param groupId
+	 * 		Group ID
+	 * @param partition
+	 * 		partition
 	 * @param batchSize
 	 * 		批处理条数
 	 */
 	public KafkaCanalAdapterClient(final String servers, final String topic, final String groupId,
-								   final Integer partition, final MessageHandler<?> messageHandler, final Long timeout,
-								   final Integer batchSize) {
-		super(createKafkaCanalConnector(servers, topic, groupId, partition, batchSize), messageHandler, timeout,
-				batchSize);
+								   final Integer partition, final int batchSize) {
+		this(servers, topic, groupId, partition, batchSize, DEFAULT_FLAT_MESSAGE);
 	}
 
-	@Override
-	protected void process() {
-		try{
-			List<FlatMessage> messages = getConnector().getFlatListWithoutAck(getTimeout(), TIMEOUT_UNIT);
+	/**
+	 * 构造函数
+	 *
+	 * @param servers
+	 * 		Kafka 地址
+	 * @param topic
+	 * 		Topic
+	 * @param groupId
+	 * 		Group ID
+	 * @param partition
+	 * 		partition
+	 * @param flatMessage
+	 * 		true / false
+	 */
+	public KafkaCanalAdapterClient(final String servers, final String topic, final String groupId,
+								   final Integer partition, final boolean flatMessage) {
+		super(createKafkaCanalConnector(servers, topic, groupId, partition, flatMessage), flatMessage);
+		setDestination(topic);
+	}
 
-			if(logger.isDebugEnabled()){
-				logger.debug("Receive messages = {}", messages);
-			}
-
-			for(FlatMessage message : messages){
-				getMessageHandler().handle(message);
-			}
-
-			getConnector().ack(); // 提交确认
-		}catch(Exception e){
-			logger.error("Handle message error, rollback", e);
-			getConnector().rollback();
-		}
+	/**
+	 * 构造函数
+	 *
+	 * @param servers
+	 * 		Kafka 地址
+	 * @param topic
+	 * 		Topic
+	 * @param groupId
+	 * 		Group ID
+	 * @param partition
+	 * 		partition
+	 * @param batchSize
+	 * 		批处理条数
+	 * @param flatMessage
+	 * 		true / false
+	 */
+	public KafkaCanalAdapterClient(final String servers, final String topic, final String groupId,
+								   final Integer partition, final int batchSize, final boolean flatMessage) {
+		super(createKafkaCanalConnector(servers, topic, groupId, partition, batchSize, flatMessage), batchSize,
+				flatMessage);
 	}
 
 	protected static KafkaCanalConnector createKafkaCanalConnector(final String servers, final String topic,
 																   final String groupId, final Integer partition,
-																   final Integer batchSize) {
-		return new KafkaCanalConnector(servers, topic, partition, groupId, batchSize, true);
+																   final boolean flatMessage) {
+		return createKafkaCanalConnector(servers, topic, groupId, partition, DEFAULT_BATCH_SIZE, flatMessage);
+	}
+
+	protected static KafkaCanalConnector createKafkaCanalConnector(final String servers, final String topic,
+																   final String groupId, final Integer partition,
+																   final Integer batchSize, final boolean flatMessage) {
+		return new KafkaCanalConnector(servers, topic, partition, groupId, batchSize, flatMessage);
 	}
 
 }

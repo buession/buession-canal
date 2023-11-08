@@ -25,10 +25,18 @@
 package com.buession.canal.client.adapter;
 
 import com.alibaba.otter.canal.client.CanalConnector;
-import com.buession.canal.client.handler.MessageHandler;
+import com.alibaba.otter.canal.protocol.Message;
+import com.alibaba.otter.canal.protocol.exception.CanalClientException;
+import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.convert.DefaultMessageConverter;
+import com.buession.canal.core.convert.MessageConverter;
 import com.buession.core.utils.Assert;
+import com.buession.core.validator.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Canal 适配器抽象类
@@ -41,38 +49,38 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractCanalAdapterClient<C extends CanalConnector> implements CanalAdapterClient {
 
-	protected final static TimeUnit TIMEOUT_UNIT = TimeUnit.SECONDS;
-
 	/**
 	 * Canal 数据操作客户端
 	 */
 	private final C connector;
 
 	/**
-	 * 消息处理器
+	 * 过滤规则
 	 */
-	private MessageHandler<?> messageHandler;
-
-	/**
-	 * 超时时长，单位：秒
-	 */
-	private final Long timeout;
+	private String filter;
 
 	/**
 	 * 批处理条数
 	 */
-	private final Integer batchSize;
+	private final int batchSize;
+
+	/**
+	 * 指令
+	 */
+	private String destination;
+
+	private MessageConverter messageConverter = new DefaultMessageConverter();
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * 构造函数
 	 *
 	 * @param connector
 	 * 		Canal 数据操作客户端
-	 * @param messageHandler
-	 * 		消息处理器
 	 */
-	public AbstractCanalAdapterClient(final C connector, final MessageHandler<?> messageHandler) {
-		this(connector, messageHandler, 1L, 1);
+	public AbstractCanalAdapterClient(final C connector) {
+		this(connector, 1);
 	}
 
 	/**
@@ -80,49 +88,92 @@ public abstract class AbstractCanalAdapterClient<C extends CanalConnector> imple
 	 *
 	 * @param connector
 	 * 		Canal 数据操作客户端
-	 * @param messageHandler
-	 * 		消息处理器
-	 * @param timeout
-	 * 		超时时长
-	 */
-	public AbstractCanalAdapterClient(final C connector, final MessageHandler<?> messageHandler, final Long timeout) {
-		this(connector, messageHandler, timeout, 1);
-	}
-
-	/**
-	 * 构造函数
-	 *
-	 * @param connector
-	 * 		Canal 数据操作客户端
-	 * @param messageHandler
-	 * 		消息处理器
 	 * @param batchSize
 	 * 		批处理条数
 	 */
-	public AbstractCanalAdapterClient(final C connector, final MessageHandler<?> messageHandler,
-									  final Integer batchSize) {
-		this(connector, messageHandler, 1L, batchSize);
-	}
-
-	/**
-	 * 构造函数
-	 *
-	 * @param connector
-	 * 		Canal 数据操作客户端
-	 * @param messageHandler
-	 * 		消息处理器
-	 * @param timeout
-	 * 		超时时长
-	 * @param batchSize
-	 * 		批处理条数
-	 */
-	public AbstractCanalAdapterClient(final C connector, final MessageHandler<?> messageHandler, final Long timeout,
-									  final Integer batchSize) {
+	public AbstractCanalAdapterClient(final C connector, final int batchSize) {
 		Assert.isNull(connector, "CanalConnector cloud not be null.");
 		this.connector = connector;
-		this.messageHandler = messageHandler;
-		this.timeout = timeout;
 		this.batchSize = batchSize;
+	}
+
+	/**
+	 * 返回过滤规则
+	 *
+	 * @return 过滤规则
+	 */
+	public String getFilter() {
+		return filter;
+	}
+
+	/**
+	 * 设置过滤规则
+	 *
+	 * @param filter
+	 * 		过滤规则
+	 */
+	public void setFilter(String filter) {
+		this.filter = filter;
+	}
+
+	@Override
+	public String getDestination() {
+		return destination;
+	}
+
+	@Override
+	public void setDestination(String destination) {
+		this.destination = destination;
+	}
+
+	@Override
+	public MessageConverter getMessageConverter() {
+		return messageConverter;
+	}
+
+	@Override
+	public void setMessageConverter(MessageConverter messageConverter) {
+		this.messageConverter = messageConverter;
+	}
+
+	@Override
+	public void init() throws CanalClientException {
+		connector.connect();
+
+		if(Validate.isBlank(getFilter())){
+			connector.subscribe();
+		}else{
+			connector.subscribe(getFilter());
+		}
+
+		// 回滚到未进行 ack 的地方，下次 fetch 时，可以从最后一个没有 ack 的位置获取数据
+		connector.rollback();
+	}
+
+	@Override
+	public void ack(long batchId) throws CanalClientException {
+		connector.ack(batchId);
+	}
+
+	@Override
+	public void ack() throws CanalClientException {
+
+	}
+
+	@Override
+	public void rollback(long batchId) throws CanalClientException {
+		connector.rollback(batchId);
+	}
+
+	@Override
+	public void rollback() throws CanalClientException {
+		connector.rollback();
+	}
+
+	@Override
+	public void close() throws CanalClientException {
+		connector.unsubscribe();
+		connector.disconnect();
 	}
 
 	/**
@@ -132,26 +183,8 @@ public abstract class AbstractCanalAdapterClient<C extends CanalConnector> imple
 	 *
 	 * @see CanalConnector
 	 */
-	public C getConnector() {
+	protected C getConnector() {
 		return connector;
-	}
-
-	/**
-	 * 返回消息处理器
-	 *
-	 * @return 消息处理器
-	 */
-	public MessageHandler getMessageHandler() {
-		return messageHandler;
-	}
-
-	/**
-	 * 返回超时时长
-	 *
-	 * @return 超时时长
-	 */
-	public Long getTimeout() {
-		return timeout;
 	}
 
 	/**
@@ -159,23 +192,27 @@ public abstract class AbstractCanalAdapterClient<C extends CanalConnector> imple
 	 *
 	 * @return 批处理条数
 	 */
-	public Integer getBatchSize() {
+	protected int getBatchSize() {
 		return batchSize;
 	}
 
-	@Override
-	public void init() {
-		connector.connect();
-		connector.subscribe();
-		process();
+	@SuppressWarnings({"unchecked"})
+	protected List<CanalMessage> messagesConvert(final Message message) {
+		List<CanalMessage> messages = getMessageConverter().convert(message);
+
+		messages.forEach((m)->m.setDestination(getDestination()));
+
+		return messages;
 	}
 
-	@Override
-	public void destroy() {
-		connector.unsubscribe();
-		connector.disconnect();
-	}
+	protected List<CanalMessage> messagesConvert(final List<Message> messages) {
+		List<CanalMessage> result = new ArrayList<>(messages.size());
 
-	protected abstract void process();
+		for(Message message : messages){
+			result.addAll(messagesConvert(message));
+		}
+
+		return result;
+	}
 
 }

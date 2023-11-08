@@ -25,12 +25,6 @@
 package com.buession.canal.client.adapter;
 
 import com.alibaba.otter.canal.client.rabbitmq.RabbitMQCanalConnector;
-import com.alibaba.otter.canal.protocol.FlatMessage;
-import com.buession.canal.client.handler.MessageHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * Canal RabbitMQ 适配器
@@ -38,9 +32,7 @@ import java.util.List;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class RabbitMqCanalAdapterClient extends AbstractCanalAdapterClient<RabbitMQCanalConnector> {
-
-	private final static Logger logger = LoggerFactory.getLogger(RabbitMqCanalAdapterClient.class);
+public class RabbitMQCanalAdapterClient extends AbstractCanalMqAdapterClient<RabbitMQCanalConnector> {
 
 	/**
 	 * 构造函数
@@ -55,13 +47,10 @@ public class RabbitMqCanalAdapterClient extends AbstractCanalAdapterClient<Rabbi
 	 * 		密码
 	 * @param queueName
 	 * 		队列名称
-	 * @param messageHandler
-	 * 		消息处理器
 	 */
-	public RabbitMqCanalAdapterClient(final String server, final String virtualHost, final String username,
-									  final String password, final String queueName,
-									  final MessageHandler<?> messageHandler) {
-		super(createRabbitMQCanalConnector(server, virtualHost, queueName, username, password), messageHandler);
+	public RabbitMQCanalAdapterClient(final String server, final String virtualHost, final String username,
+									  final String password, final String queueName) {
+		this(server, virtualHost, queueName, username, password, DEFAULT_FLAT_MESSAGE);
 	}
 
 	/**
@@ -77,41 +66,12 @@ public class RabbitMqCanalAdapterClient extends AbstractCanalAdapterClient<Rabbi
 	 * 		密码
 	 * @param queueName
 	 * 		队列名称
-	 * @param messageHandler
-	 * 		消息处理器
-	 * @param timeout
-	 * 		超时时长
-	 */
-	public RabbitMqCanalAdapterClient(final String server, final String virtualHost, final String username,
-									  final String password, final String queueName,
-									  final MessageHandler<?> messageHandler, final Long timeout) {
-		super(createRabbitMQCanalConnector(server, virtualHost, queueName, username, password), messageHandler,
-				timeout);
-	}
-
-	/**
-	 * 构造函数
-	 *
-	 * @param server
-	 * 		RabbitMQ 主机地址
-	 * @param virtualHost
-	 * 		Virtual Host
-	 * @param username
-	 * 		用户名
-	 * @param password
-	 * 		密码
-	 * @param queueName
-	 * 		队列名称
-	 * @param messageHandler
-	 * 		消息处理器
 	 * @param batchSize
 	 * 		批处理条数
 	 */
-	public RabbitMqCanalAdapterClient(final String server, final String virtualHost, final String username,
-									  final String password, final String queueName,
-									  final MessageHandler<?> messageHandler, final Integer batchSize) {
-		super(createRabbitMQCanalConnector(server, virtualHost, queueName, username, password), messageHandler,
-				batchSize);
+	public RabbitMQCanalAdapterClient(final String server, final String virtualHost, final String username,
+									  final String password, final String queueName, final int batchSize) {
+		this(server, virtualHost, queueName, username, password, batchSize, DEFAULT_FLAT_MESSAGE);
 	}
 
 	/**
@@ -127,48 +87,50 @@ public class RabbitMqCanalAdapterClient extends AbstractCanalAdapterClient<Rabbi
 	 * 		密码
 	 * @param queueName
 	 * 		队列名称
-	 * @param messageHandler
-	 * 		消息处理器
-	 * @param timeout
-	 * 		超时时长
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param flatMessage
+	 * 		true / false
 	 */
-	public RabbitMqCanalAdapterClient(final String server, final String virtualHost, final String username,
-									  final String password, final String queueName,
-									  final MessageHandler<?> messageHandler, final Long timeout,
-									  final Integer batchSize) {
-		super(createRabbitMQCanalConnector(server, virtualHost, queueName, username, password), messageHandler, timeout,
-				batchSize);
+	public RabbitMQCanalAdapterClient(final String server, final String virtualHost, final String username,
+									  final String password, final String queueName, final boolean flatMessage) {
+		super(createRabbitMQCanalConnector(server, virtualHost, queueName, username, password, flatMessage),
+				flatMessage);
+		setDestination(queueName);
 	}
 
-	@Override
-	protected void process() {
-		try{
-			List<FlatMessage> messages = getConnector().getFlatListWithoutAck(getTimeout(), TIMEOUT_UNIT);
-
-			if(logger.isDebugEnabled()){
-				logger.debug("Receive messages = {}", messages);
-			}
-
-			for(FlatMessage message : messages){
-				getMessageHandler().handle(message);
-			}
-
-			getConnector().ack(); // 提交确认
-		}catch(Exception e){
-			logger.error("Handle message error, rollback", e);
-			getConnector().rollback();
-		}
+	/**
+	 * 构造函数
+	 *
+	 * @param server
+	 * 		RabbitMQ 主机地址
+	 * @param virtualHost
+	 * 		Virtual Host
+	 * @param username
+	 * 		用户名
+	 * @param password
+	 * 		密码
+	 * @param queueName
+	 * 		队列名称
+	 * @param batchSize
+	 * 		批处理条数
+	 * @param flatMessage
+	 * 		true / false
+	 */
+	public RabbitMQCanalAdapterClient(final String server, final String virtualHost, final String username,
+									  final String password, final String queueName, final int batchSize,
+									  final boolean flatMessage) {
+		super(createRabbitMQCanalConnector(server, virtualHost, queueName, username, password, flatMessage),
+				batchSize, flatMessage);
+		setDestination(queueName);
 	}
 
 	protected static RabbitMQCanalConnector createRabbitMQCanalConnector(final String server,
 																		 final String virtualHost,
 																		 final String queueName,
 																		 final String username,
-																		 final String password) {
+																		 final String password,
+																		 final boolean flatMessage) {
 		return new RabbitMQCanalConnector(server, virtualHost, queueName, null, null, username, password,
-				null, true);
+				null, flatMessage);
 	}
 
 }
