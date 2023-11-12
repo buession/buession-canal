@@ -25,8 +25,15 @@
 package com.buession.canal.spring.annotation;
 
 import com.buession.canal.annotation.CanalBinding;
+import com.buession.canal.client.dispatcher.DefaultDispatcher;
+import com.buession.canal.spring.annotation.factory.CanalBindingBeanPostProcessor;
 import com.buession.core.validator.Validate;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
@@ -49,23 +56,18 @@ import java.util.stream.Collectors;
  * @see BeanDefinition
  * @since 0.0.1
  */
-class CanalBindingScannerRegistrar implements ImportBeanDefinitionRegistrar, ResourceLoaderAware, EnvironmentAware {
+class CanalBindingScannerRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware, ResourceLoaderAware,
+		BeanFactoryAware {
 
 	private Environment environment;
 
 	private ResourceLoader resourceLoader;
 
-	public Environment getEnvironment() {
-		return environment;
-	}
+	private AutowireCapableBeanFactory beanFactory;
 
 	@Override
 	public void setEnvironment(@NonNull Environment environment) {
 		this.environment = environment;
-	}
-
-	public ResourceLoader getResourceLoader() {
-		return resourceLoader;
 	}
 
 	@Override
@@ -74,12 +76,26 @@ class CanalBindingScannerRegistrar implements ImportBeanDefinitionRegistrar, Res
 	}
 
 	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		if(beanFactory instanceof AutowireCapableBeanFactory){
+			this.beanFactory = (AutowireCapableBeanFactory) beanFactory;
+		}
+	}
+
+	@Override
 	public void registerBeanDefinitions(@NonNull AnnotationMetadata metadata,
 										@NonNull BeanDefinitionRegistry registry) {
+		registerCanalBindingBeanDefinitions(metadata, registry);
+		registerDispatcherBeanDefinition(metadata, registry);
+		registerCanalBindingBeanPostProcessor(metadata, registry);
+	}
+
+	private void registerCanalBindingBeanDefinitions(final AnnotationMetadata metadata,
+													 final BeanDefinitionRegistry registry) {
 		final AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(
 				metadata.getAnnotationAttributes(EnableCanal.class.getName()));
 		final CanalBindingClassPathMapperScanner scanner = new CanalBindingClassPathMapperScanner(registry,
-				getEnvironment(), getResourceLoader());
+				environment, resourceLoader, beanFactory);
 		final Set<String> basePackages = getBasePackages(annotationAttributes);
 
 		String lazyInitialization = annotationAttributes.getString("lazyInitialization");
@@ -91,7 +107,23 @@ class CanalBindingScannerRegistrar implements ImportBeanDefinitionRegistrar, Res
 			basePackages.add(getDefaultBasePackage(metadata));
 		}
 
-		scanner.doScan(basePackages.toArray(new String[]{}));
+		scanner.scan(basePackages.toArray(new String[]{}));
+	}
+
+	private void registerDispatcherBeanDefinition(final AnnotationMetadata metadata,
+												  final BeanDefinitionRegistry registry) {
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(DefaultDispatcher.class);
+
+		registry.registerBeanDefinition("default.Canal.Dispatcher", builder.getBeanDefinition());
+	}
+
+	private void registerCanalBindingBeanPostProcessor(final AnnotationMetadata metadata,
+													   final BeanDefinitionRegistry registry) {
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
+				CanalBindingBeanPostProcessor.class);
+		builder.addPropertyValue("beanFactory", beanFactory);
+
+		registry.registerBeanDefinition(CanalBindingBeanPostProcessor.class.getName(), builder.getBeanDefinition());
 	}
 
 	private static Set<String> getBasePackages(final AnnotationAttributes annotationAttributes) {

@@ -24,10 +24,10 @@
  */
 package com.buession.canal.spring.client.factory;
 
-import com.buession.canal.client.Binder;
 import com.buession.canal.client.CanalClient;
+import com.buession.canal.client.CanalContext;
+import com.buession.canal.client.dispatcher.Dispatcher;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -39,9 +39,14 @@ import java.util.concurrent.ExecutorService;
 public class CanalClientFactory {
 
 	/**
-	 * {@link Binder} 列表
+	 * {@link CanalContext}
 	 */
-	private List<Binder> binders;
+	private CanalContext context;
+
+	/**
+	 * 分发器
+	 */
+	private Dispatcher dispatcher;
 
 	/**
 	 * {@link ExecutorService}
@@ -49,22 +54,41 @@ public class CanalClientFactory {
 	private ExecutorService executor;
 
 	/**
-	 * 返回 {@link Binder} 列表
+	 * 返回 {@link CanalContext}
 	 *
-	 * @return {@link Binder} 列表
+	 * @return {@link CanalContext}
 	 */
-	public List<Binder> getBinders() {
-		return binders;
+	public CanalContext getContext() {
+		return context;
 	}
 
 	/**
-	 * 设置 {@link Binder} 列表
+	 * 设置 {@link CanalContext}
 	 *
-	 * @param binders
-	 *        {@link Binder} 列表
+	 * @param context
+	 *        {@link CanalContext}
 	 */
-	public void setBinders(List<Binder> binders) {
-		this.binders = binders;
+	public void setContext(CanalContext context) {
+		this.context = context;
+	}
+
+	/**
+	 * 返回分发器
+	 *
+	 * @return 分发器
+	 */
+	public Dispatcher getDispatcher() {
+		return dispatcher;
+	}
+
+	/**
+	 * 设置分发器
+	 *
+	 * @param dispatcher
+	 * 		分发器
+	 */
+	public void setDispatcher(Dispatcher dispatcher) {
+		this.dispatcher = dispatcher;
 	}
 
 	/**

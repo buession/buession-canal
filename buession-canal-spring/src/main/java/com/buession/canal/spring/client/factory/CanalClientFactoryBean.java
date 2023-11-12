@@ -30,8 +30,6 @@ import com.buession.core.utils.Assert;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextStartedEvent;
 
 /**
  * {@link CanalClient} 工厂 bean
@@ -39,8 +37,8 @@ import org.springframework.context.event.ContextStartedEvent;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class CanalClientFactoryBean extends CanalClientFactory implements ApplicationListener<ContextStartedEvent>,
-		FactoryBean<CanalClient>, InitializingBean, DisposableBean, AutoCloseable {
+public class CanalClientFactoryBean extends CanalClientFactory implements FactoryBean<CanalClient>,
+		InitializingBean, DisposableBean, AutoCloseable {
 
 	private CanalClient canalClient;
 
@@ -55,15 +53,11 @@ public class CanalClientFactoryBean extends CanalClientFactory implements Applic
 	}
 
 	@Override
-	public void onApplicationEvent(ContextStartedEvent event) {
-
-	}
-
-	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.isNull(getBinders(), "Property 'binders' is required");
+		Assert.isNull(getContext(), "Property 'context' is required");
+		Assert.isNull(getDispatcher(), "Property 'dispatcher' is required");
 
-		canalClient = new DefaultCanalClient(getBinders(), getExecutor());
+		canalClient = new DefaultCanalClient(getContext(), getDispatcher(), getExecutor());
 
 		if(canalClient.isRunning() == false){
 			canalClient.start();

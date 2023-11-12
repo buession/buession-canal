@@ -25,7 +25,6 @@
 package com.buession.canal.spring.annotation;
 
 import com.buession.canal.annotation.CanalBinding;
-import com.buession.canal.spring.binding.factory.CanalBindingFactoryBean;
 import com.buession.core.validator.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +32,7 @@ import org.springframework.aop.scope.ScopedProxyFactoryBean;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -48,9 +48,7 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 
-import java.util.Arrays;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * {@link CanalBinding} 扫描器
@@ -65,6 +63,8 @@ class CanalBindingClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 	 */
 	private boolean lazyInitialization;
 
+	private final AutowireCapableBeanFactory beanFactory;
+
 	private final static Logger logger = LoggerFactory.getLogger(CanalBindingClassPathMapperScanner.class);
 
 	/**
@@ -76,10 +76,13 @@ class CanalBindingClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 	 *        {@link Environment}
 	 * @param resourceLoader
 	 *        {@link ResourceLoader}
+	 * @param beanFactory
+	 *        {@link AutowireCapableBeanFactory}
 	 */
 	public CanalBindingClassPathMapperScanner(BeanDefinitionRegistry registry, Environment environment,
-											  ResourceLoader resourceLoader) {
+											  ResourceLoader resourceLoader, AutowireCapableBeanFactory beanFactory) {
 		super(registry, false, environment, resourceLoader);
+		this.beanFactory = beanFactory;
 		addIncludeFilter(new AnnotationTypeFilter(CanalBinding.class));
 		setBeanNameGenerator(FullyQualifiedAnnotationBeanNameGenerator.INSTANCE);
 	}
@@ -106,41 +109,19 @@ class CanalBindingClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 			return true;
 		}else{
 			if(logger.isDebugEnabled()){
-				logger.warn("Skipping CanalBindingFactoryBean with name '{}' and '{}' bindingType" +
-						". Bean already defined with the same name!", beanName, beanDefinition.getBeanClassName());
+				logger.warn(
+						"Skipping CanalBindingFactoryBean with name '{}' and '{}' bindingType. Bean already defined with the same name!",
+						beanName, beanDefinition.getBeanClassName());
 			}
 			return false;
 		}
 	}
 
 	@Override
-	@NonNull
-	protected Set<BeanDefinitionHolder> doScan(@NonNull String... basePackages) {
-		Set<BeanDefinitionHolder> beanDefinitions = super.doScan(basePackages);
+	protected void registerBeanDefinition(BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry) {
+		super.registerBeanDefinition(definitionHolder, registry);
 
-		if(beanDefinitions.isEmpty()){
-			if(logger.isDebugEnabled()){
-				logger.debug("No CanalBinding was found in '{}' package. Please check your configuration.",
-						Arrays.toString(basePackages));
-			}
-		}else{
-			processBeanDefinitions(beanDefinitions);
-		}
-
-		return beanDefinitions;
-	}
-
-	private void processBeanDefinitions(final Set<BeanDefinitionHolder> beanDefinitions) {
-		BeanDefinitionRegistry beanDefinitionRegistry = getRegistry();
-
-		for(BeanDefinitionHolder beanDefinitionHolder : beanDefinitions){
-			processBeanDefinition(beanDefinitionHolder, beanDefinitionRegistry);
-		}
-	}
-
-	private void processBeanDefinition(final BeanDefinitionHolder beanDefinitionHolder,
-									   final BeanDefinitionRegistry beanDefinitionRegistry) {
-		AbstractBeanDefinition beanDefinition = (AbstractBeanDefinition) beanDefinitionHolder.getBeanDefinition();
+		AbstractBeanDefinition beanDefinition = (AbstractBeanDefinition) definitionHolder.getBeanDefinition();
 
 		boolean scopedProxy = false;
 
@@ -149,58 +130,49 @@ class CanalBindingClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 					.ofNullable(((RootBeanDefinition) beanDefinition).getDecoratedDefinition())
 					.map(BeanDefinitionHolder::getBeanDefinition).orElseThrow(()->new IllegalStateException(
 							"The target bean definition of scoped proxy bean not found. Root bean definition[" +
-									beanDefinitionHolder + "]"));
+									definitionHolder + ']'));
 			scopedProxy = true;
 		}
 
-		processBeanDefinition(beanDefinitionHolder, beanDefinition);
+		processBeanDefinition(beanDefinition);
 
 		if(scopedProxy){
 			return;
 		}
 
 		if(beanDefinition.isSingleton() == false){
-			registerProxyBeanDefinitionHolder(beanDefinitionHolder, beanDefinitionRegistry);
+			registerProxyBeanDefinitionHolder(definitionHolder, registry);
 		}
 	}
 
-	private void processBeanDefinition(final BeanDefinitionHolder beanDefinitionHolder,
-									   final AbstractBeanDefinition beanDefinition) {
+	private void processBeanDefinition(final AbstractBeanDefinition beanDefinition) {
 		String beanClassName = beanDefinition.getBeanClassName();
-		if(logger.isDebugEnabled()){
-			logger.debug("Creating CanalBindingFactoryBean with name '{}' and '{}' bindingType",
-					beanDefinitionHolder.getBeanName(), beanClassName);
-		}
 
-		Class<?> bindingClazz = ClassUtils.resolveClassName(beanClassName, null);
-		CanalBinding canalBinding = AnnotationUtils.findAnnotation(bindingClazz, CanalBinding.class);
+		CanalBinding canalBinding = AnnotationUtils.findAnnotation(ClassUtils.resolveClassName(beanClassName, null),
+				CanalBinding.class);
 
 		if(Validate.isBlank(canalBinding.destination())){
 			throw new IllegalStateException(
-					"Either 'destination' must be provided in @CanalBinding for: " + bindingClazz.getName());
+					"Either 'destination' must be required in @CanalBinding for: " + beanClassName);
 		}
-
-		beanDefinition.getPropertyValues().add("destination", canalBinding.destination());
-		beanDefinition.getPropertyValues().add("bindingType", bindingClazz);
-
-		beanDefinition.setBeanClass(CanalBindingFactoryBean.class);
-		beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName);
 
 		beanDefinition.setLazyInit(lazyInitialization);
 		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
 		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		beanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, beanClassName);
+
+		//CanalEventListenerAnnotationUtils.registryEventListenerMethod(canalBinding.destination(), );
 	}
 
-	private void registerProxyBeanDefinitionHolder(final BeanDefinitionHolder beanDefinitionHolder,
-												   final BeanDefinitionRegistry beanDefinitionRegistry) {
-		final BeanDefinitionHolder proxyBeanDefinitionHolder = ScopedProxyUtils.createScopedProxy(beanDefinitionHolder,
-				beanDefinitionRegistry, true);
+	private void registerProxyBeanDefinitionHolder(final BeanDefinitionHolder definitionHolder,
+												   final BeanDefinitionRegistry registry) {
+		final BeanDefinitionHolder proxyBeanDefinitionHolder = ScopedProxyUtils.createScopedProxy(definitionHolder,
+				registry, true);
 
-		if(beanDefinitionRegistry.containsBeanDefinition(proxyBeanDefinitionHolder.getBeanName())){
-			beanDefinitionRegistry.removeBeanDefinition(proxyBeanDefinitionHolder.getBeanName());
+		if(registry.containsBeanDefinition(proxyBeanDefinitionHolder.getBeanName())){
+			registry.removeBeanDefinition(proxyBeanDefinitionHolder.getBeanName());
 		}
-		beanDefinitionRegistry.registerBeanDefinition(proxyBeanDefinitionHolder.getBeanName(),
+		registry.registerBeanDefinition(proxyBeanDefinitionHolder.getBeanName(),
 				proxyBeanDefinitionHolder.getBeanDefinition());
 	}
 
