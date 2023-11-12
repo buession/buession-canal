@@ -21,10 +21,39 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.client;/**
- * 
+ */
+package com.buession.canal.client;
+
+import com.buession.canal.client.adapter.AdapterClient;
+
+import java.util.Set;
+
+/**
+ * Canal 上下文
  *
  * @author Yong.Teng
  * @since 0.0.1
- */public class DefaultCanalContext {
+ */
+public class DefaultCanalContext implements CanalContext {
+
+	/**
+	 * Canal 适配器
+	 */
+	private final Set<AdapterClient> adapterClients;
+
+	/**
+	 * 构造函数
+	 *
+	 * @param adapterClients
+	 * 		Canal 适配器
+	 */
+	public DefaultCanalContext(final Set<AdapterClient> adapterClients) {
+		this.adapterClients = adapterClients;
+	}
+
+	@Override
+	public Set<AdapterClient> getAdapterClients() {
+		return adapterClients;
+	}
+
 }

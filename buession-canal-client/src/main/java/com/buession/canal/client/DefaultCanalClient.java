@@ -24,9 +24,9 @@
  */
 package com.buession.canal.client;
 
-import com.buession.canal.client.handler.MessageHandlerFactory;
+import com.buession.canal.client.adapter.AdapterClient;
+import com.buession.canal.client.dispatcher.Dispatcher;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -40,29 +40,37 @@ public class DefaultCanalClient extends AbstractCanalClient {
 	/**
 	 * 构造函数
 	 *
-	 * @param binders
-	 *        {@link Binder} 列表
+	 * @param context
+	 *        {@link CanalContext}
+	 * @param dispatcher
+	 * 		分发器
 	 */
-	public DefaultCanalClient(final List<Binder> binders) {
-		super(binders);
+	public DefaultCanalClient(final CanalContext context, final Dispatcher dispatcher) {
+		super(context, dispatcher);
 	}
 
 	/**
 	 * 构造函数
 	 *
-	 * @param binders
-	 *        {@link Binder} 列表
+	 * @param context
+	 *        {@link CanalContext}
+	 * @param dispatcher
+	 * 		分发器
 	 * @param executor
 	 *        {@link ExecutorService}
 	 */
-	public DefaultCanalClient(final List<Binder> binders, final ExecutorService executor) {
-		super(binders, executor);
+	public DefaultCanalClient(final CanalContext context, final Dispatcher dispatcher, final ExecutorService executor) {
+		super(context, dispatcher, executor);
 	}
 
 	@Override
-	protected void process(final Binder binder, final MessageHandlerFactory messageHandlerFactory,
+	protected void process(final AdapterClient adapterClient, final Dispatcher dispatcher,
 						   final ExecutorService executor) {
-		executor.submit(messageHandlerFactory.newHandler(binder));
+		executor.submit(()->{
+			if(isRunning()){
+				dispatcher.dispatch(adapterClient, 5);
+			}
+		});
 	}
 
 }

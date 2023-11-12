@@ -32,7 +32,7 @@ import com.alibaba.otter.canal.client.pulsarmq.PulsarMQCanalConnector;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class PulsarMQCanalAdapterClient extends AbstractCanalMqAdapterClient<PulsarMQCanalConnector> {
+public class PulsarMQAdapterClient extends AbstractMqAdapterClient<PulsarMQCanalConnector> {
 
 	public final static int DEFAULT_GET_BATCH_TIMEOUT = 30;
 
@@ -60,8 +60,8 @@ public class PulsarMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Pul
 	 * @param subscriptName
 	 * 		订阅名称
 	 */
-	public PulsarMQCanalAdapterClient(final String serviceUrl, final String roleToken, final String topic,
-									  final String subscriptName) {
+	public PulsarMQAdapterClient(final String serviceUrl, final String roleToken, final String topic,
+								 final String subscriptName) {
 		this(serviceUrl, roleToken, topic, subscriptName, DEFAULT_BATCH_SIZE);
 	}
 
@@ -79,8 +79,8 @@ public class PulsarMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Pul
 	 * @param batchSize
 	 * 		批处理条数
 	 */
-	public PulsarMQCanalAdapterClient(final String serviceUrl, final String roleToken, final String topic,
-									  final String subscriptName, final int batchSize) {
+	public PulsarMQAdapterClient(final String serviceUrl, final String roleToken, final String topic,
+								 final String subscriptName, final int batchSize) {
 		this(serviceUrl, roleToken, topic, subscriptName, batchSize, DEFAULT_FLAT_MESSAGE);
 	}
 
@@ -98,8 +98,8 @@ public class PulsarMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Pul
 	 * @param flatMessage
 	 * 		true / false
 	 */
-	public PulsarMQCanalAdapterClient(final String serviceUrl, final String roleToken, final String topic,
-									  final String subscriptName, final boolean flatMessage) {
+	public PulsarMQAdapterClient(final String serviceUrl, final String roleToken, final String topic,
+								 final String subscriptName, final boolean flatMessage) {
 		super(createPulsarMQCanalConnector(serviceUrl, roleToken, topic, subscriptName, flatMessage), subscriptName,
 				DEFAULT_BATCH_SIZE, flatMessage);
 	}
@@ -120,8 +120,8 @@ public class PulsarMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Pul
 	 * @param flatMessage
 	 * 		true / false
 	 */
-	public PulsarMQCanalAdapterClient(final String serviceUrl, final String roleToken, final String topic,
-									  final String subscriptName, final int batchSize, final boolean flatMessage) {
+	public PulsarMQAdapterClient(final String serviceUrl, final String roleToken, final String topic,
+								 final String subscriptName, final int batchSize, final boolean flatMessage) {
 		super(createPulsarMQCanalConnector(serviceUrl, roleToken, topic, subscriptName, batchSize, flatMessage),
 				subscriptName, batchSize, flatMessage);
 	}
@@ -152,11 +152,11 @@ public class PulsarMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Pul
 	 * @param maxRedeliveryCount
 	 * 		-
 	 */
-	public PulsarMQCanalAdapterClient(final String serviceUrl, final String roleToken, final String topic,
-									  final String subscriptName, final int getBatchTimeout,
-									  final int batchProcessTimeout, final int redeliveryDelay, final int ackTimeout,
-									  final boolean isRetry, final boolean isRetryDLQUpperCase,
-									  final Integer maxRedeliveryCount) {
+	public PulsarMQAdapterClient(final String serviceUrl, final String roleToken, final String topic,
+								 final String subscriptName, final int getBatchTimeout,
+								 final int batchProcessTimeout, final int redeliveryDelay, final int ackTimeout,
+								 final boolean isRetry, final boolean isRetryDLQUpperCase,
+								 final Integer maxRedeliveryCount) {
 		super(createPulsarMQCanalConnector(serviceUrl, roleToken, topic, subscriptName, getBatchTimeout,
 				batchProcessTimeout, redeliveryDelay, ackTimeout, isRetry, isRetryDLQUpperCase,
 				maxRedeliveryCount, DEFAULT_FLAT_MESSAGE), subscriptName, DEFAULT_FLAT_MESSAGE);
@@ -190,11 +190,11 @@ public class PulsarMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Pul
 	 * @param batchSize
 	 * 		批处理条数
 	 */
-	public PulsarMQCanalAdapterClient(final String serviceUrl, final String roleToken, final String topic,
-									  final String subscriptName, final int getBatchTimeout,
-									  final int batchProcessTimeout, final int redeliveryDelay, final int ackTimeout,
-									  final boolean isRetry, final boolean isRetryDLQUpperCase,
-									  final Integer maxRedeliveryCount, final int batchSize) {
+	public PulsarMQAdapterClient(final String serviceUrl, final String roleToken, final String topic,
+								 final String subscriptName, final int getBatchTimeout,
+								 final int batchProcessTimeout, final int redeliveryDelay, final int ackTimeout,
+								 final boolean isRetry, final boolean isRetryDLQUpperCase,
+								 final Integer maxRedeliveryCount, final int batchSize) {
 		super(createPulsarMQCanalConnector(serviceUrl, roleToken, topic, subscriptName, batchSize, getBatchTimeout,
 				batchProcessTimeout, redeliveryDelay, ackTimeout, isRetry, isRetryDLQUpperCase,
 				maxRedeliveryCount, DEFAULT_FLAT_MESSAGE), subscriptName, batchSize, DEFAULT_FLAT_MESSAGE);
@@ -228,11 +228,11 @@ public class PulsarMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Pul
 	 * @param flatMessage
 	 * 		true / false
 	 */
-	public PulsarMQCanalAdapterClient(final String serviceUrl, final String roleToken, final String topic,
-									  final String subscriptName, final int getBatchTimeout,
-									  final int batchProcessTimeout, final int redeliveryDelay, final int ackTimeout,
-									  final boolean isRetry, final boolean isRetryDLQUpperCase,
-									  final Integer maxRedeliveryCount, final boolean flatMessage) {
+	public PulsarMQAdapterClient(final String serviceUrl, final String roleToken, final String topic,
+								 final String subscriptName, final int getBatchTimeout,
+								 final int batchProcessTimeout, final int redeliveryDelay, final int ackTimeout,
+								 final boolean isRetry, final boolean isRetryDLQUpperCase,
+								 final Integer maxRedeliveryCount, final boolean flatMessage) {
 		super(createPulsarMQCanalConnector(serviceUrl, roleToken, topic, subscriptName, getBatchTimeout,
 				batchProcessTimeout, redeliveryDelay, ackTimeout, isRetry, isRetryDLQUpperCase,
 				maxRedeliveryCount, flatMessage), subscriptName, flatMessage);
@@ -268,12 +268,12 @@ public class PulsarMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Pul
 	 * @param flatMessage
 	 * 		true / false
 	 */
-	public PulsarMQCanalAdapterClient(final String serviceUrl, final String roleToken, final String topic,
-									  final String subscriptName, final int getBatchTimeout,
-									  final int batchProcessTimeout, final int redeliveryDelay,
-									  final int ackTimeout, final boolean isRetry,
-									  final boolean isRetryDLQUpperCase, final Integer maxRedeliveryCount,
-									  final int batchSize, final boolean flatMessage) {
+	public PulsarMQAdapterClient(final String serviceUrl, final String roleToken, final String topic,
+								 final String subscriptName, final int getBatchTimeout,
+								 final int batchProcessTimeout, final int redeliveryDelay,
+								 final int ackTimeout, final boolean isRetry,
+								 final boolean isRetryDLQUpperCase, final Integer maxRedeliveryCount,
+								 final int batchSize, final boolean flatMessage) {
 		super(createPulsarMQCanalConnector(serviceUrl, roleToken, topic, subscriptName, batchSize, getBatchTimeout,
 				batchProcessTimeout, redeliveryDelay, ackTimeout, isRetry, isRetryDLQUpperCase,
 				maxRedeliveryCount, flatMessage), subscriptName, batchSize, flatMessage);

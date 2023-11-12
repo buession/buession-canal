@@ -24,15 +24,13 @@
  */
 package com.buession.canal.client;
 
-import com.buession.canal.client.handler.DefaultMessageHandler;
-import com.buession.canal.client.handler.MessageHandlerFactory;
-import com.buession.canal.core.binding.CanalBinding;
+import com.buession.canal.client.adapter.AdapterClient;
+import com.buession.canal.client.dispatcher.Dispatcher;
 import com.buession.canal.core.concurrent.DefaultCanalThreadPoolExecutor;
 import com.buession.core.utils.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -44,16 +42,19 @@ import java.util.concurrent.ExecutorService;
 public abstract class AbstractCanalClient implements CanalClient {
 
 	/**
-	 * {@link Binder} 列表
+	 * {@link CanalContext}
 	 */
-	private final List<Binder> binders;
+	private final CanalContext context;
 
 	/**
 	 * {@link ExecutorService}
 	 */
 	private final ExecutorService executor;
 
-	private final MessageHandlerFactory messageHandlerFactory;
+	/**
+	 * 分发器
+	 */
+	private final Dispatcher dispatcher;
 
 	private volatile boolean running = false;
 
@@ -62,37 +63,43 @@ public abstract class AbstractCanalClient implements CanalClient {
 	/**
 	 * 构造函数
 	 *
-	 * @param binders
-	 *        {@link Binder} 列表
+	 * @param context
+	 *        {@link CanalContext}
+	 * @param dispatcher
+	 * 		分发器
 	 */
-	public AbstractCanalClient(final List<Binder> binders) {
-		this(binders, new DefaultCanalThreadPoolExecutor());
+	public AbstractCanalClient(final CanalContext context, final Dispatcher dispatcher) {
+		this(context, dispatcher, new DefaultCanalThreadPoolExecutor());
 	}
 
 	/**
 	 * 构造函数
 	 *
-	 * @param binders
-	 *        {@link Binder} 列表
-	 *        {@link CanalBinding} 列表
+	 * @param context
+	 *        {@link CanalContext}
+	 * @param dispatcher
+	 * 		分发器
 	 * @param executor
 	 *        {@link ExecutorService}
 	 */
-	public AbstractCanalClient(final List<Binder> binders, final ExecutorService executor) {
-		Assert.isNull(binders, "The Binder cloud not be null");
-		Assert.isNull(executor, "The ExecutorService cloud not be null");
-		this.binders = binders;
+	public AbstractCanalClient(final CanalContext context, final Dispatcher dispatcher,
+							   final ExecutorService executor) {
+		Assert.isNull(context, "The CanalContext is required");
+		Assert.isNull(dispatcher, "The Dispatcher is required");
+		Assert.isNull(executor, "The ExecutorService is required");
+		this.context = context;
+		this.dispatcher = dispatcher;
 		this.executor = executor;
-		this.messageHandlerFactory = DefaultMessageHandler::new;
 	}
 
 	@Override
 	public void start() {
 		logger.info("CanalClient starting...");
 
-		for(Binder binder : binders){
-			process(binder, messageHandlerFactory, executor);
-		}
+		context.getAdapterClients().forEach((adapterClient)->{
+			adapterClient.init();
+			process(adapterClient, dispatcher, executor);
+		});
 
 		running = true;
 	}
@@ -109,7 +116,7 @@ public abstract class AbstractCanalClient implements CanalClient {
 		return running;
 	}
 
-	protected abstract void process(final Binder binder, final MessageHandlerFactory messageHandlerFactory,
+	protected abstract void process(final AdapterClient adapterClient, final Dispatcher dispatcher,
 									final ExecutorService executor);
 
 }

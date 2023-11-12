@@ -25,11 +25,8 @@
 package com.buession.canal.client.handler;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
-import com.buession.canal.client.Binder;
-import com.buession.canal.core.CanalMessage;
-import com.buession.canal.core.listener.CanalEventListener;
+import com.buession.canal.core.listener.EventListener;
 import com.buession.core.validator.Validate;
-import org.slf4j.Logger;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -42,43 +39,24 @@ import java.util.function.Predicate;
  */
 public class DefaultMessageHandler extends AbstractMessageHandler {
 
-	public DefaultMessageHandler(final Binder binder) {
-		super(binder);
+	public DefaultMessageHandler() {
+		super();
 	}
 
-	@Override
-	protected void distributeEvent(final CanalMessage message) {
-		if(getBinding().getListeners() == null){
-			return;
-		}
-
-		getBinding().getListeners().stream()
-				.filter(eventListenerFilter(message.getTable().getSchema(), message.getTable().getName(),
-						message.getEventType()))
-				.forEach((listener)->{
-					try{
-						listener.getInvoker()
-								.invoke(listener.getObject(), listener.getMethod(), getArgs(listener, message));
-					}catch(Throwable e){
-						logger.error("Invoker invoke error", e);
-					}
-				});
-	}
-
-	protected Predicate<CanalEventListener> eventListenerFilter(final String schemaName, final String tableName,
-																final CanalEntry.EventType eventType) {
+	protected Predicate<EventListener> eventListenerFilter(final String schemaName, final String tableName,
+														   final CanalEntry.EventType eventType) {
 		// 判断数据库名是否一致
-		Predicate<CanalEventListener> sf =
+		Predicate<EventListener> sf =
 				listener->schemaName == null || Validate.isBlank(listener.getTable().getSchema())
 						|| Objects.equals(schemaName, listener.getTable().getSchema());
 
 		// 判断数据表名是否一致
-		Predicate<CanalEventListener> tf =
+		Predicate<EventListener> tf =
 				listener->tableName == null || Validate.isBlank(listener.getTable().getName())
 						|| Objects.equals(tableName, listener.getTable().getName());
 
 		// 判断事件类型是否一致
-		Predicate<CanalEventListener> ef =
+		Predicate<EventListener> ef =
 				listener->eventType == null || listener.getEventType() == null
 						|| eventType == listener.getEventType();
 

@@ -45,7 +45,7 @@ import java.util.List;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public abstract class AbstractCanalAdapterClient<C extends CanalConnector> implements CanalAdapterClient {
+public abstract class AbstractAdapterClient<C extends CanalConnector> implements AdapterClient {
 
 	/**
 	 * Canal 数据操作客户端
@@ -81,7 +81,7 @@ public abstract class AbstractCanalAdapterClient<C extends CanalConnector> imple
 	 * @param destination
 	 * 		指令
 	 */
-	public AbstractCanalAdapterClient(final C connector, final String destination) {
+	public AbstractAdapterClient(final C connector, final String destination) {
 		this(connector, destination, 1);
 	}
 
@@ -95,7 +95,7 @@ public abstract class AbstractCanalAdapterClient<C extends CanalConnector> imple
 	 * @param batchSize
 	 * 		批处理条数
 	 */
-	public AbstractCanalAdapterClient(final C connector, final String destination, final int batchSize) {
+	public AbstractAdapterClient(final C connector, final String destination, final int batchSize) {
 		Assert.isNull(connector, "CanalConnector cloud not be null.");
 		this.connector = connector;
 		this.destination = destination;

@@ -21,10 +21,26 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.client;/**
- * 
+ */
+package com.buession.canal.client;
+
+import com.buession.canal.client.adapter.AdapterClient;
+
+import java.util.Set;
+
+/**
+ * Canal 上下文
  *
  * @author Yong.Teng
  * @since 0.0.1
- */public interface CanalContext {
+ */
+public interface CanalContext {
+
+	/**
+	 * 返回所有 Canal 适配器
+	 *
+	 * @return 所有 Canal 适配器
+	 */
+	Set<AdapterClient> getAdapterClients();
+
 }

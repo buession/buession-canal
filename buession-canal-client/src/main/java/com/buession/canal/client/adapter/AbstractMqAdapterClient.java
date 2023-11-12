@@ -43,8 +43,8 @@ import java.util.concurrent.TimeUnit;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public abstract class AbstractCanalMqAdapterClient<C extends CanalMQConnector> extends AbstractCanalAdapterClient<C>
-		implements CanalMqAdapterClient {
+public abstract class AbstractMqAdapterClient<C extends CanalMQConnector> extends AbstractAdapterClient<C>
+		implements MqAdapterClient {
 
 	private final boolean flatMessage;
 
@@ -56,7 +56,7 @@ public abstract class AbstractCanalMqAdapterClient<C extends CanalMQConnector> e
 	 * @param destination
 	 * 		指令
 	 */
-	public AbstractCanalMqAdapterClient(final C connector, final String destination) {
+	public AbstractMqAdapterClient(final C connector, final String destination) {
 		this(connector, destination, DEFAULT_FLAT_MESSAGE);
 	}
 
@@ -70,7 +70,7 @@ public abstract class AbstractCanalMqAdapterClient<C extends CanalMQConnector> e
 	 * @param batchSize
 	 * 		批处理条数
 	 */
-	public AbstractCanalMqAdapterClient(final C connector, final String destination, final int batchSize) {
+	public AbstractMqAdapterClient(final C connector, final String destination, final int batchSize) {
 		this(connector, destination, batchSize, DEFAULT_FLAT_MESSAGE);
 	}
 
@@ -84,7 +84,7 @@ public abstract class AbstractCanalMqAdapterClient<C extends CanalMQConnector> e
 	 * @param flatMessage
 	 * 		true / false
 	 */
-	public AbstractCanalMqAdapterClient(final C connector, final String destination, final boolean flatMessage) {
+	public AbstractMqAdapterClient(final C connector, final String destination, final boolean flatMessage) {
 		super(connector, destination);
 		this.flatMessage = flatMessage;
 	}
@@ -101,8 +101,8 @@ public abstract class AbstractCanalMqAdapterClient<C extends CanalMQConnector> e
 	 * @param flatMessage
 	 * 		true / false
 	 */
-	public AbstractCanalMqAdapterClient(final C connector, final String destination, final int batchSize,
-										final boolean flatMessage) {
+	public AbstractMqAdapterClient(final C connector, final String destination, final int batchSize,
+								   final boolean flatMessage) {
 		super(connector, destination, batchSize);
 		this.flatMessage = flatMessage;
 	}

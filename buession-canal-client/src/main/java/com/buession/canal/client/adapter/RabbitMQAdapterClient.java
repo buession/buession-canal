@@ -32,7 +32,7 @@ import com.alibaba.otter.canal.client.rabbitmq.RabbitMQCanalConnector;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class RabbitMQCanalAdapterClient extends AbstractCanalMqAdapterClient<RabbitMQCanalConnector> {
+public class RabbitMQAdapterClient extends AbstractMqAdapterClient<RabbitMQCanalConnector> {
 
 	/**
 	 * 构造函数
@@ -48,8 +48,8 @@ public class RabbitMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Rab
 	 * @param queueName
 	 * 		队列名称
 	 */
-	public RabbitMQCanalAdapterClient(final String server, final String virtualHost, final String username,
-									  final String password, final String queueName) {
+	public RabbitMQAdapterClient(final String server, final String virtualHost, final String username,
+								 final String password, final String queueName) {
 		this(server, virtualHost, queueName, username, password, DEFAULT_FLAT_MESSAGE);
 	}
 
@@ -69,8 +69,8 @@ public class RabbitMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Rab
 	 * @param batchSize
 	 * 		批处理条数
 	 */
-	public RabbitMQCanalAdapterClient(final String server, final String virtualHost, final String username,
-									  final String password, final String queueName, final int batchSize) {
+	public RabbitMQAdapterClient(final String server, final String virtualHost, final String username,
+								 final String password, final String queueName, final int batchSize) {
 		this(server, virtualHost, queueName, username, password, batchSize, DEFAULT_FLAT_MESSAGE);
 	}
 
@@ -90,8 +90,8 @@ public class RabbitMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Rab
 	 * @param flatMessage
 	 * 		true / false
 	 */
-	public RabbitMQCanalAdapterClient(final String server, final String virtualHost, final String username,
-									  final String password, final String queueName, final boolean flatMessage) {
+	public RabbitMQAdapterClient(final String server, final String virtualHost, final String username,
+								 final String password, final String queueName, final boolean flatMessage) {
 		super(createRabbitMQCanalConnector(server, virtualHost, queueName, username, password, flatMessage),
 				queueName, flatMessage);
 	}
@@ -114,9 +114,9 @@ public class RabbitMQCanalAdapterClient extends AbstractCanalMqAdapterClient<Rab
 	 * @param flatMessage
 	 * 		true / false
 	 */
-	public RabbitMQCanalAdapterClient(final String server, final String virtualHost, final String username,
-									  final String password, final String queueName, final int batchSize,
-									  final boolean flatMessage) {
+	public RabbitMQAdapterClient(final String server, final String virtualHost, final String username,
+								 final String password, final String queueName, final int batchSize,
+								 final boolean flatMessage) {
 		super(createRabbitMQCanalConnector(server, virtualHost, queueName, username, password, flatMessage),
 				queueName, batchSize, flatMessage);
 	}

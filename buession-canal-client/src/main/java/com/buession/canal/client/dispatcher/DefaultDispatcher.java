@@ -21,10 +21,19 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.client.dispatcher;/**
- * 
+ */
+package com.buession.canal.client.dispatcher;
+
+/**
+ * 默认分发器
  *
  * @author Yong.Teng
  * @since 0.0.1
- */public class DefaultDispatcher {
+ */
+public class DefaultDispatcher extends AbstractDispatcher {
+
+	public DefaultDispatcher() {
+		super();
+	}
+	
 }

@@ -21,10 +21,131 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.client.dispatcher;/**
- * 
+ */
+package com.buession.canal.client.dispatcher;
+
+import com.buession.canal.client.adapter.AdapterClient;
+import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.listener.EventListenerMethod;
+import com.buession.canal.core.listener.EventListenerRegistry;
+import com.buession.canal.core.listener.support.DestinationArgumentResolver;
+import com.buession.canal.core.listener.support.EntryTypeArgumentResolver;
+import com.buession.canal.core.listener.support.EventListenerArgumentResolver;
+import com.buession.canal.core.listener.support.EventListenerArgumentResolverComposite;
+import com.buession.canal.core.listener.support.EventTypeArgumentResolver;
+import com.buession.canal.core.listener.support.HeaderArgumentResolver;
+import com.buession.canal.core.listener.support.RowChangeArgumentResolver;
+import com.buession.canal.core.listener.support.RowDataArgumentResolver;
+import com.buession.canal.core.listener.support.RowDataArrayArgumentResolver;
+import com.buession.canal.core.listener.support.RowDataCollectionArgumentResolver;
+import com.buession.canal.core.listener.support.SchemaArgumentResolver;
+import com.buession.canal.core.listener.support.TableArgumentResolver;
+import com.buession.core.builder.ListBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 分发器抽象类
  *
  * @author Yong.Teng
  * @since 0.0.1
- */public class AbstractDispatcher {
+ */
+public abstract class AbstractDispatcher implements Dispatcher {
+
+	private final EventListenerRegistry eventListenerRegistry = new EventListenerRegistry();
+
+	private final EventListenerArgumentResolverComposite argumentResolvers = new EventListenerArgumentResolverComposite();
+
+	private volatile boolean running = true;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	public AbstractDispatcher() {
+		argumentResolvers.addResolvers(getDefaultArgumentResolvers());
+	}
+
+	public EventListenerRegistry getEventListenerRegistry() {
+		return eventListenerRegistry;
+	}
+
+	@Override
+	public void dispatch(AdapterClient adapterClient, long timeout) {
+		while(running){
+			try{
+				List<CanalMessage> messages = adapterClient.getListWithoutAck(timeout, TimeUnit.SECONDS);
+
+				if(messages != null){
+					for(CanalMessage message : messages){
+						doDispatch(message);
+					}
+				}
+
+				adapterClient.ack();
+			}catch(Exception e){
+				logger.error("Message handle error", e);
+			}
+		}
+
+		running = false;
+	}
+
+	protected void doDispatch(final CanalMessage canalMessage) {
+		EventListenerMethod method = eventListenerRegistry.getMethod(buildEventListenerName(canalMessage));
+
+		if(method == null){
+			method = eventListenerRegistry.getMethod(buildEventListenerNameWithoutTable(canalMessage));
+		}
+
+		if(method == null){
+			return;
+		}
+
+		method.setArgumentResolvers(argumentResolvers);
+
+		try{
+			method.invoke(canalMessage);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	private static String buildEventListenerName(final CanalMessage canalMessage) {
+		final StringBuilder sb = new StringBuilder();
+
+		sb.append(canalMessage.getDestination()).append("$$");
+		sb.append(canalMessage.getTable().getSchema()).append('.').append(canalMessage.getTable().getName())
+				.append("$$");
+		sb.append(canalMessage.getEventType().name());
+
+		return sb.toString();
+	}
+
+	private static String buildEventListenerNameWithoutTable(final CanalMessage canalMessage) {
+		final StringBuilder sb = new StringBuilder();
+
+		sb.append(canalMessage.getDestination()).append("$$");
+		sb.append('.').append("$$");
+		sb.append(canalMessage.getEventType().name());
+
+		return sb.toString();
+	}
+
+	protected static List<EventListenerArgumentResolver> getDefaultArgumentResolvers() {
+		return ListBuilder.<EventListenerArgumentResolver>create(10)
+				.add(new DestinationArgumentResolver())
+				.add(new EntryTypeArgumentResolver())
+				.add(new EventTypeArgumentResolver())
+				.add(new HeaderArgumentResolver())
+				.add(new RowChangeArgumentResolver())
+				.add(new RowDataArgumentResolver())
+				.add(new RowDataCollectionArgumentResolver())
+				.add(new RowDataArrayArgumentResolver())
+				.add(new SchemaArgumentResolver())
+				.add(new TableArgumentResolver())
+				.build();
+	}
+
 }

@@ -24,12 +24,25 @@
  */
 package com.buession.canal.client.handler;
 
+import com.buession.canal.core.listener.EventHandler;
+
 /**
  * 信息处理接口
  *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public interface MessageHandler extends Runnable {
+@FunctionalInterface
+public interface MessageHandler {
+
+	/**
+	 * 消息处理
+	 *
+	 * @param eventHandler
+	 * 		消息
+	 *
+	 * @return 返回数据
+	 */
+	Object handle(final EventHandler eventHandler);
 
 }

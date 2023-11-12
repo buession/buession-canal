@@ -30,7 +30,7 @@ package com.buession.canal.client.adapter;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public interface CanalMqAdapterClient extends CanalAdapterClient {
+public interface MqAdapterClient extends AdapterClient {
 
 	boolean DEFAULT_FLAT_MESSAGE = false;
 

@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public interface CanalAdapterClient {
+public interface AdapterClient {
 
 	int DEFAULT_BATCH_SIZE = 1;
 

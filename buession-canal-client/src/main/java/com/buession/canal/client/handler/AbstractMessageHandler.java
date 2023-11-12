@@ -24,24 +24,10 @@
  */
 package com.buession.canal.client.handler;
 
-import com.alibaba.otter.canal.protocol.CanalEntry;
-import com.buession.canal.client.Binder;
-import com.buession.canal.client.adapter.CanalAdapterClient;
 import com.buession.canal.core.CanalMessage;
-import com.buession.canal.core.ParameterType;
-import com.buession.canal.core.binding.CanalBinding;
-import com.buession.canal.core.listener.CanalEventListener;
-import com.buession.canal.core.listener.ParameterMapping;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.buession.canal.core.listener.EventHandler;
+import com.buession.canal.core.listener.MethodParameter;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 /**
@@ -52,74 +38,17 @@ import java.util.function.Function;
  */
 public abstract class AbstractMessageHandler implements MessageHandler {
 
-	private final CanalAdapterClient adapterClient;
-
-	private final CanalBinding<?> binding;
-
-	private final long timeout;
-
-	private volatile boolean running = true;
-
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
-
-	public AbstractMessageHandler(final Binder binder) {
-		this.adapterClient = binder.getAdapterClient();
-		this.binding = binder.getBinding();
-		this.timeout = binder.getTimeout();
-		adapterClient.init();
+	public AbstractMessageHandler() {
 	}
 
 	@Override
-	public void run() {
-		while(running){
-			try{
-				List<CanalMessage> messages = adapterClient.getListWithoutAck(timeout, TimeUnit.SECONDS);
-
-				for(CanalMessage message : messages){
-					distributeEvent(message);
-				}
-
-				adapterClient.ack();
-			}catch(Exception e){
-				logger.error("Message handle error", e);
-			}
-		}
-
-		running = false;
+	public Object handle(final EventHandler eventHandler) {
+		return null;
 	}
 
-	protected CanalBinding<?> getBinding() {
-		return binding;
-	}
-
-	protected Object[] getArgs(final CanalEventListener eventListener, final CanalMessage message) {
-		return Arrays.stream(eventListener.getParameterMappings()).map(convertParameter(message)).toArray();
-	}
-
-	protected abstract void distributeEvent(final CanalMessage message);
-
-	protected Function<ParameterMapping, Object> convertParameter(final CanalMessage message) {
+	protected Function<MethodParameter, Object> convertParameter(final CanalMessage message) {
 		return (pm)->{
-			switch(pm.getParameterType()){
-				case ROW_CHANGE:
-					return message.getRowChange();
-				case ROW_DATA:
-					return message.getRowChange().getRowDatasList().get(0);
-				case HEADER:
-					return message.getHeader();
-				case ENTRY_TYPE:
-					return message.getEntryType();
-				case EVENT_TYPE:
-					return message.getEventType();
-				case DESTINATION:
-					return message.getDestination();
-				case SCHEMA:
-					return message.getTable().getSchema();
-				case TABLE:
-					return message.getTable().getName();
-				default:
-					break;
-			}
+			/*
 
 			ParameterizedType parameterizedType = ((ParameterizedType) pm.getType());
 			Type type = parameterizedType.getRawType();
@@ -130,6 +59,8 @@ public abstract class AbstractMessageHandler implements MessageHandler {
 					return message.getRowChange().getRowDatasList();
 				}
 			}
+
+			 */
 
 			return null;
 		};

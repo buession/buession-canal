@@ -34,9 +34,9 @@ import java.util.concurrent.TimeUnit;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class TcpCanalAdapterClientTest {
+public class TcpAdapterClientTest {
 
-	private final static TcpCanalAdapterClient client = new TcpCanalAdapterClient("127.0.0.1:11111",
+	private final static TcpAdapterClient client = new TcpAdapterClient("127.0.0.1:11111",
 			null, "customer", "admin", "admin", 5);
 
 	static {

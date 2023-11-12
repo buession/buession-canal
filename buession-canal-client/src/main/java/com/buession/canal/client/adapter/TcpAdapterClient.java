@@ -48,7 +48,7 @@ import java.util.stream.Stream;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConnector> {
+public class TcpAdapterClient extends AbstractAdapterClient<CanalConnector> {
 
 	public final static int DEFAULT_PORT = 1111;
 
@@ -66,8 +66,8 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConne
 	 * @param password
 	 * 		密码
 	 */
-	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
-								 final String username, final String password) {
+	public TcpAdapterClient(final String server, final String zkServers, final String destination,
+							final String username, final String password) {
 		super(createCanalConnector(server, zkServers, destination, username, password), destination);
 	}
 
@@ -87,8 +87,8 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConne
 	 * @param batchSize
 	 * 		批处理条数
 	 */
-	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
-								 final String username, final String password, final int batchSize) {
+	public TcpAdapterClient(final String server, final String zkServers, final String destination,
+							final String username, final String password, final int batchSize) {
 		super(createCanalConnector(server, zkServers, destination, username, password), destination, batchSize);
 	}
 
@@ -110,9 +110,9 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConne
 	 * @param idleTimeout
 	 * 		连接池超时
 	 */
-	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
-								 final String username, final String password, final Integer soTimeout,
-								 final Integer idleTimeout) {
+	public TcpAdapterClient(final String server, final String zkServers, final String destination,
+							final String username, final String password, final Integer soTimeout,
+							final Integer idleTimeout) {
 		super(createCanalConnector(server, zkServers, destination, username, password, soTimeout, idleTimeout),
 				destination);
 	}
@@ -137,9 +137,9 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConne
 	 * @param idleTimeout
 	 * 		连接池超时
 	 */
-	public TcpCanalAdapterClient(final String server, final String zkServers, final String destination,
-								 final String username, final String password, final Integer soTimeout,
-								 final Integer idleTimeout, final int batchSize) {
+	public TcpAdapterClient(final String server, final String zkServers, final String destination,
+							final String username, final String password, final Integer soTimeout,
+							final Integer idleTimeout, final int batchSize) {
 		super(createCanalConnector(server, zkServers, destination, username, password, soTimeout, idleTimeout),
 				destination, batchSize);
 	}
@@ -192,7 +192,7 @@ public class TcpCanalAdapterClient extends AbstractCanalAdapterClient<CanalConne
 				return canalConnector;
 			}else{
 				List<SocketAddress> serverSocketAddresses = Stream.of(servers).map(
-						TcpCanalAdapterClient::createSocketAddressFromHostAndPort).collect(Collectors.toList());
+						TcpAdapterClient::createSocketAddressFromHostAndPort).collect(Collectors.toList());
 
 				ClusterCanalConnector canalConnector =
 						(ClusterCanalConnector) CanalConnectors.newClusterConnector(serverSocketAddresses, destination,

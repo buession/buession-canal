@@ -21,10 +21,28 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.client.dispatcher;/**
- * 
+ */
+package com.buession.canal.client.dispatcher;
+
+import com.buession.canal.client.adapter.AdapterClient;
+
+/**
+ * 分发器
  *
  * @author Yong.Teng
  * @since 0.0.1
- */public interface Dispatcher {
+ */
+@FunctionalInterface
+public interface Dispatcher {
+
+	/**
+	 * 分发
+	 *
+	 * @param adapterClient
+	 * 		Canal 适配器
+	 * @param timeout
+	 * 		超时时长，单位：秒
+	 */
+	void dispatch(AdapterClient adapterClient, long timeout);
+
 }
