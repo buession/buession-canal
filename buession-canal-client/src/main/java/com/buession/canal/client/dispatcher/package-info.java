@@ -22,59 +22,8 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.core;
-
 /**
- * 参数类型
- *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public enum ParameterType {
-
-	/**
-	 * 指令
-	 */
-	DESTINATION,
-
-	/**
-	 * 数据库
-	 */
-	SCHEMA,
-
-	/**
-	 * 数据表
-	 */
-	TABLE,
-
-	/**
-	 * 头
-	 */
-	HEADER,
-
-	/**
-	 * 行变化
-	 */
-	ROW_CHANGE,
-
-	/**
-	 * 行数据
-	 */
-	ROW_DATA,
-
-	/**
-	 * 实体类型
-	 */
-	ENTRY_TYPE,
-
-	/**
-	 * 事件类型
-	 */
-	EVENT_TYPE,
-
-	/**
-	 * 未知
-	 */
-	UNKNOW
-
-}
+package com.buession.canal.client;

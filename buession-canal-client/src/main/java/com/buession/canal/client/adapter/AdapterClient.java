@@ -94,6 +94,8 @@ public interface CanalAdapterClient {
 	 * @param unit
 	 * 		超时时长单位
 	 *
+	 * @return 数据列表
+	 *
 	 * @throws CanalClientException
 	 * 		Canal 客户端异常
 	 */
@@ -111,6 +113,8 @@ public interface CanalAdapterClient {
 	 * 		超时时长
 	 * @param unit
 	 * 		超时时长单位
+	 *
+	 * @return 数据列表
 	 *
 	 * @throws CanalClientException
 	 * 		Canal 客户端异常

@@ -22,27 +22,28 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.client.handler;
+package com.buession.canal.core.listener.support;
 
-import com.buession.canal.client.Binder;
+import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.listener.MethodParameter;
 
 /**
- * 信息处理工厂接口
+ * {@link CanalEntry.RowChange} 参数解析器
  *
  * @author Yong.Teng
  * @since 0.0.1
  */
-@FunctionalInterface
-public interface MessageHandlerFactory {
+public class RowChangeArgumentResolver implements EventListenerArgumentResolver {
 
-	/**
-	 * 创建信息处理实例
-	 *
-	 * @param binder
-	 *        {@link Binder}
-	 *
-	 * @return 信息处理
-	 */
-	MessageHandler newHandler(Binder binder);
+	@Override
+	public boolean supports(final MethodParameter parameter) {
+		return CanalEntry.RowChange.class.isAssignableFrom(parameter.getParameterType());
+	}
+
+	@Override
+	public Object resolve(final MethodParameter parameter, final CanalMessage canalMessage) throws Exception {
+		return canalMessage == null ? null : canalMessage.getRowChange();
+	}
 
 }

@@ -21,9 +21,10 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */
-/**
+ */package com.buession.canal.core.listener.utils;/**
+ * 
+ *
  * @author Yong.Teng
  * @since 0.0.1
- */
-package com.buession.canal.spring.binding.factory;
+ */public class EventListenerUtils {
+}

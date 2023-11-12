@@ -73,7 +73,7 @@ public class CanalEventListener implements Serializable {
 	/**
 	 * 方法参数列表
 	 */
-	private final ParameterMapping[] parameterMappings;
+	private final MethodParameter[] methodParameters;
 
 	/**
 	 * 方法调用者
@@ -93,18 +93,17 @@ public class CanalEventListener implements Serializable {
 	 *        {@link com.buession.canal.annotation.CanalBinding} 实例
 	 * @param method
 	 * 		方法
-	 * @param parameterMappings
+	 * @param methodParameters
 	 * 		方法参数列表
 	 */
 	public CanalEventListener(final String destination, final Table table, final CanalEntry.EventType eventType,
-							  final Object object, final Method method,
-							  final ParameterMapping[] parameterMappings) {
+							  final Object object, final Method method, final MethodParameter[] methodParameters) {
 		this.destination = destination;
 		this.table = table;
 		this.eventType = eventType;
 		this.object = object;
 		this.method = method;
-		this.parameterMappings = parameterMappings;
+		this.methodParameters = methodParameters;
 		this.invoker = new Invoker(object.getClass(), eventType, methodCache);
 	}
 
@@ -158,8 +157,8 @@ public class CanalEventListener implements Serializable {
 	 *
 	 * @return 方法参数列表
 	 */
-	public ParameterMapping[] getParameterMappings() {
-		return parameterMappings;
+	public MethodParameter[] getMethodParameters() {
+		return methodParameters;
 	}
 
 	/**

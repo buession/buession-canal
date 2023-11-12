@@ -22,8 +22,28 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
+package com.buession.canal.core.listener.support;
+
+import com.buession.canal.annotation.Schema;
+import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.listener.MethodParameter;
+
 /**
+ * 注解 {@link Schema} 参数解析器
+ *
  * @author Yong.Teng
  * @since 0.0.1
  */
-package com.buession.canal.spring.binding;
+public class SchemaArgumentResolver implements EventListenerArgumentResolver {
+
+	@Override
+	public boolean supports(final MethodParameter parameter) {
+		return parameter.hasAnnotation(Schema.class) && CharSequence.class.isAssignableFrom(parameter.getType());
+	}
+
+	@Override
+	public Object resolve(final MethodParameter parameter, final CanalMessage canalMessage) throws Exception {
+		return canalMessage == null ? null : canalMessage.getTable().getSchema();
+	}
+
+}
