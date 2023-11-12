@@ -21,10 +21,23 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.core.listener;/**
- * 
- *
+ */
+package com.buession.canal.core.listener;
+
+/**
  * @author Yong.Teng
  * @since 0.0.1
- */public class EventHandler {
+ */
+public class EventHandler {
+
+	private final Object handler;
+
+	public EventHandler(Object handler) {
+		this.handler = handler;
+	}
+
+	public Object getHandler() {
+		return handler;
+	}
+
 }

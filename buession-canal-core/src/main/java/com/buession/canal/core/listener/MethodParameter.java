@@ -24,51 +24,206 @@
  */
 package com.buession.canal.core.listener;
 
-import com.buession.canal.core.ParameterType;
+import com.buession.core.utils.Assert;
+import org.springframework.core.ResolvableType;
+import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
-import java.lang.reflect.Type;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 /**
+ * {@link EventListener} 方法参数
+ *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class ParameterMapping implements Serializable {
+public final class MethodParameter implements Serializable {
 
 	private final static long serialVersionUID = -3360650251060687317L;
 
-	private String property;
+	private final static Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
 
-	private Type type = Object.class;
+	/**
+	 * 参数名称
+	 */
+	private volatile String name;
 
-	private ParameterType parameterType;
+	/**
+	 * 方法对象
+	 */
+	private final Method method;
 
-	private ParameterMapping() {
-	}
+	/**
+	 * 参数索引
+	 */
+	private final int index;
 
-	public ParameterMapping(String property, Type type, ParameterType parameterType) {
-		this.property = property;
+	/**
+	 * 参数
+	 */
+	private volatile Parameter parameter;
+
+	/**
+	 * 参数类型
+	 */
+	private volatile Class<?> parameterType;
+
+	/**
+	 * 方法所属类
+	 */
+	private volatile Class<?> type;
+
+	/**
+	 * 注解列表
+	 */
+	private volatile Annotation[] annotations;
+
+	/**
+	 * 构造函数
+	 *
+	 * @param name
+	 * 		参数名称
+	 * @param method
+	 * 		方法
+	 * @param index
+	 * 		参数索引
+	 * @param parameter
+	 * 		参数
+	 * @param type
+	 * 		方法所属类
+	 */
+	public MethodParameter(final String name, final Method method, final int index, final Parameter parameter,
+						   final Class<?> type) {
+		Assert.isNull(method, "Method must not be null");
+		this.name = name;
+		this.method = method;
+		this.index = index;
+		this.parameter = parameter;
 		this.type = type;
-		this.parameterType = parameterType;
 	}
 
-	public String getProperty() {
-		return property;
+	/**
+	 * 返回参数名称
+	 *
+	 * @return 参数名称
+	 */
+	public String getName() {
+		return name;
 	}
 
-	public Type getType() {
+	/**
+	 * 返回方法
+	 *
+	 * @return 方法
+	 */
+	public Method getMethod() {
+		return method;
+	}
+
+	/**
+	 * 返回参数索引
+	 *
+	 * @return 参数索引
+	 */
+	public int getIndex() {
+		return index;
+	}
+
+	/**
+	 * 返回参数
+	 *
+	 * @return 参数
+	 */
+	public Parameter getParameter() {
+		return parameter;
+	}
+
+	/**
+	 * 返回参数类型
+	 *
+	 * @return 参数类型
+	 */
+	public Class<?> getParameterType() {
+		Class<?> parameterType = this.parameterType;
+		if(parameterType != null){
+			return parameterType;
+		}
+
+		this.parameterType = this.getMethod().getParameterTypes()[this.index];
+		return this.parameterType;
+	}
+
+	/**
+	 * 返回方法所属类
+	 *
+	 * @return 方法所属类
+	 */
+	public Class<?> getType() {
 		return type;
 	}
 
-	public ParameterType getParameterType() {
-		return parameterType;
+	/**
+	 * 判断参数是否含有注解
+	 *
+	 * @param annotationType
+	 * 		注解
+	 * @param <A>
+	 * 		注解类型
+	 *
+	 * @return true / false
+	 */
+	public <A extends Annotation> boolean hasAnnotation(Class<A> annotationType) {
+		return getAnnotation(annotationType) != null;
+	}
+
+	/**
+	 * 返回注解
+	 *
+	 * @param annotationType
+	 * 		注解
+	 * @param <A>
+	 * 		注解类型
+	 *
+	 * @return 注解
+	 */
+	@SuppressWarnings({"unchecked"})
+	@Nullable
+	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
+		Annotation[] annotations = getAnnotations();
+		for(Annotation annotation : annotations){
+			if(annotationType.isInstance(annotation)){
+				return (A) annotation;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * 返回所有注解
+	 *
+	 * @return 所有注解
+	 */
+	public Annotation[] getAnnotations() {
+		Annotation[] annotations = this.annotations;
+
+		if(annotations == null){
+			Annotation[][] annotationArray = this.method.getParameterAnnotations();
+			int index = this.index;
+
+			this.annotations = (index >= 0 && index < annotationArray.length ?
+					annotationArray[index] : EMPTY_ANNOTATION_ARRAY);
+		}
+
+		return annotations;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(property, type, parameterType);
+		return Objects.hash(name, index, parameter, getParameterType(), type, getAnnotations());
 	}
 
 	@Override
@@ -77,22 +232,15 @@ public class ParameterMapping implements Serializable {
 			return false;
 		}
 
-		if(obj instanceof ParameterMapping){
-			ParameterMapping that = (ParameterMapping) obj;
-			return Objects.equals(property, that.getProperty()) && Objects.equals(type, that.getType()) &&
-					Objects.equals(parameterType, that.getParameterType());
+		if(obj instanceof MethodParameter){
+			MethodParameter that = (MethodParameter) obj;
+			return Objects.equals(name, that.getName()) && Objects.equals(parameter, that.getParameter()) &&
+					Objects.equals(getParameterType(), that.getParameterType()) &&
+					Objects.equals(type, that.getType()) &&
+					Objects.equals(getAnnotations(), that.getAnnotations());
 		}
 
 		return false;
-	}
-
-	@Override
-	public String toString() {
-		return new StringJoiner(", ", "ParameterMapping[", "]")
-				.add("property='" + property + "'")
-				.add("type=" + type)
-				.add("parameterType=" + parameterType)
-				.toString();
 	}
 
 }

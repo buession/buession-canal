@@ -24,7 +24,10 @@
  */
 package com.buession.canal.core.listener;
 
+import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.listener.support.EventListenerArgumentResolverComposite;
 import com.buession.core.utils.Assert;
+import com.buession.core.validator.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
@@ -40,9 +43,13 @@ import java.util.Arrays;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class CanalEventListenerMethod {
+public class EventListenerMethod {
+
+	private final static Object[] EMPTY_ARGS = new Object[0];
 
 	private final BeanFactory beanFactory;
+
+	private EventListenerArgumentResolverComposite argumentResolvers = new EventListenerArgumentResolverComposite();
 
 	private final Object target;
 
@@ -54,9 +61,9 @@ public class CanalEventListenerMethod {
 
 	private final MethodParameter[] parameters;
 
-	private final static Logger logger = LoggerFactory.getLogger(CanalEventListenerMethod.class);
+	private final static Logger logger = LoggerFactory.getLogger(EventListenerMethod.class);
 
-	public CanalEventListenerMethod(Object target, Method method) {
+	public EventListenerMethod(Object target, Method method) {
 		Assert.isNull(target, "Target is required");
 		Assert.isNull(method, "Method is required");
 		this.beanFactory = null;
@@ -67,7 +74,7 @@ public class CanalEventListenerMethod {
 		this.parameters = initMethodParameters();
 	}
 
-	public CanalEventListenerMethod(String beanName, BeanFactory beanFactory, Method method) {
+	public EventListenerMethod(String beanName, BeanFactory beanFactory, Method method) {
 		Assert.isBlank(beanName, "Bean name is required");
 		Assert.isNull(beanFactory, "BeanFactory is required");
 		Assert.isNull(method, "Method is required");
@@ -81,6 +88,15 @@ public class CanalEventListenerMethod {
 		this.method = method;
 		this.bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
 		this.parameters = initMethodParameters();
+	}
+
+	public EventListenerArgumentResolverComposite getArgumentResolvers() {
+		return argumentResolvers;
+	}
+
+	public void setArgumentResolvers(
+			EventListenerArgumentResolverComposite argumentResolvers) {
+		this.argumentResolvers = argumentResolvers;
 	}
 
 	public Object getTarget() {
@@ -103,8 +119,8 @@ public class CanalEventListenerMethod {
 		return parameters;
 	}
 
-	public Object invoke() throws Exception {
-		Object[] args = getMethodArgumentValues();
+	public Object invoke(final CanalMessage canalMessage) throws Exception {
+		Object[] args = getMethodArgumentValues(canalMessage);
 
 		if(logger.isTraceEnabled()){
 			logger.trace("Arguments: {}", Arrays.toString(args));
@@ -113,8 +129,37 @@ public class CanalEventListenerMethod {
 		return doInvoke(args);
 	}
 
-	protected Object[] getMethodArgumentValues() throws Exception {
-		return new Object[0];
+	protected Object[] getMethodArgumentValues(final CanalMessage canalMessage) throws Exception {
+		MethodParameter[] parameters = getParameters();
+
+		if(Validate.isEmpty(parameters)){
+			return EMPTY_ARGS;
+		}
+
+		final Object[] args = new Object[parameters.length];
+
+		for(int i = 0; i < parameters.length; i++){
+			MethodParameter parameter = parameters[i];
+
+			if(argumentResolvers.supports(parameter) == false){
+				throw new IllegalStateException(formatArgumentError(parameter, "No suitable resolver"));
+			}
+
+			try{
+				args[i] = argumentResolvers.resolve(parameter, canalMessage);
+			}catch(Exception e){
+				// Leave stack trace for later, exception may actually be resolved and handled...
+				if(logger.isDebugEnabled()){
+					String exMsg = e.getMessage();
+					if(exMsg != null && !exMsg.contains(parameter.getMethod().toGenericString())){
+						logger.debug(formatArgumentError(parameter, exMsg));
+					}
+				}
+				throw e;
+			}
+		}
+
+		return args;
 	}
 
 	protected Object doInvoke(Object... args) throws Exception {
@@ -131,6 +176,12 @@ public class CanalEventListenerMethod {
 		}
 
 		return result;
+	}
+
+	private static String formatArgumentError(final MethodParameter methodParameter, final String message) {
+		return "Could not resolve parameter [" + methodParameter.getIndex() + "] in " +
+				methodParameter.getMethod().toGenericString() +
+				(Validate.hasText(message) ? ": " + message : "");
 	}
 
 }

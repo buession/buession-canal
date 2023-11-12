@@ -21,10 +21,33 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.core.listener.utils;/**
- * 
- *
+ */
+package com.buession.canal.core.listener.utils;
+
+import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.buession.core.validator.Validate;
+
+/**
  * @author Yong.Teng
  * @since 0.0.1
- */public class EventListenerUtils {
+ */
+public class EventListenerUtils {
+
+	private EventListenerUtils() {
+
+	}
+
+	public static String buildEventListenerName(final String destination, final String schema, final String table,
+												final CanalEntry.EventType eventType) {
+		final StringBuilder sb = new StringBuilder();
+
+		sb.append(destination).append("$$");
+		if(Validate.hasText(schema) && Validate.hasText(table)){
+			sb.append(schema).append('.').append(table).append("$$");
+		}
+		sb.append(eventType.name());
+
+		return sb.toString();
+	}
+
 }

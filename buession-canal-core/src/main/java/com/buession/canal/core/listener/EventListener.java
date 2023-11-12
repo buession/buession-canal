@@ -39,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class CanalEventListener implements Serializable {
+public class EventListener implements Serializable {
 
 	private final static long serialVersionUID = -8417968908960591491L;
 
@@ -96,8 +96,8 @@ public class CanalEventListener implements Serializable {
 	 * @param methodParameters
 	 * 		方法参数列表
 	 */
-	public CanalEventListener(final String destination, final Table table, final CanalEntry.EventType eventType,
-							  final Object object, final Method method, final MethodParameter[] methodParameters) {
+	public EventListener(final String destination, final Table table, final CanalEntry.EventType eventType,
+						 final Object object, final Method method, final MethodParameter[] methodParameters) {
 		this.destination = destination;
 		this.table = table;
 		this.eventType = eventType;

@@ -21,10 +21,35 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.core.listener;/**
- * 
- *
+ */
+package com.buession.canal.core.listener;
+
+import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/**
  * @author Yong.Teng
  * @since 0.0.1
- */public class EventListenerRegistry {
+ */
+public class EventListenerRegistry {
+
+	private final Map<String, EventListenerMethod> methods = new LinkedHashMap<>();
+
+	public Map<String, EventListenerMethod> getMethods() {
+		return methods;
+	}
+
+	public EventListenerMethod getMethod(String name) {
+		return methods.get(name);
+	}
+
+	public void register(String name, Object object, Method method) {
+		methods.put(name, createEventListenerMethod(object, method));
+	}
+
+	protected EventListenerMethod createEventListenerMethod(Object object, Method method) {
+		return new EventListenerMethod(object, method);
+	}
+
 }
