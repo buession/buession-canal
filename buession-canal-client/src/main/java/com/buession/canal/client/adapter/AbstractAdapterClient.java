@@ -28,6 +28,7 @@ import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.protocol.Message;
 import com.alibaba.otter.canal.protocol.exception.CanalClientException;
 import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.Configuration;
 import com.buession.canal.core.convert.DefaultMessageConverter;
 import com.buession.canal.core.convert.MessageConverter;
 import com.buession.core.utils.Assert;
@@ -35,6 +36,7 @@ import com.buession.core.validator.Validate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Canal 适配器抽象类
@@ -48,24 +50,14 @@ import java.util.List;
 public abstract class AbstractAdapterClient<C extends CanalConnector> implements AdapterClient {
 
 	/**
+	 * 配置
+	 */
+	protected Configuration configuration;
+
+	/**
 	 * Canal 数据操作客户端
 	 */
 	private final C connector;
-
-	/**
-	 * 过滤规则
-	 */
-	private String filter;
-
-	/**
-	 * 批处理条数
-	 */
-	private final int batchSize;
-
-	/**
-	 * 指令
-	 */
-	private String destination;
 
 	/**
 	 * 消息转换器
@@ -82,7 +74,7 @@ public abstract class AbstractAdapterClient<C extends CanalConnector> implements
 	 * 		指令
 	 */
 	public AbstractAdapterClient(final C connector, final String destination) {
-		this(connector, destination, 1);
+		this(connector, destination, new Configuration());
 	}
 
 	/**
@@ -92,43 +84,19 @@ public abstract class AbstractAdapterClient<C extends CanalConnector> implements
 	 * 		Canal 数据操作客户端
 	 * @param destination
 	 * 		指令
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param configuration
+	 * 		配置
 	 */
-	public AbstractAdapterClient(final C connector, final String destination, final int batchSize) {
+	public AbstractAdapterClient(final C connector, final String destination, final Configuration configuration) {
 		Assert.isNull(connector, "CanalConnector cloud not be null.");
 		this.connector = connector;
-		this.destination = destination;
-		this.batchSize = batchSize;
-	}
-
-	/**
-	 * 返回过滤规则
-	 *
-	 * @return 过滤规则
-	 */
-	public String getFilter() {
-		return filter;
-	}
-
-	/**
-	 * 设置过滤规则
-	 *
-	 * @param filter
-	 * 		过滤规则
-	 */
-	public void setFilter(String filter) {
-		this.filter = filter;
+		this.configuration = Optional.ofNullable(configuration).orElse(new Configuration());
+		this.configuration.setDestination(destination);
 	}
 
 	@Override
-	public String getDestination() {
-		return destination;
-	}
-
-	@Override
-	public void setDestination(String destination) {
-		this.destination = destination;
+	public Configuration getConfiguration() {
+		return configuration;
 	}
 
 	@SuppressWarnings({"rawtypes"})
@@ -147,10 +115,10 @@ public abstract class AbstractAdapterClient<C extends CanalConnector> implements
 	public void init() throws CanalClientException {
 		connector.connect();
 
-		if(Validate.isBlank(getFilter())){
+		if(Validate.isBlank(configuration.getFilter())){
 			connector.subscribe();
 		}else{
-			connector.subscribe(getFilter());
+			connector.subscribe(configuration.getFilter());
 		}
 
 		// 回滚到未进行 ack 的地方，下次 fetch 时，可以从最后一个没有 ack 的位置获取数据
@@ -194,21 +162,12 @@ public abstract class AbstractAdapterClient<C extends CanalConnector> implements
 		return connector;
 	}
 
-	/**
-	 * 返回批处理条数
-	 *
-	 * @return 批处理条数
-	 */
-	protected int getBatchSize() {
-		return batchSize;
-	}
-
 	@SuppressWarnings({"unchecked"})
 	protected List<CanalMessage> messagesConvert(final Message message) {
 		List<CanalMessage> messages = getMessageConverter().convert(message);
 
 		if(messages != null){
-			messages.forEach((m)->m.setDestination(getDestination()));
+			messages.forEach((m)->m.setDestination(configuration.getDestination()));
 		}
 
 		return messages;

@@ -25,6 +25,7 @@
 package com.buession.canal.client.adapter;
 
 import com.alibaba.otter.canal.client.rocketmq.RocketMQCanalConnector;
+import com.buession.canal.core.Configuration;
 
 /**
  * Canal RocketMQ 适配器
@@ -71,13 +72,13 @@ public class RocketMQAdapterClient extends AbstractMqAdapterClient<RocketMQCanal
 	 * 		消息轨迹数据 Topic
 	 * @param accessChannel
 	 * 		-
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param configuration
+	 * 		配置
 	 */
 	public RocketMQAdapterClient(final String nameServer, final String topic, final String groupId,
 								 final Boolean enableMessageTrace, final String customizedTraceTopic,
-								 final String accessChannel, final int batchSize) {
-		this(nameServer, topic, groupId, null, enableMessageTrace, customizedTraceTopic, accessChannel, batchSize);
+								 final String accessChannel, final Configuration configuration) {
+		this(nameServer, topic, groupId, null, enableMessageTrace, customizedTraceTopic, accessChannel, configuration);
 	}
 
 	/**
@@ -119,15 +120,16 @@ public class RocketMQAdapterClient extends AbstractMqAdapterClient<RocketMQCanal
 	 * 		消息轨迹数据 Topic
 	 * @param accessChannel
 	 * 		-
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param configuration
+	 * 		配置
 	 * @param flatMessage
 	 * 		true / false
 	 */
 	public RocketMQAdapterClient(final String nameServer, final String topic, final String groupId,
 								 final Boolean enableMessageTrace, final String customizedTraceTopic,
-								 final String accessChannel, final int batchSize, final boolean flatMessage) {
-		this(nameServer, topic, groupId, null, enableMessageTrace, customizedTraceTopic, accessChannel, batchSize,
+								 final String accessChannel, final Configuration configuration,
+								 final boolean flatMessage) {
+		this(nameServer, topic, groupId, null, enableMessageTrace, customizedTraceTopic, accessChannel, configuration,
 				flatMessage);
 	}
 
@@ -173,15 +175,16 @@ public class RocketMQAdapterClient extends AbstractMqAdapterClient<RocketMQCanal
 	 * 		消息轨迹数据 Topic
 	 * @param accessChannel
 	 * 		-
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param configuration
+	 * 		配置
 	 */
 	public RocketMQAdapterClient(final String nameServer, final String topic, final String groupId,
 								 final String namespace, final Boolean enableMessageTrace,
 								 final String customizedTraceTopic, final String accessChannel,
-								 final int batchSize) {
-		super(createRocketMQCanalConnector(nameServer, topic, groupId, namespace, batchSize, enableMessageTrace,
-				customizedTraceTopic, accessChannel, DEFAULT_FLAT_MESSAGE), topic, batchSize);
+								 final Configuration configuration) {
+		super(createRocketMQCanalConnector(nameServer, topic, groupId, namespace, configuration == null ?
+						Configuration.DEFAULT_BATCH_SIZE : configuration.getBatchSize(), enableMessageTrace,
+				customizedTraceTopic, accessChannel, DEFAULT_FLAT_MESSAGE), topic, configuration);
 	}
 
 	/**
@@ -229,17 +232,18 @@ public class RocketMQAdapterClient extends AbstractMqAdapterClient<RocketMQCanal
 	 * 		消息轨迹数据 Topic
 	 * @param accessChannel
 	 * 		-
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param configuration
+	 * 		配置
 	 * @param flatMessage
 	 * 		true / false
 	 */
 	public RocketMQAdapterClient(final String nameServer, final String topic, final String groupId,
 								 final String namespace, final Boolean enableMessageTrace,
 								 final String customizedTraceTopic, final String accessChannel,
-								 final int batchSize, final boolean flatMessage) {
-		super(createRocketMQCanalConnector(nameServer, topic, groupId, namespace, batchSize, enableMessageTrace,
-				customizedTraceTopic, accessChannel, flatMessage), topic, batchSize, flatMessage);
+								 final Configuration configuration, final boolean flatMessage) {
+		super(createRocketMQCanalConnector(nameServer, topic, groupId, namespace, configuration == null ?
+						Configuration.DEFAULT_BATCH_SIZE : configuration.getBatchSize(), enableMessageTrace,
+				customizedTraceTopic, accessChannel, flatMessage), topic, configuration, flatMessage);
 	}
 
 	protected static RocketMQCanalConnector createRocketMQCanalConnector(final String nameServer,
@@ -250,8 +254,8 @@ public class RocketMQAdapterClient extends AbstractMqAdapterClient<RocketMQCanal
 																		 final String customizedTraceTopic,
 																		 final String accessChannel,
 																		 final boolean flatMessage) {
-		return new RocketMQCanalConnector(nameServer, topic, groupName, null, null, DEFAULT_BATCH_SIZE, flatMessage,
-				enableMessageTrace, customizedTraceTopic, accessChannel, namespace);
+		return new RocketMQCanalConnector(nameServer, topic, groupName, null, null, Configuration.DEFAULT_BATCH_SIZE,
+				flatMessage, enableMessageTrace, customizedTraceTopic, accessChannel, namespace);
 	}
 
 	protected static RocketMQCanalConnector createRocketMQCanalConnector(final String nameServer,

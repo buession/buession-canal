@@ -26,6 +26,7 @@ package com.buession.canal.client.dispatcher;
 
 import com.buession.canal.client.adapter.AdapterClient;
 import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.Configuration;
 import com.buession.canal.core.listener.EventListenerMethod;
 import com.buession.canal.core.listener.EventListenerRegistry;
 import com.buession.canal.core.listener.support.DestinationArgumentResolver;
@@ -72,10 +73,12 @@ public abstract class AbstractDispatcher implements Dispatcher {
 	}
 
 	@Override
-	public void dispatch(AdapterClient adapterClient, long timeout) {
+	public void dispatch(AdapterClient adapterClient) {
+		Configuration configuration = adapterClient.getConfiguration();
 		while(running){
 			try{
-				List<CanalMessage> messages = adapterClient.getListWithoutAck(timeout, TimeUnit.SECONDS);
+				List<CanalMessage> messages = adapterClient.getListWithoutAck(configuration.getTimeout().toMillis(),
+						TimeUnit.MILLISECONDS);
 
 				if(messages != null){
 					for(CanalMessage message : messages){
@@ -92,46 +95,18 @@ public abstract class AbstractDispatcher implements Dispatcher {
 		running = false;
 	}
 
-	protected void doDispatch(final CanalMessage canalMessage) {
-		EventListenerMethod method = eventListenerRegistry.getMethod(buildEventListenerName(canalMessage));
-
-		if(method == null){
-			method = eventListenerRegistry.getMethod(buildEventListenerNameWithoutTable(canalMessage));
-		}
+	protected void doDispatch(final CanalMessage canalMessage) throws Exception {
+		EventListenerMethod method = findMethod(canalMessage);
 
 		if(method == null){
 			return;
 		}
 
 		method.setArgumentResolvers(argumentResolvers);
-
-		try{
-			method.invoke(canalMessage);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+		method.invoke(canalMessage);
 	}
 
-	private static String buildEventListenerName(final CanalMessage canalMessage) {
-		final StringBuilder sb = new StringBuilder();
-
-		sb.append(canalMessage.getDestination()).append("$$");
-		sb.append(canalMessage.getTable().getSchema()).append('.').append(canalMessage.getTable().getName())
-				.append("$$");
-		sb.append(canalMessage.getEventType().name());
-
-		return sb.toString();
-	}
-
-	private static String buildEventListenerNameWithoutTable(final CanalMessage canalMessage) {
-		final StringBuilder sb = new StringBuilder();
-
-		sb.append(canalMessage.getDestination()).append("$$");
-		sb.append('.').append("$$");
-		sb.append(canalMessage.getEventType().name());
-
-		return sb.toString();
-	}
+	protected abstract EventListenerMethod findMethod(final CanalMessage canalMessage);
 
 	protected static List<EventListenerArgumentResolver> getDefaultArgumentResolvers() {
 		return ListBuilder.<EventListenerArgumentResolver>create(10)

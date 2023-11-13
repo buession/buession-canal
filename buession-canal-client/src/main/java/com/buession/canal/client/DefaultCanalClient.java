@@ -68,7 +68,7 @@ public class DefaultCanalClient extends AbstractCanalClient {
 						   final ExecutorService executor) {
 		executor.submit(()->{
 			if(isRunning()){
-				dispatcher.dispatch(adapterClient, 5);
+				dispatcher.dispatch(adapterClient);
 			}
 		});
 	}

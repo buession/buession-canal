@@ -40,9 +40,7 @@ public interface Dispatcher {
 	 *
 	 * @param adapterClient
 	 * 		Canal 适配器
-	 * @param timeout
-	 * 		超时时长，单位：秒
 	 */
-	void dispatch(AdapterClient adapterClient, long timeout);
+	void dispatch(AdapterClient adapterClient);
 
 }

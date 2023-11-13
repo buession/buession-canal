@@ -31,6 +31,7 @@ import com.alibaba.otter.canal.client.impl.SimpleCanalConnector;
 import com.alibaba.otter.canal.protocol.Message;
 import com.alibaba.otter.canal.protocol.exception.CanalClientException;
 import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.Configuration;
 import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.utils.StringUtils;
 import com.buession.core.validator.Validate;
@@ -84,12 +85,12 @@ public class TcpAdapterClient extends AbstractAdapterClient<CanalConnector> {
 	 * 		用户名
 	 * @param password
 	 * 		密码
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param configuration
+	 * 		配置
 	 */
 	public TcpAdapterClient(final String server, final String zkServers, final String destination,
-							final String username, final String password, final int batchSize) {
-		super(createCanalConnector(server, zkServers, destination, username, password), destination, batchSize);
+							final String username, final String password, final Configuration configuration) {
+		super(createCanalConnector(server, zkServers, destination, username, password), destination, configuration);
 	}
 
 	/**
@@ -130,29 +131,29 @@ public class TcpAdapterClient extends AbstractAdapterClient<CanalConnector> {
 	 * 		用户名
 	 * @param password
 	 * 		密码
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param configuration
+	 * 		配置
 	 * @param soTimeout
 	 * 		读取超时
 	 * @param idleTimeout
 	 * 		连接池超时
 	 */
 	public TcpAdapterClient(final String server, final String zkServers, final String destination,
-							final String username, final String password, final Integer soTimeout,
-							final Integer idleTimeout, final int batchSize) {
+							final String username, final String password, final Configuration configuration,
+							final Integer soTimeout, final Integer idleTimeout) {
 		super(createCanalConnector(server, zkServers, destination, username, password, soTimeout, idleTimeout),
-				destination, batchSize);
+				destination, configuration);
 	}
 
 	@Override
 	public List<CanalMessage> getList(Long timeout, TimeUnit unit) throws CanalClientException {
-		Message message = getConnector().get(getBatchSize(), timeout, unit);
+		Message message = getConnector().get(configuration.getBatchSize(), timeout, unit);
 		return messagesConvert(message);
 	}
 
 	@Override
 	public List<CanalMessage> getListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException {
-		Message message = getConnector().getWithoutAck(getBatchSize(), timeout, unit);
+		Message message = getConnector().getWithoutAck(configuration.getBatchSize(), timeout, unit);
 		return messagesConvert(message);
 	}
 

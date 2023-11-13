@@ -25,6 +25,7 @@
 package com.buession.canal.client.adapter;
 
 import com.alibaba.otter.canal.client.rabbitmq.RabbitMQCanalConnector;
+import com.buession.canal.core.Configuration;
 
 /**
  * Canal RabbitMQ 适配器
@@ -66,12 +67,12 @@ public class RabbitMQAdapterClient extends AbstractMqAdapterClient<RabbitMQCanal
 	 * 		密码
 	 * @param queueName
 	 * 		队列名称
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param configuration
+	 * 		配置
 	 */
 	public RabbitMQAdapterClient(final String server, final String virtualHost, final String username,
-								 final String password, final String queueName, final int batchSize) {
-		this(server, virtualHost, queueName, username, password, batchSize, DEFAULT_FLAT_MESSAGE);
+								 final String password, final String queueName, final Configuration configuration) {
+		this(server, virtualHost, queueName, username, password, configuration, DEFAULT_FLAT_MESSAGE);
 	}
 
 	/**
@@ -109,16 +110,16 @@ public class RabbitMQAdapterClient extends AbstractMqAdapterClient<RabbitMQCanal
 	 * 		密码
 	 * @param queueName
 	 * 		队列名称
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param configuration
+	 * 		配置
 	 * @param flatMessage
 	 * 		true / false
 	 */
 	public RabbitMQAdapterClient(final String server, final String virtualHost, final String username,
-								 final String password, final String queueName, final int batchSize,
+								 final String password, final String queueName, final Configuration configuration,
 								 final boolean flatMessage) {
 		super(createRabbitMQCanalConnector(server, virtualHost, queueName, username, password, flatMessage),
-				queueName, batchSize, flatMessage);
+				queueName, configuration, flatMessage);
 	}
 
 	protected static RabbitMQCanalConnector createRabbitMQCanalConnector(final String server,

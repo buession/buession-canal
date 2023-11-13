@@ -29,6 +29,7 @@ import com.alibaba.otter.canal.protocol.FlatMessage;
 import com.alibaba.otter.canal.protocol.Message;
 import com.alibaba.otter.canal.protocol.exception.CanalClientException;
 import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,11 +68,11 @@ public abstract class AbstractMqAdapterClient<C extends CanalMQConnector> extend
 	 * 		Canal 数据操作客户端
 	 * @param destination
 	 * 		指令
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param configuration
+	 * 		配置
 	 */
-	public AbstractMqAdapterClient(final C connector, final String destination, final int batchSize) {
-		this(connector, destination, batchSize, DEFAULT_FLAT_MESSAGE);
+	public AbstractMqAdapterClient(final C connector, final String destination, final Configuration configuration) {
+		this(connector, destination, configuration, DEFAULT_FLAT_MESSAGE);
 	}
 
 	/**
@@ -96,14 +97,14 @@ public abstract class AbstractMqAdapterClient<C extends CanalMQConnector> extend
 	 * 		Canal 数据操作客户端
 	 * @param destination
 	 * 		指令
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param configuration
+	 * 		配置
 	 * @param flatMessage
 	 * 		true / false
 	 */
-	public AbstractMqAdapterClient(final C connector, final String destination, final int batchSize,
+	public AbstractMqAdapterClient(final C connector, final String destination, final Configuration configuration,
 								   final boolean flatMessage) {
-		super(connector, destination, batchSize);
+		super(connector, destination, configuration);
 		this.flatMessage = flatMessage;
 	}
 

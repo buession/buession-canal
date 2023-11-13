@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class TcpAdapterClientTest {
 
 	private final static TcpAdapterClient client = new TcpAdapterClient("127.0.0.1:11111",
-			null, "customer", "admin", "admin", 5);
+			null, "customer", "admin", "admin");
 
 	static {
 		client.init();

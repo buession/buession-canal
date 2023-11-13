@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class KafkaAdapterClientTest {
 
 	private final static KafkaAdapterClient client = new KafkaAdapterClient("127.0.0.1:9092",
-			"user", "user", null, 1, true);
+			"user", "user", null, null, true);
 
 	static {
 		client.init();

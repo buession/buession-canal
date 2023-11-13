@@ -24,6 +24,10 @@
  */
 package com.buession.canal.client.dispatcher;
 
+import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.listener.EventListenerMethod;
+import com.buession.canal.core.listener.utils.EventListenerUtils;
+
 /**
  * 默认分发器
  *
@@ -35,5 +39,26 @@ public class DefaultDispatcher extends AbstractDispatcher {
 	public DefaultDispatcher() {
 		super();
 	}
-	
+
+	@Override
+	protected EventListenerMethod findMethod(final CanalMessage canalMessage) {
+		EventListenerMethod method = getEventListenerRegistry().getMethod(buildEventListenerName(canalMessage));
+
+		if(method == null){
+			method = getEventListenerRegistry().getMethod(buildEventListenerNameWithoutTable(canalMessage));
+		}
+
+		return method;
+	}
+
+	private static String buildEventListenerName(final CanalMessage canalMessage) {
+		return EventListenerUtils.buildEventListenerName(canalMessage.getDestination(),
+				canalMessage.getTable().getSchema(), canalMessage.getTable().getName(), canalMessage.getEventType());
+	}
+
+	private static String buildEventListenerNameWithoutTable(final CanalMessage canalMessage) {
+		return EventListenerUtils.buildEventListenerName(canalMessage.getDestination(), null, null,
+				canalMessage.getEventType());
+	}
+
 }

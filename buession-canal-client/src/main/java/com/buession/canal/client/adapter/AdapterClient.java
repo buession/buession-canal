@@ -26,6 +26,7 @@ package com.buession.canal.client.adapter;
 
 import com.alibaba.otter.canal.protocol.exception.CanalClientException;
 import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.Configuration;
 import com.buession.canal.core.convert.MessageConverter;
 
 import java.util.List;
@@ -39,22 +40,12 @@ import java.util.concurrent.TimeUnit;
  */
 public interface AdapterClient {
 
-	int DEFAULT_BATCH_SIZE = 1;
-
 	/**
-	 * 返回指令
+	 * 获取配置
 	 *
-	 * @return 指令
+	 * @return 配置
 	 */
-	String getDestination();
-
-	/**
-	 * 设置指令
-	 *
-	 * @param destination
-	 * 		指令
-	 */
-	void setDestination(String destination);
+	Configuration getConfiguration();
 
 	/**
 	 * 返回消息转换器

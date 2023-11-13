@@ -25,6 +25,7 @@
 package com.buession.canal.client.adapter;
 
 import com.alibaba.otter.canal.client.kafka.KafkaCanalConnector;
+import com.buession.canal.core.Configuration;
 
 /**
  * Canal Kafka 适配器
@@ -45,7 +46,7 @@ public class KafkaAdapterClient extends AbstractMqAdapterClient<KafkaCanalConnec
 	 * 		Group ID
 	 */
 	public KafkaAdapterClient(final String servers, final String topic, final String groupId) {
-		this(servers, topic, groupId, null, DEFAULT_FLAT_MESSAGE);
+		this(servers, topic, groupId, (Configuration) null, DEFAULT_FLAT_MESSAGE);
 	}
 
 	/**
@@ -57,12 +58,12 @@ public class KafkaAdapterClient extends AbstractMqAdapterClient<KafkaCanalConnec
 	 * 		Topic
 	 * @param groupId
 	 * 		Group ID
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param configuration
+	 * 		配置
 	 */
 	public KafkaAdapterClient(final String servers, final String topic, final String groupId,
-							  final int batchSize) {
-		this(servers, topic, groupId, null, batchSize, DEFAULT_FLAT_MESSAGE);
+							  final Configuration configuration) {
+		this(servers, topic, groupId, null, configuration, DEFAULT_FLAT_MESSAGE);
 	}
 
 	/**
@@ -79,7 +80,7 @@ public class KafkaAdapterClient extends AbstractMqAdapterClient<KafkaCanalConnec
 	 */
 	public KafkaAdapterClient(final String servers, final String topic, final String groupId,
 							  final boolean flatMessage) {
-		this(servers, topic, groupId, null, DEFAULT_BATCH_SIZE, flatMessage);
+		this(servers, topic, groupId, null, null, flatMessage);
 	}
 
 	/**
@@ -91,14 +92,14 @@ public class KafkaAdapterClient extends AbstractMqAdapterClient<KafkaCanalConnec
 	 * 		Topic
 	 * @param groupId
 	 * 		Group ID
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param configuration
+	 * 		配置
 	 * @param flatMessage
 	 * 		true / false
 	 */
 	public KafkaAdapterClient(final String servers, final String topic, final String groupId,
-							  final int batchSize, final boolean flatMessage) {
-		this(servers, topic, groupId, null, batchSize, flatMessage);
+							  final Configuration configuration, final boolean flatMessage) {
+		this(servers, topic, groupId, null, configuration, flatMessage);
 	}
 
 	/**
@@ -129,12 +130,12 @@ public class KafkaAdapterClient extends AbstractMqAdapterClient<KafkaCanalConnec
 	 * 		Group ID
 	 * @param partition
 	 * 		partition
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param configuration
+	 * 		配置
 	 */
 	public KafkaAdapterClient(final String servers, final String topic, final String groupId,
-							  final Integer partition, final int batchSize) {
-		this(servers, topic, groupId, partition, batchSize, DEFAULT_FLAT_MESSAGE);
+							  final Integer partition, final Configuration configuration) {
+		this(servers, topic, groupId, partition, configuration, DEFAULT_FLAT_MESSAGE);
 	}
 
 	/**
@@ -167,21 +168,23 @@ public class KafkaAdapterClient extends AbstractMqAdapterClient<KafkaCanalConnec
 	 * 		Group ID
 	 * @param partition
 	 * 		partition
-	 * @param batchSize
-	 * 		批处理条数
+	 * @param configuration
+	 * 		配置
 	 * @param flatMessage
 	 * 		true / false
 	 */
 	public KafkaAdapterClient(final String servers, final String topic, final String groupId,
-							  final Integer partition, final int batchSize, final boolean flatMessage) {
-		super(createKafkaCanalConnector(servers, topic, groupId, partition, batchSize, flatMessage), topic, batchSize,
-				flatMessage);
+							  final Integer partition, final Configuration configuration, final boolean flatMessage) {
+		super(createKafkaCanalConnector(servers, topic, groupId, partition,
+				configuration == null ? Configuration.DEFAULT_BATCH_SIZE : configuration.getBatchSize(),
+				flatMessage), topic, configuration, flatMessage);
 	}
 
 	protected static KafkaCanalConnector createKafkaCanalConnector(final String servers, final String topic,
 																   final String groupId, final Integer partition,
 																   final boolean flatMessage) {
-		return createKafkaCanalConnector(servers, topic, groupId, partition, DEFAULT_BATCH_SIZE, flatMessage);
+		return createKafkaCanalConnector(servers, topic, groupId, partition, Configuration.DEFAULT_BATCH_SIZE,
+				flatMessage);
 	}
 
 	protected static KafkaCanalConnector createKafkaCanalConnector(final String servers, final String topic,
