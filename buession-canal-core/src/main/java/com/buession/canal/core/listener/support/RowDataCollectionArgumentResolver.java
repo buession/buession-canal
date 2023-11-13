@@ -27,12 +27,14 @@ package com.buession.canal.core.listener.support;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.buession.canal.core.CanalMessage;
 import com.buession.canal.core.listener.MethodParameter;
+import com.buession.core.validator.Validate;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -46,13 +48,16 @@ public class RowDataCollectionArgumentResolver implements EventListenerArgumentR
 	@Override
 	public boolean supports(MethodParameter parameter) {
 		if(Collection.class.isAssignableFrom(parameter.getParameterType())){
-			ParameterizedType parameterizedType = null;//((ParameterizedType) parameter.getParameterType());
-			Type type = parameterizedType.getRawType();
-			Class<?> clazz = (Class<?>) type;
+			Type[] actualTypeArguments =
+					((ParameterizedType) parameter.getParameter().getParameterizedType()).getActualTypeArguments();
 
-			return false;//CanalEntry.RowData.class.isAssignableFrom(parameterizedType.getActualTypeArguments()[0]);
+			if(Validate.isEmpty(actualTypeArguments)){
+				return false;
+			}
+
+			return Objects.equals(actualTypeArguments[0], CanalEntry.RowData.class);
 		}
-
+		
 		return false;
 	}
 

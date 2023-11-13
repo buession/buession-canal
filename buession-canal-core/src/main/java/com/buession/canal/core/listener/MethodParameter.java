@@ -25,7 +25,6 @@
 package com.buession.canal.core.listener;
 
 import com.buession.core.utils.Assert;
-import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
@@ -35,7 +34,7 @@ import java.lang.reflect.Parameter;
 import java.util.Objects;
 
 /**
- * {@link EventListener} 方法参数
+ * {@link com.buession.canal.annotation.CanalEventListener} 方法参数
  *
  * @author Yong.Teng
  * @since 0.0.1

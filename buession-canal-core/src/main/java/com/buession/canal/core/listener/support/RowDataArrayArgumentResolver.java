@@ -28,8 +28,6 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.buession.canal.core.CanalMessage;
 import com.buession.canal.core.listener.MethodParameter;
 
-import java.lang.reflect.Array;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -42,7 +40,11 @@ public class RowDataArrayArgumentResolver implements EventListenerArgumentResolv
 
 	@Override
 	public boolean supports(MethodParameter parameter) {
-		return Array.class.isAssignableFrom(parameter.getParameterType());
+		if(parameter.getParameterType().isArray()){
+			return CanalEntry.RowData.class.isAssignableFrom(parameter.getParameterType().getComponentType());
+		}
+
+		return false;
 	}
 
 	@Override
@@ -52,7 +54,7 @@ public class RowDataArrayArgumentResolver implements EventListenerArgumentResolv
 		}
 
 		List<CanalEntry.RowData> rowData = canalMessage.getRowChange().getRowDatasList();
-		return rowData.toArray(new Object[]{});
+		return rowData.toArray(new CanalEntry.RowData[]{});
 	}
 
 }

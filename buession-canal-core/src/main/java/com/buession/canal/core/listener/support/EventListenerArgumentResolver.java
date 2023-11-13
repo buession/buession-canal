@@ -52,6 +52,8 @@ public interface EventListenerArgumentResolver {
 	 *
 	 * @param parameter
 	 * 		The method parameter to resolve.
+	 * @param canalMessage
+	 *        {@link CanalMessage}
 	 *
 	 * @return The resolved argument value, or {@code null} if not resolvable.
 	 *

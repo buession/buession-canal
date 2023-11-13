@@ -25,7 +25,6 @@
 package com.buession.canal.core.listener;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
-import com.buession.canal.core.event.invoker.EventMethodInvoker;
 import com.buession.canal.core.exception.ExceptionUtil;
 
 import java.io.Serializable;
@@ -82,8 +81,7 @@ public class Invoker implements InvocationHandler, Serializable {
 		LOOKUP_CONSTRUCTOR = lookup;
 	}
 
-	public Invoker(final Class<?> bindingType, final CanalEntry.EventType eventType, final Map<Method,
-			EventMethodInvoker> methodCache) {
+	public Invoker(final Class<?> bindingType, final CanalEntry.EventType eventType) {
 		this.bindingType = bindingType;
 		this.eventType = eventType;
 	}
