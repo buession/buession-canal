@@ -95,7 +95,7 @@ class CanalBindingScannerRegistrar implements ImportBeanDefinitionRegistrar, Env
 		final AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(
 				metadata.getAnnotationAttributes(EnableCanal.class.getName()));
 		final CanalBindingClassPathMapperScanner scanner = new CanalBindingClassPathMapperScanner(registry,
-				environment, resourceLoader, beanFactory);
+				environment, resourceLoader);
 		final Set<String> basePackages = getBasePackages(annotationAttributes);
 
 		String lazyInitialization = annotationAttributes.getString("lazyInitialization");

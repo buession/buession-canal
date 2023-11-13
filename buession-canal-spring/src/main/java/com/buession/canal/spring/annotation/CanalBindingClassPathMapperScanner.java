@@ -32,7 +32,6 @@ import org.springframework.aop.scope.ScopedProxyFactoryBean;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -63,8 +62,6 @@ class CanalBindingClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 	 */
 	private boolean lazyInitialization;
 
-	private final AutowireCapableBeanFactory beanFactory;
-
 	private final static Logger logger = LoggerFactory.getLogger(CanalBindingClassPathMapperScanner.class);
 
 	/**
@@ -76,13 +73,10 @@ class CanalBindingClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 	 *        {@link Environment}
 	 * @param resourceLoader
 	 *        {@link ResourceLoader}
-	 * @param beanFactory
-	 *        {@link AutowireCapableBeanFactory}
 	 */
 	public CanalBindingClassPathMapperScanner(BeanDefinitionRegistry registry, Environment environment,
-											  ResourceLoader resourceLoader, AutowireCapableBeanFactory beanFactory) {
+											  ResourceLoader resourceLoader) {
 		super(registry, false, environment, resourceLoader);
-		this.beanFactory = beanFactory;
 		addIncludeFilter(new AnnotationTypeFilter(CanalBinding.class));
 		setBeanNameGenerator(FullyQualifiedAnnotationBeanNameGenerator.INSTANCE);
 	}
@@ -118,7 +112,8 @@ class CanalBindingClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 	}
 
 	@Override
-	protected void registerBeanDefinition(BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry) {
+	protected void registerBeanDefinition(@NonNull BeanDefinitionHolder definitionHolder,
+										  @NonNull BeanDefinitionRegistry registry) {
 		super.registerBeanDefinition(definitionHolder, registry);
 
 		AbstractBeanDefinition beanDefinition = (AbstractBeanDefinition) definitionHolder.getBeanDefinition();
@@ -160,8 +155,6 @@ class CanalBindingClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
 		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		beanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, beanClassName);
-
-		//CanalEventListenerAnnotationUtils.registryEventListenerMethod(canalBinding.destination(), );
 	}
 
 	private void registerProxyBeanDefinitionHolder(final BeanDefinitionHolder definitionHolder,

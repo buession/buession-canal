@@ -56,6 +56,7 @@ public class CanalBindingBeanPostProcessor implements BeanPostProcessor, BeanFac
 	@Override
 	public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
 		CanalBinding canalBinding = AnnotationUtils.findAnnotation(bean.getClass(), CanalBinding.class);
+		
 		if(canalBinding != null){
 			Dispatcher dispatcher = beanFactory.getBean(Dispatcher.class);
 			detectBindingMethods(bean, bean.getClass(), (AbstractDispatcher) dispatcher, canalBinding.destination());
