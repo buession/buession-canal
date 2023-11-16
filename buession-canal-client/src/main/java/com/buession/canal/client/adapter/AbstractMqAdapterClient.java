@@ -30,6 +30,8 @@ import com.alibaba.otter.canal.protocol.Message;
 import com.alibaba.otter.canal.protocol.exception.CanalClientException;
 import com.buession.canal.core.CanalMessage;
 import com.buession.canal.core.Configuration;
+import com.buession.canal.core.Result;
+import com.buession.canal.core.convert.FlatMessageConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +90,9 @@ public abstract class AbstractMqAdapterClient<C extends CanalMQConnector> extend
 	public AbstractMqAdapterClient(final C connector, final String destination, final boolean flatMessage) {
 		super(connector, destination);
 		this.flatMessage = flatMessage;
+		if(this.flatMessage){
+			setMessageConverter(new FlatMessageConverter());
+		}
 	}
 
 	/**
@@ -106,6 +111,9 @@ public abstract class AbstractMqAdapterClient<C extends CanalMQConnector> extend
 								   final boolean flatMessage) {
 		super(connector, destination, configuration);
 		this.flatMessage = flatMessage;
+		if(this.flatMessage){
+			setMessageConverter(new FlatMessageConverter());
+		}
 	}
 
 	@Override
@@ -114,24 +122,24 @@ public abstract class AbstractMqAdapterClient<C extends CanalMQConnector> extend
 	}
 
 	@Override
-	public List<CanalMessage> getList(Long timeout, TimeUnit unit) throws CanalClientException {
+	public Result getList(Long timeout, TimeUnit unit) throws CanalClientException {
 		if(isFlatMessage()){
 			List<FlatMessage> messages = getConnector().getFlatList(timeout, unit);
-			return flatMessagesConvert(messages);
+			return new Result(flatMessagesConvert(messages));
 		}else{
 			List<Message> messages = getConnector().getList(timeout, unit);
-			return messagesConvert(messages);
+			return new Result(messagesConvert(messages));
 		}
 	}
 
 	@Override
-	public List<CanalMessage> getListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException {
+	public Result getListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException {
 		if(isFlatMessage()){
 			List<FlatMessage> messages = getConnector().getFlatListWithoutAck(timeout, unit);
-			return flatMessagesConvert(messages);
+			return new Result(flatMessagesConvert(messages));
 		}else{
 			List<Message> messages = getConnector().getListWithoutAck(timeout, unit);
-			return messagesConvert(messages);
+			return new Result(messagesConvert(messages));
 		}
 	}
 
@@ -145,7 +153,7 @@ public abstract class AbstractMqAdapterClient<C extends CanalMQConnector> extend
 		List<CanalMessage> result = new ArrayList<>(messages.size());
 
 		for(FlatMessage flatMessage : messages){
-			//result.addAll(getMessageTransponder().convert(flatMessage));
+			result.addAll(getMessageConverter().convert(configuration.getDestination(), flatMessage));
 		}
 
 		return result;

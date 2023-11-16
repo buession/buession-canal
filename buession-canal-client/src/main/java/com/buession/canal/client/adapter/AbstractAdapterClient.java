@@ -164,13 +164,7 @@ public abstract class AbstractAdapterClient<C extends CanalConnector> implements
 
 	@SuppressWarnings({"unchecked"})
 	protected List<CanalMessage> messagesConvert(final Message message) {
-		List<CanalMessage> messages = getMessageConverter().convert(message);
-
-		if(messages != null){
-			messages.forEach((m)->m.setDestination(configuration.getDestination()));
-		}
-
-		return messages;
+		return getMessageConverter().convert(configuration.getDestination(), message);
 	}
 
 	protected List<CanalMessage> messagesConvert(final List<Message> messages) {

@@ -66,17 +66,39 @@
 
 		<dependency>
 			<groupId>com.alibaba.otter</groupId>
-			<artifactId>canal.client</artifactId>
+			<artifactId>canal.protocol</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba.otter</groupId>
-			<artifactId>canal.protocol</artifactId>
+			<artifactId>canal.client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.zookeeper</groupId>
+			<artifactId>zookeeper</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-clients</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>

@@ -24,10 +24,9 @@
  */
 package com.buession.canal.client.adapter;
 
-import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.Result;
 import org.junit.Test;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -45,8 +44,8 @@ public class KafkaAdapterClientTest {
 
 	@Test
 	public void getList() {
-		List<CanalMessage> messages = client.getList(5L, TimeUnit.SECONDS);
-		System.out.println(messages);
+		Result result = client.getList(5L, TimeUnit.SECONDS);
+		System.out.println(result);
 	}
 
 }

@@ -25,11 +25,10 @@
 package com.buession.canal.client.adapter;
 
 import com.alibaba.otter.canal.protocol.exception.CanalClientException;
-import com.buession.canal.core.CanalMessage;
 import com.buession.canal.core.Configuration;
+import com.buession.canal.core.Result;
 import com.buession.canal.core.convert.MessageConverter;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -85,12 +84,12 @@ public interface AdapterClient {
 	 * @param unit
 	 * 		超时时长单位
 	 *
-	 * @return 数据列表
+	 * @return 数据结果
 	 *
 	 * @throws CanalClientException
 	 * 		Canal 客户端异常
 	 */
-	List<CanalMessage> getList(Long timeout, TimeUnit unit) throws CanalClientException;
+	Result getList(Long timeout, TimeUnit unit) throws CanalClientException;
 
 	/**
 	 * 获取数据，设置 timeout 时间直到拿到数据为止
@@ -105,12 +104,12 @@ public interface AdapterClient {
 	 * @param unit
 	 * 		超时时长单位
 	 *
-	 * @return 数据列表
+	 * @return 数据结果
 	 *
 	 * @throws CanalClientException
 	 * 		Canal 客户端异常
 	 */
-	List<CanalMessage> getListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException;
+	Result getListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException;
 
 	/**
 	 * 进行 batch id 的消费确认，确认之后，小于等于此 batchId 的 Message 都会被确认

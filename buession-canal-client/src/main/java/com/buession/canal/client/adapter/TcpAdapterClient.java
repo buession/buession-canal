@@ -30,8 +30,8 @@ import com.alibaba.otter.canal.client.impl.ClusterCanalConnector;
 import com.alibaba.otter.canal.client.impl.SimpleCanalConnector;
 import com.alibaba.otter.canal.protocol.Message;
 import com.alibaba.otter.canal.protocol.exception.CanalClientException;
-import com.buession.canal.core.CanalMessage;
 import com.buession.canal.core.Configuration;
+import com.buession.canal.core.Result;
 import com.buession.core.converter.mapper.PropertyMapper;
 import com.buession.core.utils.StringUtils;
 import com.buession.core.validator.Validate;
@@ -146,15 +146,15 @@ public class TcpAdapterClient extends AbstractAdapterClient<CanalConnector> {
 	}
 
 	@Override
-	public List<CanalMessage> getList(Long timeout, TimeUnit unit) throws CanalClientException {
+	public Result getList(Long timeout, TimeUnit unit) throws CanalClientException {
 		Message message = getConnector().get(configuration.getBatchSize(), timeout, unit);
-		return messagesConvert(message);
+		return new Result(message.getId(), messagesConvert(message));
 	}
 
 	@Override
-	public List<CanalMessage> getListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException {
+	public Result getListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException {
 		Message message = getConnector().getWithoutAck(configuration.getBatchSize(), timeout, unit);
-		return messagesConvert(message);
+		return new Result(message.getId(), messagesConvert(message));
 	}
 
 	protected static CanalConnector createCanalConnector(final String server, final String zkServers,

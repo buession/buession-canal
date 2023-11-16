@@ -67,7 +67,7 @@ public class DefaultCanalClient extends AbstractCanalClient {
 	protected void process(final AdapterClient adapterClient, final Dispatcher dispatcher,
 						   final ExecutorService executor) {
 		executor.submit(()->{
-			if(isRunning()){
+			while(isRunning()){
 				dispatcher.dispatch(adapterClient);
 			}
 		});
