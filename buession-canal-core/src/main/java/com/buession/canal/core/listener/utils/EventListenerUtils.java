@@ -27,6 +27,8 @@ package com.buession.canal.core.listener.utils;
 import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.buession.core.validator.Validate;
 
+import java.lang.reflect.Method;
+
 /**
  * @author Yong.Teng
  * @since 0.0.1

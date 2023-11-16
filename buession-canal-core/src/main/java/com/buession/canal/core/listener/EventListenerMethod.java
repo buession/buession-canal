@@ -30,7 +30,6 @@ import com.buession.core.utils.Assert;
 import com.buession.core.validator.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.core.BridgeMethodResolver;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -40,16 +39,16 @@ import java.lang.reflect.Parameter;
 import java.util.Arrays;
 
 /**
+ * {@link com.buession.canal.annotation.CanalEventListener} 方法
+ *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class EventListenerMethod {
+public final class EventListenerMethod {
 
 	private final static Object[] EMPTY_ARGS = new Object[0];
 
-	private final BeanFactory beanFactory;
-
-	private EventListenerArgumentResolverComposite argumentResolvers = new EventListenerArgumentResolverComposite();
+	private EventListenerArgumentResolverComposite argumentResolvers;
 
 	private final Object target;
 
@@ -63,28 +62,12 @@ public class EventListenerMethod {
 
 	private final static Logger logger = LoggerFactory.getLogger(EventListenerMethod.class);
 
-	public EventListenerMethod(Object target, Method method) {
+	public EventListenerMethod(Object target, Method method, EventListenerArgumentResolverComposite argumentResolvers) {
 		Assert.isNull(target, "Target is required");
 		Assert.isNull(method, "Method is required");
-		this.beanFactory = null;
+		this.argumentResolvers = argumentResolvers;
 		this.target = target;
 		this.targetType = ClassUtils.getUserClass(target);
-		this.method = method;
-		this.bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
-		this.parameters = initMethodParameters();
-	}
-
-	public EventListenerMethod(String beanName, BeanFactory beanFactory, Method method) {
-		Assert.isBlank(beanName, "Bean name is required");
-		Assert.isNull(beanFactory, "BeanFactory is required");
-		Assert.isNull(method, "Method is required");
-		this.beanFactory = beanFactory;
-		this.target = beanName;
-		Class<?> targetType = beanFactory.getType(beanName);
-		if(targetType == null){
-			throw new IllegalStateException("Cannot resolve bean type for bean with name '" + beanName + "'");
-		}
-		this.targetType = ClassUtils.getUserClass(targetType);
 		this.method = method;
 		this.bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
 		this.parameters = initMethodParameters();
@@ -94,8 +77,7 @@ public class EventListenerMethod {
 		return argumentResolvers;
 	}
 
-	public void setArgumentResolvers(
-			EventListenerArgumentResolverComposite argumentResolvers) {
+	public void setArgumentResolvers(EventListenerArgumentResolverComposite argumentResolvers) {
 		this.argumentResolvers = argumentResolvers;
 	}
 
@@ -148,10 +130,9 @@ public class EventListenerMethod {
 			try{
 				args[i] = argumentResolvers.resolve(parameter, canalMessage);
 			}catch(Exception e){
-				// Leave stack trace for later, exception may actually be resolved and handled...
 				if(logger.isDebugEnabled()){
 					String exMsg = e.getMessage();
-					if(exMsg != null && !exMsg.contains(parameter.getMethod().toGenericString())){
+					if(exMsg != null && exMsg.contains(parameter.getMethod().toGenericString()) == false){
 						logger.debug(formatArgumentError(parameter, exMsg));
 					}
 				}
@@ -179,9 +160,16 @@ public class EventListenerMethod {
 	}
 
 	private static String formatArgumentError(final MethodParameter methodParameter, final String message) {
-		return "Could not resolve parameter [" + methodParameter.getIndex() + "] in " +
-				methodParameter.getMethod().toGenericString() +
-				(Validate.hasText(message) ? ": " + message : "");
+		final StringBuilder sb = new StringBuilder("Could not resolve parameter [");
+
+		sb.append('[').append(methodParameter.getIndex()).append(']');
+		sb.append(" in ").append(methodParameter.getMethod().toGenericString());
+
+		if(Validate.hasText(message)){
+			sb.append(": ").append(message);
+		}
+
+		return sb.toString();
 	}
 
 }

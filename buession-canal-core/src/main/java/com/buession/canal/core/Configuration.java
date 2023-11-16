@@ -136,7 +136,7 @@ public class Configuration {
 
 	@Override
 	public String toString() {
-		return new StringJoiner(", ", Configuration.class.getSimpleName() + "[", "]")
+		return new StringJoiner(", ", "Configuration[", "]")
 				.add("destination='" + destination + "'")
 				.add("filter='" + filter + "'")
 				.add("batchSize=" + batchSize)

@@ -49,7 +49,7 @@ public class RowDataArrayArgumentResolver implements EventListenerArgumentResolv
 
 	@Override
 	public Object resolve(MethodParameter parameter, final CanalMessage canalMessage) throws Exception {
-		if(canalMessage == null){
+		if(canalMessage == null || canalMessage.getRowChange() == null){
 			return null;
 		}
 

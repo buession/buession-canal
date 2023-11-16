@@ -21,10 +21,106 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.core;/**
- * 
+ */
+package com.buession.canal.core;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.StringJoiner;
+
+/**
+ * 结果
  *
  * @author Yong.Teng
  * @since 0.0.1
- */public class Result {
+ */
+public class Result implements Serializable {
+
+	private final static long serialVersionUID = 5375957586654168072L;
+
+	/**
+	 * ID
+	 */
+	private long id;
+
+	/**
+	 * 消息列表
+	 */
+	private List<CanalMessage> messages;
+
+	/**
+	 * 构造函数
+	 */
+	public Result() {
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param messages
+	 * 		消息列表
+	 */
+	public Result(List<CanalMessage> messages) {
+		this(-1, messages);
+	}
+
+	/**
+	 * 构造函数
+	 *
+	 * @param id
+	 * 		ID
+	 * @param messages
+	 * 		消息列表
+	 */
+	public Result(long id, List<CanalMessage> messages) {
+		this.id = id;
+		this.messages = messages;
+	}
+
+	/**
+	 * 返回 ID
+	 *
+	 * @return ID
+	 */
+	public long getId() {
+		return id;
+	}
+
+	/**
+	 * 设置 ID
+	 *
+	 * @param id
+	 * 		ID
+	 */
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	/**
+	 * 返回消息列表
+	 *
+	 * @return 消息列表
+	 */
+	public List<CanalMessage> getMessages() {
+		return messages;
+	}
+
+	/**
+	 * 设置消息列表
+	 *
+	 * @param messages
+	 * 		消息列表
+	 */
+	public void setMessages(List<CanalMessage> messages) {
+		this.messages = messages;
+	}
+
+	@Override
+	public String toString() {
+		return new StringJoiner(", ", "Result[", "]")
+				.add("id=" + id)
+				.add("messages=" + messages)
+				.toString();
+	}
+
 }

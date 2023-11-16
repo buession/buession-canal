@@ -25,36 +25,34 @@
 package com.buession.canal.core.listener.support;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.buession.canal.annotation.Row;
 import com.buession.canal.core.CanalMessage;
 import com.buession.canal.core.listener.MethodParameter;
 
 import java.util.List;
 
 /**
- * {@link CanalEntry.RowData} 数组参数解析器
+ * 行数据数组参数解析器
  *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class RowDataArrayArgumentResolver implements EventListenerArgumentResolver {
+public class RowArrayArgumentResolver implements EventListenerArgumentResolver {
 
 	@Override
 	public boolean supports(MethodParameter parameter) {
-		if(parameter.getParameterType().isArray()){
-			return CanalEntry.RowData.class.isAssignableFrom(parameter.getParameterType().getComponentType());
-		}
-
-		return false;
+		return parameter.hasAnnotation(Row.class) && parameter.getParameterType().isArray();
 	}
 
 	@Override
 	public Object resolve(MethodParameter parameter, final CanalMessage canalMessage) throws Exception {
-		if(canalMessage == null || canalMessage.getRowChange() == null){
+		if(canalMessage == null || canalMessage.getData() == null){
 			return null;
 		}
 
-		List<CanalEntry.RowData> rowData = canalMessage.getRowChange().getRowDatasList();
-		return rowData.toArray(new CanalEntry.RowData[]{});
+		//List<CanalEntry.RowData> rowData = canalMessage.getRowChange().getRowDatasList();
+		//return rowData.toArray(new CanalEntry.RowData[]{});
+		return null;
 	}
 
 }

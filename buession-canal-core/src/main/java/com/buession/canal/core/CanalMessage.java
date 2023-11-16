@@ -28,9 +28,12 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 
 /**
+ * 消息
+ *
  * @author Yong.Teng
  * @since 0.0.1
  */
@@ -66,6 +69,8 @@ public class CanalMessage implements Serializable {
 	private CanalEntry.Header header;
 
 	private CanalEntry.RowChange rowChange;
+
+	private Object data;
 
 	/**
 	 * 返回指令
@@ -165,6 +170,27 @@ public class CanalMessage implements Serializable {
 
 	public void setRowChange(CanalEntry.RowChange rowChange) {
 		this.rowChange = rowChange;
+	}
+
+	public Object getData() {
+		return data;
+	}
+
+	public void setData(Object data) {
+		this.data = data;
+	}
+
+	@Override
+	public String toString() {
+		return new StringJoiner(", ", "CanalMessage[", "]")
+				.add("destination='" + destination + "'")
+				.add("table=" + table)
+				.add("entryType=" + entryType)
+				.add("eventType=" + eventType)
+				.add("isDdl=" + isDdl)
+				.add("header=" + header)
+				.add("rowChange=" + rowChange)
+				.toString();
 	}
 
 }

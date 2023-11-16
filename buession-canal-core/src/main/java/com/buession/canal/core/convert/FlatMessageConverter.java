@@ -25,12 +25,12 @@
 package com.buession.canal.core.convert;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
-import com.alibaba.otter.canal.protocol.Message;
+import com.alibaba.otter.canal.protocol.FlatMessage;
 import com.buession.canal.core.CanalMessage;
 import com.buession.canal.core.Table;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -39,43 +39,25 @@ import java.util.stream.Collectors;
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class DefaultMessageConverter extends AbstractMessageConverter<Message> {
-
-	private final List<CanalEntry.EntryType> ignoreEntryTypes = getIgnoreEntryTypes();
+public class FlatMessageConverter extends AbstractMessageConverter<FlatMessage> {
 
 	@Override
-	public List<CanalMessage> convert(final Message message) {
-		List<CanalEntry.Entry> entries = message.getEntries();
-
-		return entries.stream()
-				.filter((entry)->ignoreEntryTypes.stream().anyMatch(t->entry.getEntryType() == t) == false)
-				.map(this::doParseEntry).collect(Collectors.toList());
+	public List<CanalMessage> convert(final String destination, final FlatMessage message) {
+		return message.getData().stream().map((row)->this.doParseEntry(destination, message, row))
+				.collect(Collectors.toList());
 	}
 
-	private CanalMessage doParseEntry(final CanalEntry.Entry entry) {
-		CanalEntry.RowChange rowChange;
-		try{
-			rowChange = CanalEntry.RowChange.parseFrom(entry.getStoreValue());
-		}catch(Exception e){
-			throw new RuntimeException("parse event has an error, data: " + entry, e);
-		}
-
+	private CanalMessage doParseEntry(final String destination, final FlatMessage message,
+									  final Map<String, String> row) {
 		final CanalMessage canalMessage = new CanalMessage();
 
-		canalMessage.setTable(new Table(entry.getHeader().getSchemaName(), entry.getHeader().getTableName()));
-		canalMessage.setEntryType(entry.getEntryType());
-		canalMessage.setEventType(entry.getHeader().getEventType());
-		canalMessage.setHeader(entry.getHeader());
-		canalMessage.setRowChange(rowChange);
-		canalMessage.setDdl(rowChange.getIsDdl());
+		canalMessage.setDestination(destination);
+		canalMessage.setTable(new Table(message.getDatabase(), message.getTable()));
+		canalMessage.setEventType(CanalEntry.EventType.valueOf(message.getType()));
+		canalMessage.setData(row);
+		canalMessage.setDdl(message.getIsDdl());
 
 		return canalMessage;
-	}
-
-	@Override
-	protected List<CanalEntry.EntryType> getIgnoreEntryTypes() {
-		return Arrays.asList(CanalEntry.EntryType.TRANSACTIONBEGIN, CanalEntry.EntryType.TRANSACTIONEND,
-				CanalEntry.EntryType.HEARTBEAT);
 	}
 
 }

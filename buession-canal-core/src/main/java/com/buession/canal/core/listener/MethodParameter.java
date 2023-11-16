@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -222,7 +223,7 @@ public final class MethodParameter implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, index, parameter, getParameterType(), type, getAnnotations());
+		return Objects.hash(name, index, parameter, getParameterType(), type, Arrays.hashCode(getAnnotations()));
 	}
 
 	@Override
@@ -236,7 +237,7 @@ public final class MethodParameter implements Serializable {
 			return Objects.equals(name, that.getName()) && Objects.equals(parameter, that.getParameter()) &&
 					Objects.equals(getParameterType(), that.getParameterType()) &&
 					Objects.equals(type, that.getType()) &&
-					Objects.equals(getAnnotations(), that.getAnnotations());
+					Arrays.equals(getAnnotations(), that.getAnnotations());
 		}
 
 		return false;

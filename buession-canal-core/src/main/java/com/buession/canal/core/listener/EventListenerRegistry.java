@@ -24,6 +24,8 @@
  */
 package com.buession.canal.core.listener;
 
+import com.buession.canal.core.listener.support.EventListenerArgumentResolverComposite;
+
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -33,6 +35,8 @@ import java.util.Map;
  * @since 0.0.1
  */
 public class EventListenerRegistry {
+
+	private final EventListenerArgumentResolverComposite argumentResolvers = new EventListenerArgumentResolverComposite();
 
 	private final Map<String, EventListenerMethod> methods = new LinkedHashMap<>();
 
@@ -45,11 +49,7 @@ public class EventListenerRegistry {
 	}
 
 	public void register(String name, Object object, Method method) {
-		methods.put(name, createEventListenerMethod(object, method));
-	}
-
-	protected EventListenerMethod createEventListenerMethod(Object object, Method method) {
-		return new EventListenerMethod(object, method);
+		methods.put(name, new EventListenerMethod(object, method, argumentResolvers));
 	}
 
 }

@@ -24,49 +24,35 @@
  */
 package com.buession.canal.core.listener.support;
 
-import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.buession.canal.annotation.Row;
 import com.buession.canal.core.CanalMessage;
 import com.buession.canal.core.listener.MethodParameter;
-import com.buession.core.validator.Validate;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 /**
- * {@link CanalEntry.RowData} 集合参数解析器
+ * 行数据集合参数解析器
  *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class RowDataCollectionArgumentResolver implements EventListenerArgumentResolver {
+public class RowCollectionArgumentResolver implements EventListenerArgumentResolver {
 
 	@Override
 	public boolean supports(MethodParameter parameter) {
-		if(Collection.class.isAssignableFrom(parameter.getParameterType())){
-			Type[] actualTypeArguments =
-					((ParameterizedType) parameter.getParameter().getParameterizedType()).getActualTypeArguments();
-
-			if(Validate.isEmpty(actualTypeArguments)){
-				return false;
-			}
-
-			return Objects.equals(actualTypeArguments[0], CanalEntry.RowData.class);
-		}
-
-		return false;
+		return parameter.hasAnnotation(Row.class) && Collection.class.isAssignableFrom(parameter.getParameterType());
 	}
 
 	@Override
 	public Object resolve(MethodParameter parameter, final CanalMessage canalMessage) throws Exception {
-		if(canalMessage == null || canalMessage.getRowChange() == null){
+		if(canalMessage == null || canalMessage.getData() == null){
 			return null;
 		}
 
+		/*
 		if(List.class.isAssignableFrom(parameter.getParameterType())){
 			return canalMessage.getRowChange().getRowDatasList();
 		}else if(Set.class.isAssignableFrom(parameter.getParameterType())){
@@ -74,6 +60,9 @@ public class RowDataCollectionArgumentResolver implements EventListenerArgumentR
 		}else{
 			return null;
 		}
+
+		 */
+		return null;
 	}
 
 }

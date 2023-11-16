@@ -44,15 +44,15 @@ public class DefaultMessageConverter extends AbstractMessageConverter<Message> {
 	private final List<CanalEntry.EntryType> ignoreEntryTypes = getIgnoreEntryTypes();
 
 	@Override
-	public List<CanalMessage> convert(final Message message) {
+	public List<CanalMessage> convert(final String destination, final Message message) {
 		List<CanalEntry.Entry> entries = message.getEntries();
 
 		return entries.stream()
 				.filter((entry)->ignoreEntryTypes.stream().anyMatch(t->entry.getEntryType() == t) == false)
-				.map(this::doParseEntry).collect(Collectors.toList());
+				.map((entry)->this.doParseEntry(destination, entry)).collect(Collectors.toList());
 	}
 
-	private CanalMessage doParseEntry(final CanalEntry.Entry entry) {
+	private CanalMessage doParseEntry(final String destination, final CanalEntry.Entry entry) {
 		CanalEntry.RowChange rowChange;
 		try{
 			rowChange = CanalEntry.RowChange.parseFrom(entry.getStoreValue());
@@ -62,11 +62,13 @@ public class DefaultMessageConverter extends AbstractMessageConverter<Message> {
 
 		final CanalMessage canalMessage = new CanalMessage();
 
+		canalMessage.setDestination(destination);
 		canalMessage.setTable(new Table(entry.getHeader().getSchemaName(), entry.getHeader().getTableName()));
 		canalMessage.setEntryType(entry.getEntryType());
 		canalMessage.setEventType(entry.getHeader().getEventType());
 		canalMessage.setHeader(entry.getHeader());
 		canalMessage.setRowChange(rowChange);
+		canalMessage.setData(rowChange.getRowDatasList());
 		canalMessage.setDdl(rowChange.getIsDdl());
 
 		return canalMessage;

@@ -57,13 +57,13 @@ public class RowDataCollectionArgumentResolver implements EventListenerArgumentR
 
 			return Objects.equals(actualTypeArguments[0], CanalEntry.RowData.class);
 		}
-		
+
 		return false;
 	}
 
 	@Override
 	public Object resolve(MethodParameter parameter, final CanalMessage canalMessage) throws Exception {
-		if(canalMessage == null){
+		if(canalMessage == null || canalMessage.getRowChange() == null){
 			return null;
 		}
 

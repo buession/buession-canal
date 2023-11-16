@@ -36,23 +36,10 @@ import com.buession.canal.core.listener.MethodParameter;
  */
 public class TableArgumentResolver implements EventListenerArgumentResolver {
 
-	private boolean isTableObject;
-
-	private boolean isTableName;
-
 	@Override
 	public boolean supports(final MethodParameter parameter) {
-		isTableObject = com.buession.canal.core.Table.class.isAssignableFrom(parameter.getType());
-		if(isTableObject){
-			return true;
-		}
-
-		isTableName = parameter.hasAnnotation(Table.class);
-		if(isTableName){
-			return CharSequence.class.isAssignableFrom(parameter.getType());
-		}
-
-		return false;
+		return com.buession.canal.core.Table.class.isAssignableFrom(parameter.getType()) ||
+				parameter.hasAnnotation(Table.class) && CharSequence.class.isAssignableFrom(parameter.getType());
 	}
 
 	@Override
@@ -61,11 +48,11 @@ public class TableArgumentResolver implements EventListenerArgumentResolver {
 			return null;
 		}
 
-		if(isTableObject){
+		if(com.buession.canal.core.Table.class.isAssignableFrom(parameter.getType())){
 			return canalMessage.getTable();
 		}
 
-		if(isTableName){
+		if(parameter.hasAnnotation(Table.class)){
 			return canalMessage.getTable().getName();
 		}
 

@@ -24,34 +24,47 @@
  */
 package com.buession.canal.core.listener.support;
 
-import com.alibaba.otter.canal.protocol.CanalEntry;
+import com.buession.beans.BeanConverter;
+import com.buession.beans.BeanUtils;
+import com.buession.beans.DefaultBeanConverter;
+import com.buession.beans.converters.DatePropertyConverter;
+import com.buession.canal.annotation.Row;
 import com.buession.canal.core.CanalMessage;
 import com.buession.canal.core.listener.MethodParameter;
-import com.buession.core.validator.Validate;
 
-import java.util.List;
+import java.util.Date;
+import java.util.Map;
 
 /**
- * {@link CanalEntry.RowData} 参数解析器
+ * 行数据参数解析器
  *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public class RowDataArgumentResolver implements EventListenerArgumentResolver {
+public class RowArgumentResolver implements EventListenerArgumentResolver {
 
 	@Override
 	public boolean supports(MethodParameter parameter) {
-		return CanalEntry.RowData.class.isAssignableFrom(parameter.getParameterType());
+		return parameter.hasAnnotation(Row.class);
 	}
 
 	@Override
 	public Object resolve(MethodParameter parameter, final CanalMessage canalMessage) throws Exception {
-		if(canalMessage == null || canalMessage.getRowChange() == null){
+		if(canalMessage == null || canalMessage.getData() == null){
 			return null;
 		}
 
-		List<CanalEntry.RowData> rowData = canalMessage.getRowChange().getRowDatasList();
-		return rowData.get(0);
+		Object data = canalMessage.getData();
+		if(Map.class.isAssignableFrom(parameter.getParameterType())){
+			return data;
+		}else{
+			final DefaultBeanConverter beanConverter = new DefaultBeanConverter();
+			final Object target = BeanUtils.instantiateClass(parameter.getParameterType());
+
+			beanConverter.registerConverter(Date.class, new DatePropertyConverter("yyyy-MM-dd HH:mm:ss"));
+
+			return beanConverter.convert(data, target);
+		}
 	}
 
 }

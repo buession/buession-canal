@@ -25,7 +25,6 @@
 package com.buession.canal.core.convert;
 
 import com.buession.canal.core.CanalMessage;
-import com.buession.core.converter.Converter;
 
 import java.util.List;
 
@@ -39,17 +38,18 @@ import java.util.List;
  * @since 0.0.1
  */
 @FunctionalInterface
-public interface MessageConverter<M> extends Converter<M, List<CanalMessage>> {
+public interface MessageConverter<M> {
 
 	/**
 	 * 将原始消息转换成 {@link CanalMessage}
 	 *
+	 * @param destination
+	 * 		指令
 	 * @param message
 	 * 		原始消息
 	 *
 	 * @return {@link CanalMessage}
 	 */
-	@Override
-	List<CanalMessage> convert(final M message);
+	List<CanalMessage> convert(final String destination, final M message);
 
 }
