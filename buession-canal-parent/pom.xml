@@ -70,7 +70,7 @@
 			<!-- start canal -->
 			<dependency>
 				<groupId>com.alibaba.otter</groupId>
-				<artifactId>canal.client</artifactId>
+				<artifactId>canal.protocol</artifactId>
 				<version>${alibaba.canal.version}</version>
 				<exclusions>
 					<exclusion>
@@ -89,7 +89,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.alibaba.otter</groupId>
-				<artifactId>canal.protocol</artifactId>
+				<artifactId>canal.client</artifactId>
 				<version>${alibaba.canal.version}</version>
 				<exclusions>
 					<exclusion>
