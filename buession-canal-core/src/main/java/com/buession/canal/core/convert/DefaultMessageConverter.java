@@ -29,6 +29,7 @@ import com.alibaba.otter.canal.protocol.Message;
 import com.buession.canal.core.CanalMessage;
 import com.buession.canal.core.Table;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,6 +61,10 @@ public class DefaultMessageConverter extends AbstractMessageConverter<Message> {
 			throw new RuntimeException("parse event has an error, data: " + entry, e);
 		}
 
+		final List<CanalEntry.Column> data = new ArrayList<>(rowChange.getRowDatasList().size());
+
+		rowChange.getRowDatasList().forEach((rowData)->data.addAll(rowData.getAfterColumnsList()));
+		
 		final CanalMessage canalMessage = new CanalMessage();
 
 		canalMessage.setDestination(destination);
@@ -68,7 +73,7 @@ public class DefaultMessageConverter extends AbstractMessageConverter<Message> {
 		canalMessage.setEventType(entry.getHeader().getEventType());
 		canalMessage.setHeader(entry.getHeader());
 		canalMessage.setRowChange(rowChange);
-		canalMessage.setData(rowChange.getRowDatasList());
+		canalMessage.setData(data);
 		canalMessage.setDdl(rowChange.getIsDdl());
 
 		return canalMessage;

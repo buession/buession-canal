@@ -70,7 +70,7 @@ public class CanalMessage implements Serializable {
 
 	private CanalEntry.RowChange rowChange;
 
-	private Object data;
+	private List<CanalEntry.Column> data;
 
 	/**
 	 * 返回指令
@@ -172,11 +172,11 @@ public class CanalMessage implements Serializable {
 		this.rowChange = rowChange;
 	}
 
-	public Object getData() {
+	public List<CanalEntry.Column> getData() {
 		return data;
 	}
 
-	public void setData(Object data) {
+	public void setData(List<CanalEntry.Column> data) {
 		this.data = data;
 	}
 

@@ -29,6 +29,7 @@ import com.alibaba.otter.canal.protocol.FlatMessage;
 import com.buession.canal.core.CanalMessage;
 import com.buession.canal.core.Table;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -50,11 +51,23 @@ public class FlatMessageConverter extends AbstractMessageConverter<FlatMessage> 
 	private CanalMessage doParseEntry(final String destination, final FlatMessage message,
 									  final Map<String, String> row) {
 		final CanalMessage canalMessage = new CanalMessage();
+		final List<CanalEntry.Column> columns = new ArrayList<>(row.size());
+		int i = 0;
+
+		for(Map.Entry<String, String> e : row.entrySet()){
+			CanalEntry.Column.Builder builder = CanalEntry.Column.newBuilder();
+
+			builder.setIndex(i++);
+			builder.setName(e.getKey());
+			builder.setValue(e.getValue());
+
+			columns.add(builder.build());
+		}
 
 		canalMessage.setDestination(destination);
 		canalMessage.setTable(new Table(message.getDatabase(), message.getTable()));
 		canalMessage.setEventType(CanalEntry.EventType.valueOf(message.getType()));
-		canalMessage.setData(row);
+		canalMessage.setData(columns);
 		canalMessage.setDdl(message.getIsDdl());
 
 		return canalMessage;

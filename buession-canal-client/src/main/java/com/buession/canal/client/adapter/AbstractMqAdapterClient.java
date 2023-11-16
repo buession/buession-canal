@@ -36,6 +36,7 @@ import com.buession.canal.core.convert.FlatMessageConverter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Canal MQ 适配器抽象类
