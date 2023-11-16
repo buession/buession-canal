@@ -39,14 +39,14 @@ import java.lang.annotation.Target;
  * @author Yong.Teng
  * @since 0.0.1
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @CanalEventListener(eventType = CanalEntry.EventType.CINDEX)
 public @interface CreateIndexEventListener {
 
 	/**
-	 * 返回数据库名称
+	 * 数据库名称
 	 *
 	 * @return 数据库名称
 	 */
@@ -54,7 +54,7 @@ public @interface CreateIndexEventListener {
 	String schema() default "";
 
 	/**
-	 * 返回数据表名称
+	 * 数据表名称
 	 *
 	 * @return 数据表名称
 	 */

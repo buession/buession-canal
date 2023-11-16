@@ -22,43 +22,39 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.canal.annotation;
+package com.buession.canal.core.listener.support;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
-import org.springframework.core.annotation.AliasFor;
+import com.buession.canal.core.CanalMessage;
+import com.buession.canal.core.listener.MethodParameter;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.List;
 
 /**
- * 修改数据表操作监听器
+ * {@link CanalEntry.RowData} 数组参数解析器
  *
  * @author Yong.Teng
  * @since 0.0.1
  */
-@Target({ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@CanalEventListener(eventType = CanalEntry.EventType.ALTER)
-public @interface AlertTableEventListener {
+public class RowDataArrayArgumentResolver implements EventListenerArgumentResolver {
 
-	/**
-	 * 数据库名称
-	 *
-	 * @return 数据库名称
-	 */
-	@AliasFor(annotation = CanalEventListener.class)
-	String schema() default "";
+	@Override
+	public boolean supports(MethodParameter parameter) {
+		if(parameter.getParameterType().isArray()){
+			return CanalEntry.RowData.class.isAssignableFrom(parameter.getParameterType().getComponentType());
+		}
 
-	/**
-	 * 数据表名称
-	 *
-	 * @return 数据表名称
-	 */
-	@AliasFor(annotation = CanalEventListener.class)
-	String table() default "";
+		return false;
+	}
+
+	@Override
+	public Object resolve(MethodParameter parameter, final CanalMessage canalMessage) throws Exception {
+		if(canalMessage == null || canalMessage.getRowChange() == null){
+			return null;
+		}
+
+		List<CanalEntry.RowData> rowData = canalMessage.getRowChange().getRowDatasList();
+		return rowData.toArray(new CanalEntry.RowData[]{});
+	}
 
 }

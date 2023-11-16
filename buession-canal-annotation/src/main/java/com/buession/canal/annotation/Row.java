@@ -22,8 +22,46 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
+package com.buession.canal.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
+ * 数据行
+ *
  * @author Yong.Teng
  * @since 0.0.1
  */
-package com.buession.canal.core.exception;
+@Target({ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+public @interface Row {
+
+	/**
+	 * 日期时间格式
+	 *
+	 * @return 日期时间格式
+	 */
+	String dateFormat() default "";
+
+	/**
+	 * {@link java.util.Locale}
+	 *
+	 * @return {@link java.util.Locale}
+	 */
+	String locale() default "";
+
+	/**
+	 * {@link java.util.TimeZone}
+	 *
+	 * @return {@link java.util.TimeZone}
+	 */
+	String timezone() default "";
+
+}

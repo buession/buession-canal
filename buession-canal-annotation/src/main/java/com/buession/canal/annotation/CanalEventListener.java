@@ -25,7 +25,6 @@
 package com.buession.canal.annotation;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
-import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -40,28 +39,28 @@ import java.lang.annotation.Target;
  * @author Yong.Teng
  * @since 0.0.1
  */
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
 public @interface CanalEventListener {
 
 	/**
-	 * 返回数据库名称
+	 * 数据库名称
 	 *
 	 * @return 数据库名称
 	 */
 	String schema() default "";
 
 	/**
-	 * 返回数据表名称
+	 * 数据表名称
 	 *
 	 * @return 数据表名称
 	 */
 	String table() default "";
 
 	/**
-	 * 返回监听操作的类型
+	 * 监听操作的类型
 	 *
 	 * @return 监听操作的类型
 	 */
