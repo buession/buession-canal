@@ -2,7 +2,7 @@
 ===========================
 
 
-## [0.0.1](https://github.com/buession/buession-canal/releases/tag/v0.0.1) (2023-08-xx)
+## [0.0.1](https://github.com/buession/buession-canal/releases/tag/v0.0.1) (2023-11-19)
 
 ### 🔨依赖升级
 
@@ -11,12 +11,7 @@
 
 ### ⭐ 新特性
 
-- **buession-logging-support-elasticsearch：** Elasticsearch 日志处理器
-- **buession-logging-support-file：** 文本日志处理器
-- **buession-logging-support-jdbc：** JDBC 日志处理器
-- **buession-logging-support-kafka：** Kafka 日志处理器
-- **buession-logging-support-mongodb：** MongoDB 日志处理器
-- **buession-logging-support-rabbitmq：** RabbitMQ 日志处理器
-- **buession-logging-support-rest：** Rest 日志处理器
-- **bbuession-logging-annotations：** 注解
-- **bbuession-logging-aspectj：** aspectj
+- **buession-canal-annotation：** canal 注解
+- **buession-canal-core：** canal 核心库
+- **buession-canal-client：** canal 客户端
+- **buession-canal-spring：** canal spring 支持
