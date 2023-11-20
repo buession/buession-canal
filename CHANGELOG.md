@@ -9,6 +9,12 @@
 - [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.3.2)
 
 
+### 🐞 Bug 修复
+
+- **buession-canal-core：** 修复 buession-beans bean 转换导致的数据丢失的 BUG
+- **buession-canal-core：** 修复 @CanalEventListener 仅指定 schema 或 table 服务映射方法的 BUG
+
+
 ---
 
 

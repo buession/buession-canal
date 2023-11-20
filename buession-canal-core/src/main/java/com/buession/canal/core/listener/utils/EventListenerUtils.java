@@ -45,9 +45,13 @@ public class EventListenerUtils {
 
 		sb.append(destination).append("$$");
 		if(Validate.hasText(schema) && Validate.hasText(table)){
-			sb.append(schema).append('.').append(table).append("$$");
+			sb.append(schema).append('.').append(table);
+		}else if(Validate.hasText(schema)){
+			sb.append("schema:").append(schema);
+		}else if(Validate.hasText(table)){
+			sb.append("table:").append(table);
 		}
-		sb.append(eventType.name());
+		sb.append("$$").append(eventType.name());
 
 		return sb.toString();
 	}
