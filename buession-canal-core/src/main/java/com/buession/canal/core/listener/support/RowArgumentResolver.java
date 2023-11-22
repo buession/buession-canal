@@ -25,7 +25,6 @@
 package com.buession.canal.core.listener.support;
 
 import com.alibaba.otter.canal.protocol.CanalEntry;
-import com.buession.beans.BeanConverter;
 import com.buession.beans.BeanUtils;
 import com.buession.beans.DefaultBeanConverter;
 import com.buession.beans.converters.DatePropertyConverter;
@@ -46,6 +45,8 @@ import java.util.Map;
  */
 public class RowArgumentResolver implements EventListenerArgumentResolver {
 
+	private volatile DefaultBeanConverter beanConverter;
+
 	@Override
 	public boolean supports(MethodParameter parameter) {
 		return parameter.hasAnnotation(Row.class);
@@ -60,20 +61,27 @@ public class RowArgumentResolver implements EventListenerArgumentResolver {
 		List<CanalEntry.Column> data = canalMessage.getData();
 		Map<String, Object> resultMap = new HashMap<>(data.size());
 
-		data.forEach((row)->{
-			resultMap.put(row.getName(), row.getValue());
-		});
+		data.forEach((row)->resultMap.put(row.getName(), row.getValue()));
 
 		if(Map.class.isAssignableFrom(parameter.getParameterType())){
 			return resultMap;
 		}else{
-			final DefaultBeanConverter beanConverter = new DefaultBeanConverter();
 			final Object target = BeanUtils.instantiateClass(parameter.getParameterType());
-
-			beanConverter.registerConverter(Date.class, new DatePropertyConverter("yyyy-MM-dd HH:mm:ss"));
-
-			return beanConverter.convert(resultMap, target);
+			return getBeanConverter().convert(resultMap, target);
 		}
+	}
+
+	private DefaultBeanConverter getBeanConverter() {
+		if(beanConverter == null){
+			synchronized(this){
+				if(beanConverter == null){
+					beanConverter = new DefaultBeanConverter();
+					beanConverter.registerConverter(Date.class, new DatePropertyConverter("yyyy-MM-dd HH:mm:ss"));
+				}
+			}
+		}
+
+		return beanConverter;
 	}
 
 }
