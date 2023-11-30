@@ -80,6 +80,10 @@ public abstract class AbstractDispatcher implements Dispatcher {
 			Result result = adapterClient.getListWithoutAck(configuration.getTimeout().toMillis(),
 					TimeUnit.MILLISECONDS);
 
+			if(logger.isDebugEnabled()){
+				logger.debug("Return {} messages.", result == null ? 0 : result.getMessages().size());
+			}
+
 			if(result != null && result.getMessages() != null){
 				for(CanalMessage message : result.getMessages()){
 					doDispatch(message);

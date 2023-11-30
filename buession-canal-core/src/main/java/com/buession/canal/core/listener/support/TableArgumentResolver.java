@@ -52,7 +52,7 @@ public class TableArgumentResolver implements EventListenerArgumentResolver {
 			return canalMessage.getTable();
 		}
 
-		if(parameter.hasAnnotation(Table.class)){
+		if(parameter.hasAnnotation(Table.class) && CharSequence.class.isAssignableFrom(parameter.getType())){
 			return canalMessage.getTable().getName();
 		}
 

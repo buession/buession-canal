@@ -25,7 +25,7 @@
 package com.buession.canal.spring.annotation;
 
 import com.buession.canal.annotation.CanalBinding;
-import com.buession.core.validator.Validate;
+import com.buession.core.utils.Assert;
 import org.springframework.aop.scope.ScopedProxyFactoryBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
@@ -123,16 +123,11 @@ class CanalBindingClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 			return;
 		}
 
-		if(Validate.isBlank(canalBinding.destination())){
-			throw new IllegalStateException(
-					"Either 'destination' must be required in @CanalBinding for: " + beanClassName);
-		}
-
-		if(destinations.contains(canalBinding.destination())){
-			throw new IllegalStateException(
-					"The destination: " + canalBinding.destination() + " already exists in @CanalBinding for: " +
-							beanClassName);
-		}
+		Assert.isBlank(canalBinding.destination(), ()->new IllegalStateException(
+				"Either 'destination' must be required in @CanalBinding for: " + beanClassName));
+		Assert.isTrue(destinations.contains(canalBinding.destination()), ()->new IllegalStateException(
+				"The destination: " + canalBinding.destination() + " already exists in @CanalBinding for: " +
+						beanClassName));
 
 		beanDefinition.setLazyInit(lazyInitialization);
 		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);

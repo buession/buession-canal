@@ -45,7 +45,7 @@ import java.util.Map;
  */
 public class RowArgumentResolver implements EventListenerArgumentResolver {
 
-	private volatile DefaultBeanConverter beanConverter;
+	private DefaultBeanConverter beanConverter;
 
 	@Override
 	public boolean supports(MethodParameter parameter) {
@@ -73,12 +73,8 @@ public class RowArgumentResolver implements EventListenerArgumentResolver {
 
 	private DefaultBeanConverter getBeanConverter() {
 		if(beanConverter == null){
-			synchronized(this){
-				if(beanConverter == null){
-					beanConverter = new DefaultBeanConverter();
-					beanConverter.registerConverter(Date.class, new DatePropertyConverter("yyyy-MM-dd HH:mm:ss"));
-				}
-			}
+			beanConverter = new DefaultBeanConverter();
+			beanConverter.registerConverter(Date.class, new DatePropertyConverter("yyyy-MM-dd HH:mm:ss"));
 		}
 
 		return beanConverter;
