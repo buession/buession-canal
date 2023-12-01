@@ -87,8 +87,7 @@ public abstract class AbstractCanalClient implements CanalClient {
 		Assert.isNull(executor, "The ExecutorService is required");
 		this.context = context;
 		this.dispatcher = dispatcher;
-		this.executor = new DefaultCanalThreadPoolExecutor("canal", context.getAdapterClients().size(),
-				context.getAdapterClients().size(), 10 * 1000L);
+		this.executor = executor;
 	}
 
 	@Override

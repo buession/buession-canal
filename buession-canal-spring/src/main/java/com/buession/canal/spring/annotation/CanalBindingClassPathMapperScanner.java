@@ -44,9 +44,7 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.lang.NonNull;
 import org.springframework.util.ClassUtils;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * {@link CanalBinding} 扫描器
@@ -60,8 +58,6 @@ class CanalBindingClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 	 * 是否延迟初始化
 	 */
 	private boolean lazyInitialization;
-
-	private final Set<String> destinations = new HashSet<>();
 
 	/**
 	 * 构造函数
@@ -125,16 +121,11 @@ class CanalBindingClassPathMapperScanner extends ClassPathBeanDefinitionScanner 
 
 		Assert.isBlank(canalBinding.destination(), ()->new IllegalStateException(
 				"Either 'destination' must be required in @CanalBinding for: " + beanClassName));
-		Assert.isTrue(destinations.contains(canalBinding.destination()), ()->new IllegalStateException(
-				"The destination: " + canalBinding.destination() + " already exists in @CanalBinding for: " +
-						beanClassName));
 
 		beanDefinition.setLazyInit(lazyInitialization);
 		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
 		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		beanDefinition.setAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE, beanClassName);
-
-		destinations.add(canalBinding.destination());
 	}
 
 }

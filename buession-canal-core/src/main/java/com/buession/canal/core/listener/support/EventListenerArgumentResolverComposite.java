@@ -26,6 +26,7 @@ package com.buession.canal.core.listener.support;
 
 import com.buession.canal.core.CanalMessage;
 import com.buession.canal.core.listener.MethodParameter;
+import com.buession.core.utils.Assert;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,10 +73,8 @@ public class EventListenerArgumentResolverComposite implements EventListenerArgu
 	@Override
 	public Object resolve(final MethodParameter parameter, final CanalMessage canalMessage) throws Exception {
 		EventListenerArgumentResolver resolver = getArgumentResolver(parameter);
-		if(resolver == null){
-			throw new IllegalArgumentException("Unsupported parameter type [" +
-					parameter.getType().getName() + "]. supports should be called first.");
-		}
+		Assert.isNull(resolver, ()->new IllegalArgumentException("Unsupported parameter type [" +
+				parameter.getType().getName() + "]. supports should be called first."));
 
 		return resolver.resolve(parameter, canalMessage);
 	}

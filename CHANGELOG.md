@@ -14,6 +14,10 @@
 - **buession-canal-core：** 修复 buession-beans bean 转换导致的数据丢失的 BUG
 - **buession-canal-core：** 修复 @CanalEventListener 仅指定 schema 或 table 服务映射方法的 BUG
 - **buession-canal-core：** 修复无法获取 @CanalEventListener schema 和 table 的 BUG
+- **buession-canal-core：** 修复线程池线程序号错误的 BUG
+- **buession-canal-core：** 修复 Table 设置数据库名和表名错误的 BUG
+- **buession-canal-client：** 修复多实例下，实例不执行的 BUG
+- **buession-canal-spring：** 修复注解 CanalBinding 无法重复定义 destination 的 BUG
 
 
 ---
