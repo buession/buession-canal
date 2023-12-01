@@ -76,27 +76,29 @@ public abstract class AbstractDispatcher implements Dispatcher {
 	public void dispatch(AdapterClient adapterClient) {
 		Configuration configuration = adapterClient.getConfiguration();
 
-		try{
-			Result result = adapterClient.getListWithoutAck(configuration.getTimeout().toMillis(),
-					TimeUnit.MILLISECONDS);
+		while(adapterClient.isRunning()){
+			try{
+				Result result = adapterClient.getListWithoutAck(configuration.getTimeout().toMillis(),
+						TimeUnit.MILLISECONDS);
 
-			if(logger.isDebugEnabled()){
-				logger.debug("Return {} messages.", result == null ? 0 : result.getMessages().size());
-			}
-
-			if(result != null && result.getMessages() != null){
-				for(CanalMessage message : result.getMessages()){
-					doDispatch(message);
+				if(logger.isDebugEnabled()){
+					logger.debug("Return {} messages.", result == null ? 0 : result.getMessages().size());
 				}
-			}
 
-			if(result != null && result.getId() > -1){
-				adapterClient.ack(result.getId());
-			}else{
-				adapterClient.ack();
+				if(result != null && result.getMessages() != null){
+					for(CanalMessage message : result.getMessages()){
+						doDispatch(message);
+					}
+				}
+
+				if(result != null && result.getId() > -1){
+					adapterClient.ack(result.getId());
+				}else{
+					adapterClient.ack();
+				}
+			}catch(Exception e){
+				logger.error("Message handle error", e);
 			}
-		}catch(Exception e){
-			logger.error("Message handle error", e);
 		}
 	}
 

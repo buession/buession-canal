@@ -150,6 +150,15 @@ public interface AdapterClient {
 	void rollback() throws CanalClientException;
 
 	/**
+	 * 判断 canal 客户端是否是开启状态
+	 *
+	 * @return true / false
+	 *
+	 * @since 0.0.1
+	 */
+	boolean isRunning();
+
+	/**
 	 * 关闭客户端
 	 *
 	 * @throws CanalClientException
