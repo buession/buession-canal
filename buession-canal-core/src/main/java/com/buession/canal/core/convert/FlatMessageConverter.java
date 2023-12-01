@@ -65,7 +65,7 @@ public class FlatMessageConverter extends AbstractMessageConverter<FlatMessage> 
 		}
 
 		canalMessage.setDestination(destination);
-		canalMessage.setTable(new Table(message.getDatabase(), message.getTable()));
+		canalMessage.setTable(new Table(message.getTable(), message.getDatabase()));
 		canalMessage.setEventType(CanalEntry.EventType.valueOf(message.getType()));
 		canalMessage.setData(columns);
 		canalMessage.setDdl(message.getIsDdl());
