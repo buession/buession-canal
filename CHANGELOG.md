@@ -20,6 +20,13 @@
 - **buession-canal-spring：** 修复注解 CanalBinding 无法重复定义 destination 的 BUG
 
 
+### ⏪ 优化
+
+- **buession-canal-core：** 代码优化
+- **buession-canal-spring：** 代码优化
+- **buession-canal-spring：** 优化 CanalClientFactoryBean 多次调用 afterPropertiesSet 时，重复初始化 CanalClient
+
+
 ---
 
 

@@ -57,9 +57,8 @@ public class CanalClientFactoryBean extends CanalClientFactory implements Factor
 		Assert.isNull(getContext(), "Property 'context' is required");
 		Assert.isNull(getDispatcher(), "Property 'dispatcher' is required");
 
-		canalClient = new DefaultCanalClient(getContext(), getDispatcher(), getExecutor());
-
-		if(canalClient.isRunning() == false){
+		if(canalClient == null){
+			canalClient = new DefaultCanalClient(getContext(), getDispatcher(), getExecutor());
 			canalClient.start();
 		}
 	}
