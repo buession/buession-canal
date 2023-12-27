@@ -111,7 +111,7 @@ public final class EventListenerMethod {
 		return doInvoke(args);
 	}
 
-	protected Object[] getMethodArgumentValues(final CanalMessage canalMessage) throws Exception {
+	private Object[] getMethodArgumentValues(final CanalMessage canalMessage) throws Exception {
 		MethodParameter[] parameters = getParameters();
 
 		if(Validate.isEmpty(parameters)){
@@ -123,9 +123,8 @@ public final class EventListenerMethod {
 		for(int i = 0; i < parameters.length; i++){
 			MethodParameter parameter = parameters[i];
 
-			if(argumentResolvers.supports(parameter) == false){
-				throw new IllegalStateException(formatArgumentError(parameter, "No suitable resolver"));
-			}
+			Assert.isFalse(argumentResolvers.supports(parameter),
+					()->new IllegalStateException(formatArgumentError(parameter, "No suitable resolver")));
 
 			try{
 				args[i] = argumentResolvers.resolve(parameter, canalMessage);
@@ -143,7 +142,7 @@ public final class EventListenerMethod {
 		return args;
 	}
 
-	protected Object doInvoke(Object... args) throws Exception {
+	private Object doInvoke(Object... args) throws Exception {
 		ReflectionUtils.makeAccessible(getBridgedMethod());
 		return getBridgedMethod().invoke(getTarget(), args);
 	}

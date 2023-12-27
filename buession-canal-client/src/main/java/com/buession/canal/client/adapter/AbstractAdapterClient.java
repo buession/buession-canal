@@ -66,6 +66,13 @@ public abstract class AbstractAdapterClient<C extends CanalConnector> implements
 	private MessageConverter messageConverter = new DefaultMessageConverter();
 
 	/**
+	 * 是否在运行
+	 *
+	 * @since 0.0.2
+	 */
+	private volatile boolean running = false;
+
+	/**
 	 * 构造函数
 	 *
 	 * @param connector
@@ -123,6 +130,7 @@ public abstract class AbstractAdapterClient<C extends CanalConnector> implements
 
 		// 回滚到未进行 ack 的地方，下次 fetch 时，可以从最后一个没有 ack 的位置获取数据
 		connector.rollback();
+		running = true;
 	}
 
 	@Override
@@ -146,7 +154,13 @@ public abstract class AbstractAdapterClient<C extends CanalConnector> implements
 	}
 
 	@Override
+	public boolean isRunning() {
+		return running;
+	}
+
+	@Override
 	public void close() throws CanalClientException {
+		running = false;
 		connector.unsubscribe();
 		connector.disconnect();
 	}

@@ -64,11 +64,11 @@ public class DefaultMessageConverter extends AbstractMessageConverter<Message> {
 		final List<CanalEntry.Column> data = new ArrayList<>(rowChange.getRowDatasList().size());
 
 		rowChange.getRowDatasList().forEach((rowData)->data.addAll(rowData.getAfterColumnsList()));
-		
+
 		final CanalMessage canalMessage = new CanalMessage();
 
 		canalMessage.setDestination(destination);
-		canalMessage.setTable(new Table(entry.getHeader().getSchemaName(), entry.getHeader().getTableName()));
+		canalMessage.setTable(new Table(entry.getHeader().getTableName(), entry.getHeader().getSchemaName()));
 		canalMessage.setEntryType(entry.getEntryType());
 		canalMessage.setEventType(entry.getHeader().getEventType());
 		canalMessage.setHeader(entry.getHeader());

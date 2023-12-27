@@ -28,7 +28,6 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import java.util.StringJoiner;
 
 /**
@@ -183,13 +182,14 @@ public class CanalMessage implements Serializable {
 	@Override
 	public String toString() {
 		return new StringJoiner(", ", "CanalMessage[", "]")
-				.add("destination='" + destination + "'")
+				.add("destination=" + destination)
 				.add("table=" + table)
 				.add("entryType=" + entryType)
 				.add("eventType=" + eventType)
 				.add("isDdl=" + isDdl)
 				.add("header=" + header)
 				.add("rowChange=" + rowChange)
+				.add("data=" + data)
 				.toString();
 	}
 

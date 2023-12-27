@@ -235,9 +235,8 @@ public final class MethodParameter implements Serializable {
 		if(obj instanceof MethodParameter){
 			MethodParameter that = (MethodParameter) obj;
 			return Objects.equals(name, that.getName()) && Objects.equals(parameter, that.getParameter()) &&
-					Objects.equals(getParameterType(), that.getParameterType()) &&
-					Objects.equals(type, that.getType()) &&
-					Arrays.equals(getAnnotations(), that.getAnnotations());
+					Objects.equals(getParameterType(), that.getParameterType()) && Objects.equals(type,
+					that.getType()) && Arrays.equals(getAnnotations(), that.getAnnotations());
 		}
 
 		return false;

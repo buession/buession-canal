@@ -7,13 +7,13 @@
 		<groupId>com.buession</groupId>
 		<artifactId>parent</artifactId>
 		<relativePath/>
-		<version>2.3.1</version>
+		<version>2.3.2</version>
 	</parent>
 	<groupId>com.buession.canal</groupId>
 	<artifactId>buession-canal-parent</artifactId>
 	<url>https://canal.buession.com/</url>
 	<description>Buession Canal Framework Parent</description>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<packaging>pom</packaging>
 
 	<organization>
@@ -61,7 +61,7 @@
 	</modules>
 
 	<properties>
-		<buession.version>2.3.1</buession.version>
+		<buession.version>2.3.2</buession.version>
 		<alibaba.canal.version>1.1.7</alibaba.canal.version>
 	</properties>
 
