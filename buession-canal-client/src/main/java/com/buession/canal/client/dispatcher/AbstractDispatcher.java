@@ -37,9 +37,7 @@ import com.buession.canal.core.listener.support.EventListenerArgumentResolverCom
 import com.buession.canal.core.listener.support.EventTypeArgumentResolver;
 import com.buession.canal.core.listener.support.HeaderArgumentResolver;
 import com.buession.canal.core.listener.support.RowArgumentResolver;
-import com.buession.canal.core.listener.support.RowArrayArgumentResolver;
 import com.buession.canal.core.listener.support.RowChangeArgumentResolver;
-import com.buession.canal.core.listener.support.RowCollectionArgumentResolver;
 import com.buession.canal.core.listener.support.RowDataArgumentResolver;
 import com.buession.canal.core.listener.support.RowDataArrayArgumentResolver;
 import com.buession.canal.core.listener.support.RowDataCollectionArgumentResolver;
@@ -78,23 +76,29 @@ public abstract class AbstractDispatcher implements Dispatcher {
 	public void dispatch(AdapterClient adapterClient) {
 		Configuration configuration = adapterClient.getConfiguration();
 
-		try{
-			Result result = adapterClient.getListWithoutAck(configuration.getTimeout().toMillis(),
-					TimeUnit.MILLISECONDS);
+		while(adapterClient.isRunning()){
+			try{
+				Result result = adapterClient.getListWithoutAck(configuration.getTimeout().toMillis(),
+						TimeUnit.MILLISECONDS);
 
-			if(result != null && result.getMessages() != null){
-				for(CanalMessage message : result.getMessages()){
-					doDispatch(message);
+				if(logger.isDebugEnabled()){
+					logger.debug("Return {} messages.", result == null ? 0 : result.getMessages().size());
 				}
-			}
 
-			if(result != null && result.getId() > -1){
-				adapterClient.ack(result.getId());
-			}else{
-				adapterClient.ack();
+				if(result != null && result.getMessages() != null){
+					for(CanalMessage message : result.getMessages()){
+						doDispatch(message);
+					}
+				}
+
+				if(result != null && result.getId() > -1){
+					adapterClient.ack(result.getId());
+				}else{
+					adapterClient.ack();
+				}
+			}catch(Exception e){
+				logger.error("Message handle error", e);
 			}
-		}catch(Exception e){
-			logger.error("Message handle error", e);
 		}
 	}
 
@@ -112,7 +116,7 @@ public abstract class AbstractDispatcher implements Dispatcher {
 	protected abstract EventListenerMethod findMethod(final CanalMessage canalMessage);
 
 	protected static List<EventListenerArgumentResolver> getDefaultArgumentResolvers() {
-		return ListBuilder.<EventListenerArgumentResolver>create(13)
+		return ListBuilder.<EventListenerArgumentResolver>create(11)
 				.add(new DestinationArgumentResolver())
 				.add(new EntryTypeArgumentResolver())
 				.add(new EventTypeArgumentResolver())
@@ -122,8 +126,6 @@ public abstract class AbstractDispatcher implements Dispatcher {
 				.add(new RowDataCollectionArgumentResolver())
 				.add(new RowDataArrayArgumentResolver())
 				.add(new RowArgumentResolver())
-				.add(new RowCollectionArgumentResolver())
-				.add(new RowArrayArgumentResolver())
 				.add(new SchemaArgumentResolver())
 				.add(new TableArgumentResolver())
 				.build();

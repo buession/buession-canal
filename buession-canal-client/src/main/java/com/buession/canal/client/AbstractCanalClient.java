@@ -56,8 +56,6 @@ public abstract class AbstractCanalClient implements CanalClient {
 	 */
 	private final Dispatcher dispatcher;
 
-	private volatile boolean running = false;
-
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
@@ -100,20 +98,13 @@ public abstract class AbstractCanalClient implements CanalClient {
 			adapterClient.init();
 			process(adapterClient, dispatcher, executor);
 		});
-
-		running = true;
 	}
 
 	@Override
 	public void stop() {
 		logger.info("CanalClient stopping...");
+		context.getAdapterClients().forEach(AdapterClient::close);
 		executor.shutdown();
-		running = false;
-	}
-
-	@Override
-	public boolean isRunning() {
-		return running;
 	}
 
 	protected abstract void process(final AdapterClient adapterClient, final Dispatcher dispatcher,

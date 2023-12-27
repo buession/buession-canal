@@ -66,11 +66,7 @@ public class DefaultCanalClient extends AbstractCanalClient {
 	@Override
 	protected void process(final AdapterClient adapterClient, final Dispatcher dispatcher,
 						   final ExecutorService executor) {
-		executor.submit(()->{
-			while(isRunning()){
-				dispatcher.dispatch(adapterClient);
-			}
-		});
+		executor.submit(()->dispatcher.dispatch(adapterClient));
 	}
 
 }

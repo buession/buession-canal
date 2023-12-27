@@ -40,7 +40,7 @@ public class DefaultCanalThreadFactory implements ThreadFactory {
 
 	private final ThreadGroup group;
 
-	private final AtomicInteger threadNumber = new AtomicInteger(1);
+	private final AtomicInteger threadNumber = new AtomicInteger(0);
 
 	private final String namePrefix;
 
@@ -57,7 +57,7 @@ public class DefaultCanalThreadFactory implements ThreadFactory {
 		if(thread.getPriority() != Thread.NORM_PRIORITY){
 			thread.setPriority(Thread.NORM_PRIORITY);
 		}
-		
+
 		thread.setDaemon(true);
 
 		return thread;

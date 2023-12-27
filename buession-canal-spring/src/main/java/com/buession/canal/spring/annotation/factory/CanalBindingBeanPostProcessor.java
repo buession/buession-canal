@@ -27,13 +27,13 @@ package com.buession.canal.spring.annotation.factory;
 import com.buession.canal.annotation.CanalBinding;
 import com.buession.canal.annotation.CanalEventListener;
 import com.buession.canal.client.dispatcher.AbstractDispatcher;
-import com.buession.canal.client.dispatcher.Dispatcher;
 import com.buession.canal.core.listener.utils.EventListenerUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.util.ReflectionUtils;
@@ -58,28 +58,29 @@ public class CanalBindingBeanPostProcessor implements BeanPostProcessor, BeanFac
 		CanalBinding canalBinding = AnnotationUtils.findAnnotation(bean.getClass(), CanalBinding.class);
 
 		if(canalBinding != null){
-			Dispatcher dispatcher = beanFactory.getBean(Dispatcher.class);
-			detectBindingMethods(bean, bean.getClass(), (AbstractDispatcher) dispatcher, canalBinding.destination());
+			AbstractDispatcher dispatcher = beanFactory.getBean(AbstractDispatcher.class);
+
+			ReflectionUtils.doWithMethods(bean.getClass(), (method)->{
+				CanalEventListener canalEventListener = AnnotatedElementUtils.findMergedAnnotation(method,
+						CanalEventListener.class);
+
+				if(canalEventListener != null){
+					Method invocableMethod = AopUtils.selectInvocableMethod(method, bean.getClass());
+					detectBindingMethod(bean, invocableMethod, canalEventListener, dispatcher,
+							canalBinding.destination());
+				}
+			});
 		}
 
 		return bean;
 	}
 
-	protected void detectBindingMethods(final Object bean, final Class<?> beanType, final AbstractDispatcher dispatcher,
-										final String destination) {
-		ReflectionUtils.doWithMethods(beanType, (method)->{
-			Method invocableMethod = AopUtils.selectInvocableMethod(method, beanType);
-			CanalEventListener canalEventListener = AnnotationUtils.findAnnotation(invocableMethod,
-					CanalEventListener.class);
-
-			if(canalEventListener == null){
-				return;
-			}
-
-			String listenerName = EventListenerUtils.buildEventListenerName(destination,
-					canalEventListener.schema(), canalEventListener.table(), canalEventListener.eventType());
-			dispatcher.getEventListenerRegistry().register(listenerName, bean, invocableMethod);
-		});
+	protected void detectBindingMethod(final Object bean, final Method method,
+									   final CanalEventListener canalEventListener,
+									   final AbstractDispatcher dispatcher, final String destination) {
+		final String listenerName = EventListenerUtils.buildEventListenerName(destination,
+				canalEventListener.schema(), canalEventListener.table(), canalEventListener.eventType());
+		dispatcher.getEventListenerRegistry().register(listenerName, bean, method);
 	}
 
 }
