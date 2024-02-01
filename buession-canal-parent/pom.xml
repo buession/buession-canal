@@ -13,7 +13,7 @@
 	<artifactId>buession-canal-parent</artifactId>
 	<url>https://canal.buession.com/</url>
 	<description>Buession Canal Framework Parent</description>
-	<version>0.0.3</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
 	<organization>
@@ -58,10 +58,12 @@
 		<module>../buession-canal-core</module>
 		<module>../buession-canal-client</module>
 		<module>../buession-canal-spring</module>
+		<module>../buession-canal-springboot</module>
 	</modules>
 
 	<properties>
-		<buession.version>2.3.2</buession.version>
+		<buession.version>2.3.3</buession.version>
+		<buession.springboot.version>2.3.3</buession.springboot.version>
 		<alibaba.canal.version>1.1.7</alibaba.canal.version>
 	</properties>
 
@@ -112,15 +114,6 @@
 
 	<build>
 		<finalName>buession-canal-parent</finalName>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>false</filtering>
-				<includes>
-					<include>**/*.*</include>
-				</includes>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

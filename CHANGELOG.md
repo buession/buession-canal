@@ -2,7 +2,16 @@
 ===========================
 
 
-## [0.0.2](https://github.com/buession/buession-canal/releases/tag/v0.0.2) (2024-xx-xx)
+## [1.0.0](https://github.com/buession/buession-canal/releases/tag/v1.0.0) (2024-xx-xx)
+
+### 🔨依赖升级
+
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.3.3)
+
+
+### ⭐ 新特性
+
+- **buession-canal-springboot：** 增加 canal 的 spring boot 支持
 
 
 ---
