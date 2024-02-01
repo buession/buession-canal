@@ -22,7 +22,7 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.canal.autoconfigure;
+package com.buession.canal.springboot.autoconfigure;
 
 import com.buession.canal.client.CanalContext;
 import com.buession.canal.client.DefaultCanalContext;
@@ -41,7 +41,7 @@ import java.util.concurrent.ExecutorService;
 
 /**
  * @author Yong.Teng
- * @since 2.3.1
+ * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(CanalProperties.class)

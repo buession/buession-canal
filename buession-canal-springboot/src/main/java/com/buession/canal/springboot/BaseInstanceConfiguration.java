@@ -21,10 +21,27 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.springboot;/**
- * 
+ */
+package com.buession.canal.springboot;
+
+import com.buession.canal.core.Configuration;
+
+import java.time.Duration;
+
+/**
+ * 实例基本配置
  *
  * @author Yong.Teng
  * @since 1.0.0
- */public class BaseInstanceConfiguration {
+ */
+public abstract class BaseInstanceConfiguration extends Configuration {
+
+	/**
+	 * 构造函数
+	 */
+	public BaseInstanceConfiguration() {
+		setTimeout(Duration.ofSeconds(10));
+		setBatchSize(10);
+	}
+
 }

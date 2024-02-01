@@ -22,7 +22,7 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.canal;
+package com.buession.canal.springboot;
 
 import com.buession.core.concurrent.ThreadPolicy;
 
@@ -32,7 +32,7 @@ import java.time.Duration;
  * 线程池配置
  *
  * @author Yong.Teng
- * @since 2.3.1
+ * @since 1.0.0
  */
 public class ThreadConfig {
 

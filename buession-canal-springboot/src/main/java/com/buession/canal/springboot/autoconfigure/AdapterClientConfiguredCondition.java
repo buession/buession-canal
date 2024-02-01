@@ -22,21 +22,22 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.canal.autoconfigure;
+package com.buession.canal.springboot.autoconfigure;
 
 import com.buession.canal.core.CanalMode;
+import com.buession.canal.springboot.BaseInstanceConfiguration;
 import com.buession.springboot.boot.autoconfigure.condition.BaseOnPropertyExistCondition;
 import org.springframework.boot.context.properties.bind.Bindable;
 
 /**
  * @author Yong.Teng
- * @since 0.0.1
+ * @since 1.0.0
  */
 interface AdapterClientConfiguredCondition {
 
 	abstract class AbstractCanalAdapterClientConfiguredCondition<P extends AdapterProperties<?
-			extends AbstractAdapterProperties.BaseInstanceConfiguration>>
-			extends BaseOnPropertyExistCondition<P> implements AdapterClientConfiguredCondition {
+			extends BaseInstanceConfiguration>> extends BaseOnPropertyExistCondition<P>
+			implements AdapterClientConfiguredCondition {
 
 		public AbstractCanalAdapterClientConfiguredCondition(final Bindable<P> registration, final CanalMode mode) {
 			super(CanalProperties.PREFIX + '.' + mode.getName(), "registered canal adapter clients", registration,

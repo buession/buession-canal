@@ -24,6 +24,6 @@
  */
 /**
  * @author Yong.Teng
- * @since 2.3.1
+ * @since 1.0.0
  */
-package com.buession.springboot.canal.autoconfigure;
+package com.buession.canal.springboot.autoconfigure;

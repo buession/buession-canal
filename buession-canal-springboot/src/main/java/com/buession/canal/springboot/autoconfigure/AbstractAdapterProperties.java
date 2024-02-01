@@ -22,11 +22,10 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.canal.autoconfigure;
+package com.buession.canal.springboot.autoconfigure;
 
-import com.buession.canal.core.Configuration;
+import com.buession.canal.springboot.BaseInstanceConfiguration;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,9 +33,9 @@ import java.util.Map;
  * Canal 适配器配置基类
  *
  * @author Yong.Teng
- * @since 0.0.1
+ * @since 1.0.0
  */
-abstract class AbstractAdapterProperties<IC extends AbstractAdapterProperties.BaseInstanceConfiguration>
+abstract class AbstractAdapterProperties<IC extends BaseInstanceConfiguration>
 		implements AdapterProperties<IC> {
 
 	/**
@@ -62,21 +61,6 @@ abstract class AbstractAdapterProperties<IC extends AbstractAdapterProperties.Ba
 	 */
 	public void setInstances(Map<String, IC> instances) {
 		this.instances = instances;
-	}
-
-	/**
-	 * 实例基本配置
-	 *
-	 * @author Yong.Teng
-	 * @since 0.0.1
-	 */
-	public static abstract class BaseInstanceConfiguration extends Configuration {
-
-		public BaseInstanceConfiguration() {
-			setTimeout(Duration.ofSeconds(10));
-			setBatchSize(10);
-		}
-
 	}
 
 }

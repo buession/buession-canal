@@ -22,16 +22,16 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.canal.autoconfigure;
+package com.buession.canal.springboot.autoconfigure;
 
-import com.buession.springboot.canal.ThreadConfig;
+import com.buession.canal.springboot.ThreadConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Canal 配置
  *
  * @author Yong.Teng
- * @since 2.3.1
+ * @since 1.0.0
  */
 @ConfigurationProperties(CanalProperties.PREFIX)
 public class CanalProperties {

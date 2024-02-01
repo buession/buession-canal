@@ -22,13 +22,15 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.canal.autoconfigure;
+package com.buession.canal.springboot.autoconfigure;
+
+import com.buession.canal.springboot.BaseInstanceConfiguration;
 
 /**
  * Kafka 适配器配置
  *
  * @author Yong.Teng
- * @since 2.3.1
+ * @since 1.0.0
  */
 public class TcpProperties extends AbstractAdapterProperties<TcpProperties.Instance> {
 
@@ -128,7 +130,7 @@ public class TcpProperties extends AbstractAdapterProperties<TcpProperties.Insta
 		this.password = password;
 	}
 
-	public final static class Instance extends AbstractAdapterProperties.BaseInstanceConfiguration {
+	public final static class Instance extends BaseInstanceConfiguration {
 
 		public Instance() {
 		}

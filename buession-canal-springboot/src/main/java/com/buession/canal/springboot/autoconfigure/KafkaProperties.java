@@ -22,13 +22,15 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.canal.autoconfigure;
+package com.buession.canal.springboot.autoconfigure;
+
+import com.buession.canal.springboot.MqBaseInstanceConfiguration;
 
 /**
  * Kafka 适配器配置
  *
  * @author Yong.Teng
- * @since 2.3.1
+ * @since 1.0.0
  */
 public class KafkaProperties extends AbstractMqAdapterProperties<KafkaProperties.Instance> {
 
@@ -56,7 +58,7 @@ public class KafkaProperties extends AbstractMqAdapterProperties<KafkaProperties
 		this.servers = servers;
 	}
 
-	public final static class Instance extends AbstractMqAdapterProperties.MqBaseInstanceConfiguration {
+	public final static class Instance extends MqBaseInstanceConfiguration {
 
 		/**
 		 * Group Id

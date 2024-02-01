@@ -21,10 +21,32 @@
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
- */package com.buession.canal.springboot;/**
- * 
+ */
+package com.buession.canal.springboot;
+
+/**
+ * MQ 实例基本配置
  *
  * @author Yong.Teng
  * @since 1.0.0
- */public class MqBaseInstanceConfiguration {
+ */
+public abstract class MqBaseInstanceConfiguration extends BaseInstanceConfiguration {
+
+	private boolean flatMessage;
+
+	/**
+	 * 构造函数
+	 */
+	public MqBaseInstanceConfiguration() {
+		super();
+	}
+
+	public boolean isFlatMessage() {
+		return flatMessage;
+	}
+
+	public void setFlatMessage(boolean flatMessage) {
+		this.flatMessage = flatMessage;
+	}
+
 }

@@ -22,7 +22,7 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.canal.autoconfigure;
+package com.buession.canal.springboot.autoconfigure;
 
 import com.buession.canal.core.Configuration;
 
@@ -32,7 +32,7 @@ import java.util.Map;
  * Canal 适配器配置
  *
  * @author Yong.Teng
- * @since 2.3.1
+ * @since 1.0.0
  */
 @FunctionalInterface
 interface AdapterProperties<C extends Configuration> {

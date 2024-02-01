@@ -22,15 +22,16 @@
  * | Copyright @ 2013-2023 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
-package com.buession.springboot.canal.autoconfigure;
+package com.buession.canal.springboot.autoconfigure;
 
 import com.buession.canal.client.adapter.PulsarMQAdapterClient;
+import com.buession.canal.springboot.MqBaseInstanceConfiguration;
 
 /**
  * PulsarMQ 适配器配置
  *
  * @author Yong.Teng
- * @since 2.3.1
+ * @since 1.0.0
  */
 public class PulsarProperties extends AbstractMqAdapterProperties<PulsarProperties.Instance> {
 
@@ -184,7 +185,7 @@ public class PulsarProperties extends AbstractMqAdapterProperties<PulsarProperti
 		this.maxRedeliveryCount = maxRedeliveryCount;
 	}
 
-	public final static class Instance extends AbstractMqAdapterProperties.MqBaseInstanceConfiguration {
+	public final static class Instance extends MqBaseInstanceConfiguration {
 
 		/**
 		 * 订阅名称
