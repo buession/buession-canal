@@ -6,7 +6,7 @@
 
 ### 🔨依赖升级
 
-- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v2.3.3)
+- [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v3.0.0)
 
 
 ### ⭐ 新特性
