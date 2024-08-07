@@ -26,7 +26,7 @@ package com.buession.canal.client.adapter;
 
 import com.buession.canal.core.CanalMessage;
 import com.buession.canal.core.Result;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

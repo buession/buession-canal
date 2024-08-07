@@ -11,7 +11,7 @@
 
 ### ⭐ 新特性
 
-- **buession-canal-springboot：** 增加 canal 的 spring boot 支持
+- 增加 spring boot 支持
 
 
 ---
