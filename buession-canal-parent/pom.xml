@@ -7,13 +7,13 @@
 		<groupId>com.buession</groupId>
 		<artifactId>parent</artifactId>
 		<relativePath/>
-		<version>2.3.3</version>
+		<version>3.0.0</version>
 	</parent>
 	<groupId>com.buession.canal</groupId>
 	<artifactId>buession-canal-parent</artifactId>
 	<url>https://canal.buession.com/</url>
 	<description>Buession Canal Framework Parent</description>
-	<version>1.0.0</version>
+	<version>2.0.0</version>
 	<packaging>pom</packaging>
 
 	<organization>
@@ -62,8 +62,8 @@
 	</modules>
 
 	<properties>
-		<buession.version>2.3.3</buession.version>
-		<buession.springboot.version>2.3.3</buession.springboot.version>
+		<buession.version>3.0.0</buession.version>
+		<buession.springboot.version>3.0.0</buession.springboot.version>
 		<alibaba.canal.version>1.1.7</alibaba.canal.version>
 	</properties>
 
@@ -78,6 +78,14 @@
 					<exclusion>
 						<groupId>io.netty</groupId>
 						<artifactId>*</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.zookeeper</groupId>
+						<artifactId>*</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.101tec</groupId>
+						<artifactId>zkclient</artifactId>
 					</exclusion>
 					<exclusion>
 						<groupId>org.slf4j</groupId>
@@ -97,6 +105,14 @@
 					<exclusion>
 						<groupId>io.netty</groupId>
 						<artifactId>*</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.zookeeper</groupId>
+						<artifactId>*</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.101tec</groupId>
+						<artifactId>zkclient</artifactId>
 					</exclusion>
 					<exclusion>
 						<groupId>org.slf4j</groupId>
@@ -128,20 +144,9 @@
 				<artifactId>maven-gpg-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<groupId>org.sonatype.central</groupId>
+				<artifactId>central-publishing-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
-
-	<distributionManagement>
-		<snapshotRepository>
-			<id>sonatype-nexus-snapshots</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>sonatype-nexus-staging</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
 </project>
