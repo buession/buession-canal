@@ -2,7 +2,7 @@
 ===========================
 
 
-## [1.0.0](https://github.com/buession/buession-canal/releases/tag/v1.0.0) (2024-05-06)
+## [2.0.0](https://github.com/buession/buession-canal/releases/tag/v2.0.0) (2024-11-07)
 
 ### 🔨依赖升级
 
