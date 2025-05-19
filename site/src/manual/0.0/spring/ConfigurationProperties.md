@@ -1,4 +1,4 @@
-# buession-springboot-cli 参考手册
+# buession-canal-spring 参考手册
 
 
 ## 配置属性
