@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.canal.springboot.autoconfigure;
@@ -27,7 +27,7 @@ package com.buession.canal.springboot.autoconfigure;
 import com.buession.canal.springboot.BaseInstanceConfiguration;
 
 /**
- * Kafka 适配器配置
+ * TCP 适配器配置
  *
  * @author Yong.Teng
  * @since 1.0.0
