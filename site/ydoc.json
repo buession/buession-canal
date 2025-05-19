@@ -1,0 +1,13 @@
+{
+  "title": "Buession Canal",
+  "keywords": "buession mysql canal",
+  "description": "阿里巴巴 canal 客户端",
+  "author": "buession",
+  "theme": "demo",
+  "root": "src",
+  "pluginsConfig": {
+    "import-asset": {
+      "js": ["/js/stat.js"]
+    }
+  }
+}
