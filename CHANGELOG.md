@@ -6,8 +6,11 @@
 ### 🔨依赖升级
 
 - [依赖库版本升级和安全漏洞修复](https://github.com/buession/buession-parent/releases/tag/v4.0.0)
+- [canal](https://github.com/alibaba/canal) 版本升级至 1.1.8
+
 
 ---
+
 
 ## [2.0.1](https://github.com/buession/buession-canal/releases/tag/v2.0.1) (2025-05-19)
 
