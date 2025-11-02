@@ -19,15 +19,14 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.canal.core.concurrent;
 
-import org.springframework.lang.NonNull;
+import com.buession.core.concurrent.DefaultThreadFactory;
 
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 默认线程工厂
@@ -36,31 +35,24 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @see ThreadFactory
  * @since 0.0.1
  */
-public class DefaultCanalThreadFactory implements ThreadFactory {
+public class DefaultCanalThreadFactory extends DefaultThreadFactory {
 
-	private final ThreadGroup group;
-
-	private final AtomicInteger threadNumber = new AtomicInteger(0);
-
-	private final String namePrefix;
-
-	public DefaultCanalThreadFactory(final String namePrefix) {
-		SecurityManager securityManager = System.getSecurityManager();
-		group = securityManager == null ? Thread.currentThread().getThreadGroup() : securityManager.getThreadGroup();
-		this.namePrefix = namePrefix + "-thread-";
+	/**
+	 * 构造函数
+	 */
+	public DefaultCanalThreadFactory() {
+		this("canal-pool");
 	}
 
-	@Override
-	public Thread newThread(@NonNull Runnable runnable) {
-		final Thread thread = new Thread(group, runnable, namePrefix + threadNumber.getAndIncrement(), 0);
-
-		if(thread.getPriority() != Thread.NORM_PRIORITY){
-			thread.setPriority(Thread.NORM_PRIORITY);
-		}
-
-		thread.setDaemon(true);
-
-		return thread;
+	/**
+	 * 构造函数
+	 *
+	 * @param namePrefix
+	 * 		名称前缀
+	 */
+	public DefaultCanalThreadFactory(final String namePrefix) {
+		super(namePrefix);
+		setDaemon(true);
 	}
 
 }
