@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.canal.core.concurrent;
@@ -42,7 +42,8 @@ public final class DefaultCanalThreadPoolExecutor extends ThreadPoolExecutor {
 	 * 构造函数
 	 */
 	public DefaultCanalThreadPoolExecutor() {
-		this("canal", Runtime.getRuntime().availableProcessors() << 1, Runtime.getRuntime().availableProcessors() << 1,
+		this(DefaultCanalThreadFactory.DEFAULT_NAME_PREFIX, Runtime.getRuntime().availableProcessors() << 1,
+				Runtime.getRuntime().availableProcessors() << 1,
 				3L, TimeUnit.SECONDS);
 	}
 

@@ -37,11 +37,13 @@ import java.util.concurrent.ThreadFactory;
  */
 public class DefaultCanalThreadFactory extends DefaultThreadFactory {
 
+	public final static String DEFAULT_NAME_PREFIX = "canal";
+
 	/**
 	 * 构造函数
 	 */
 	public DefaultCanalThreadFactory() {
-		this("canal-pool");
+		this(DEFAULT_NAME_PREFIX);
 	}
 
 	/**

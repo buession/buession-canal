@@ -19,7 +19,7 @@
  * +-------------------------------------------------------------------------------------------------------+
  * | License: http://www.apache.org/licenses/LICENSE-2.0.txt 										       |
  * | Author: Yong.Teng <webmaster@buession.com> 													       |
- * | Copyright @ 2013-2023 Buession.com Inc.														       |
+ * | Copyright @ 2013-2025 Buession.com Inc.														       |
  * +-------------------------------------------------------------------------------------------------------+
  */
 package com.buession.canal.spring.annotation;
@@ -59,7 +59,7 @@ public @interface EnableCanal {
 	 * Base packages to scan for annotated components.
 	 * <p>
 	 * {@link #value()} is an alias for (and mutually exclusive with) this attribute.
-	 * <p>
+	 * </p>
 	 *
 	 * @return the array of 'basePackages'.
 	 */

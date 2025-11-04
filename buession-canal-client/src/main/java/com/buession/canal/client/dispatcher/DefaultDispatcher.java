@@ -53,7 +53,7 @@ public class DefaultDispatcher extends AbstractDispatcher {
 
 	private static String buildEventListenerName(final CanalMessage canalMessage) {
 		return EventListenerUtils.buildEventListenerName(canalMessage.getDestination(),
-				canalMessage.getTable().getSchema(), canalMessage.getTable().getName(), canalMessage.getEventType());
+				canalMessage.getTable().schema(), canalMessage.getTable().name(), canalMessage.getEventType());
 	}
 
 	private static String buildEventListenerNameWithoutTable(final CanalMessage canalMessage) {
