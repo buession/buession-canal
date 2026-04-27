@@ -63,7 +63,7 @@
 
 	<properties>
 		<buession.version>4.0.0</buession.version>
-		<buession.springboot.version>3.0.1</buession.springboot.version>
+		<buession.springboot.version>4.0.0</buession.springboot.version>
 		<alibaba.canal.version>1.1.8</alibaba.canal.version>
 	</properties>
 

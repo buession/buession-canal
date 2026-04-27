@@ -43,7 +43,7 @@ public class SchemaArgumentResolver implements EventListenerArgumentResolver {
 
 	@Override
 	public Object resolve(final MethodParameter parameter, final CanalMessage canalMessage) throws Exception {
-		return canalMessage == null ? null : canalMessage.getTable().schema();
+		return canalMessage == null ? null : canalMessage.getTable().getSchema();
 	}
 
 }

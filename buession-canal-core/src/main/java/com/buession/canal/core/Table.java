@@ -31,17 +31,64 @@ import java.io.Serializable;
 /**
  * 数据库信息
  *
- * @param name
- * 		表名
- * @param schema
- * 		数据库名
- *
  * @author Yong.Teng
  * @since 0.0.1
  */
-public record Table(String name, String schema) implements Serializable {
+public class Table implements Serializable {
 
 	private final static long serialVersionUID = 8941302053989524508L;
+
+	/**
+	 * 表名
+	 */
+	private String name;
+
+	/**
+	 * 数据库名
+	 */
+	private String schema;
+
+	/**
+	 * 构造函数
+	 * @param name 表名
+	 * @param schema 数据库名
+	 */
+	public Table(String name, String schema) {
+		this.name = name;
+		this.schema = schema;
+	}
+
+	/**
+	 * 返回表名
+	 * @return 表名
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * 设置表名
+	 * @param name 表名
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * 返回数据库名
+	 * @return 数据库名
+	 */
+	public String getSchema() {
+		return schema;
+	}
+
+	/**
+	 * 设置数据库名
+	 * @param schema 数据库名
+	 */
+	public void setSchema(String schema) {
+		this.schema = schema;
+	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -49,8 +96,7 @@ public record Table(String name, String schema) implements Serializable {
 			return false;
 		}
 
-		if(obj instanceof Table){
-			Table that = (Table) obj;
+		if(obj instanceof Table that){
 			return StringUtils.equalsIgnoreCase(this.schema, that.schema) &&
 					StringUtils.equalsIgnoreCase(this.name, that.name);
 		}
