@@ -1,0 +1,3 @@
+com.buession.canal.springboot.autoconfigure.ThreadPoolConfiguration
+com.buession.canal.springboot.autoconfigure.AdapterClientConfiguration
+com.buession.canal.springboot.autoconfigure.CanalConfiguration
